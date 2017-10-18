@@ -1,0 +1,17 @@
+{
+	"name": "diamond",
+	"description": "MVC / Template Framework.",
+	"authors": [
+		"Jacob Jensen"
+	],
+	"license": "The MIT License (MIT)",
+	"copyright": "Copyright © 2016 Jacob Jensen",
+	"targetType": "sourceLibrary",
+	"sourcePaths": ["src"],
+	"dependencies": {
+		"vibe-d": {
+			"version": "~>0.7.28",
+			"optional": true
+		}
+	}
+}
