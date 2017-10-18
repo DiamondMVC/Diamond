@@ -4,6 +4,13 @@ Diamond is a MVC / Template Framework written in the D Programming Language. It'
 
 For the legacy project view: https://github.com/bausshf/Diamond/
 
+### Quick-links
+
+Syntax Reference: https://github.com/DiamondMVC/Diamond/wiki/Syntax-Reference
+Comparison with ASP.NET Razor: https://github.com/DiamondMVC/Diamond/wiki/Razor-Comparison
+Controller Tutorial: https://github.com/DiamondMVC/Diamond/wiki/Controller-Tutorial
+Understanding The Core: https://github.com/DiamondMVC/Diamond/wiki/Understanding-The-Core
+
 ## Features - Web
 
 * Full control over requests / responses when wanted.
