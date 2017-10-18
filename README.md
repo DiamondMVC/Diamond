@@ -2,6 +2,8 @@
 
 Diamond is a MVC / Template Framework written in the D Programming Language. It's inspired by ASP.NET's Razor syntax; however it still differs from it and has its own set of rules. Diamonds was originally written to be an alternative template version of Vibe.d's Diet templates, however it has evolved far beyond that.
 
+For the legacy project view: https://github.com/bausshf/Diamond/
+
 ## Features - Web
 
 * Full control over requests / responses when wanted.
