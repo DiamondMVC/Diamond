@@ -34,6 +34,7 @@ For the legacy project view: https://github.com/bausshf/Diamond/
 * Easy access to the current request / response using the properties: *httpRequest* and *httpResponse*
 * Can render other views within itself
 * Any type of D code can be written within views.
+* Allows for sections, which is useful to only render a part of the view. (Very useful for responsive designs)
 
 ### Models
 
@@ -76,6 +77,7 @@ For the legacy project view: https://github.com/bausshf/Diamond/
 * Can render other views within itself
 * Any type of D code can be written within views.
 * Can be used for any type of template rendering such as email, UI etc.
+* Allows for sections, which is useful to only render a part of the view. (Very useful for responsive designs)
 
 ### Models
 
