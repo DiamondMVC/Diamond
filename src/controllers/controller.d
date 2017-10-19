@@ -19,7 +19,7 @@ static if (isWeb)
 
 static if (isWeb)
 {
-  import std.string : strip, format;
+  import std.string : strip, format, toLower;
   import std.traits : hasUDA, getUDAs;
 
   enum defaultMappingFormat = q{
@@ -43,8 +43,8 @@ static if (isWeb)
 
       mapAction(
         action_%s.method,
-        action_%s.action && action_%s.action.strip().length ?
-        action_%s.action : "%s",
+        (action_%s.action && action_%s.action.strip().length ?
+        action_%s.action : "%s").toLower(),
         &controller.%s
       );
     }
