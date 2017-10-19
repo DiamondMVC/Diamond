@@ -17,11 +17,45 @@ static if (isWeb)
   import diamond.controllers.mapattributes;
 }
 
+static if (isWeb)
+{
+  import std.string : strip, format;
+  import std.traits : hasUDA, getUDAs;
+
+  enum defaultMappingFormat = q{
+    static if (hasUDA!(%s.%s, HttpDefault))
+    {
+      mapDefault(&controller.%s);
+    }
+  };
+
+  enum mandatoryMappingFormat = q{
+    static if (hasUDA!(%s.%s, HttpMandatory))
+    {
+      mapMandatory(&controller.%s);
+    }
+  };
+
+  enum actionMappingFormat = q{
+    static if (hasUDA!(%s.%s, HttpAction))
+    {
+      static const action_%s = getUDAs!(%s.%s, HttpAction)[0];
+
+      mapAction(
+        action_%s.method,
+        action_%s.action && action_%s.action.strip().length ?
+        action_%s.action : "%s",
+        &controller.%s
+      );
+    }
+  };
+}
+
 // WebServer's will have a view associated with the controller, the view then contains information about the request etc.
 static if (isWebServer)
 {
   /// Wrapper around a controller.
-  class Controller(TView,TController) : BaseController
+  class Controller(TView) : BaseController
   {
     private:
     /// The view associatedi with the controller.
@@ -33,21 +67,32 @@ static if (isWebServer)
     * Params:
     *   view =  The view associated with the controller.
     */
-    this(TView view, TController controller)
+    this(this TController)(TView view)
     {
       super();
 
       _view = view;
 
-      import std.traits : hasUDA, getUDAs;
-      import controllers;
       mixin("import diamondapp : " ~ TController.stringof.split("!")[1][1 .. $-1] ~ ";");
+
+      import controllers;
+      auto controller = cast(TController)this;
 
       foreach (member; __traits(derivedMembers, TController))
       {
-        mixin("static if (hasUDA!(" ~ TController.stringof ~ "." ~ member ~ ", HttpDefault)) mapDefault(&controller." ~ member ~ ");");
-        mixin("static if (hasUDA!(" ~ TController.stringof ~ "." ~ member ~ ", HttpMandatory)) mapMandatory(&controller." ~ member ~ ");");
-        mixin("static if (hasUDA!(" ~ TController.stringof ~ "." ~ member ~ ", HttpAction)) { static const action_" ~ member ~ " = getUDAs!(" ~ TController.stringof ~ "." ~ member ~ ", HttpAction)[0]; mapAction(action_" ~ member ~ ".method, action_" ~ member ~ ".action && action_" ~ member ~ ".action.length ? action_" ~ member ~ ".action : \"" ~ member ~ "\", &controller." ~ member ~ "); }");
+        static if (member != "__ctor")
+        {
+          mixin(defaultMappingFormat.format(TController.stringof, member, member));
+          mixin(mandatoryMappingFormat.format(TController.stringof, member, member));
+          mixin(actionMappingFormat.format(
+            TController.stringof, member,
+            member, TController.stringof, member,
+            member,
+            member, member,
+            member, member,
+            member
+          ));
+        }
       }
     }
 
@@ -174,7 +219,7 @@ else static if (isWebApi)
   import diamond.http : Route;
 
   /// Wrapper around a controller.
-  class Controller(TController) : BaseController
+  class Controller : BaseController
   {
     private:
     /// The request.
@@ -193,7 +238,7 @@ else static if (isWebApi)
     *   route =      The route of the controller.
     *   controller = The controller itself
     */
-    this(HTTPServerRequest request, HTTPServerResponse response, Route route, TController controller)
+    this(this TController)(HTTPServerRequest request, HTTPServerResponse response, Route route)
     {
       super();
 
@@ -201,14 +246,24 @@ else static if (isWebApi)
       _response = response;
       _route = route;
 
-      import std.traits : hasUDA, getUDAs;
       import controllers;
+      auto controller = cast(TController)this;
 
       foreach (member; __traits(derivedMembers, TController))
       {
-        mixin("static if (hasUDA!(" ~ TController.stringof ~ "." ~ member ~ ", HttpDefault)) mapDefault(&controller." ~ member ~ ");");
-        mixin("static if (hasUDA!(" ~ TController.stringof ~ "." ~ member ~ ", HttpMandatory)) mapMandatory(&controller." ~ member ~ ");");
-        mixin("static if (hasUDA!(" ~ TController.stringof ~ "." ~ member ~ ", HttpAction)) { static const action_" ~ member ~ " = getUDAs!(" ~ TController.stringof ~ "." ~ member ~ ", HttpAction)[0]; mapAction(action_" ~ member ~ ".method, action_" ~ member ~ ".action && action_" ~ member ~ ".action.length ? action_" ~ member ~ ".action : \"" ~ member ~ "\", &controller." ~ member ~ "); }");
+        static if (member != "__ctor")
+        {
+          mixin(defaultMappingFormat.format(TController.stringof, member, member));
+          mixin(mandatoryMappingFormat.format(TController.stringof, member, member));
+          mixin(actionMappingFormat.format(
+            TController.stringof, member,
+            member, TController.stringof, member,
+            member,
+            member, member,
+            member, member,
+            member
+          ));
+        }
       }
     }
 
