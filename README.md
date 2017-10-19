@@ -18,6 +18,12 @@ Controller Tutorial: https://github.com/DiamondMVC/Diamond/wiki/Controller-Tutor
 
 Understanding The Core: https://github.com/DiamondMVC/Diamond/wiki/Understanding-The-Core
 
+Using Diamond Stand-alone: https://github.com/DiamondMVC/Diamond/wiki/Using-Diamond-Stand-alone
+
+Using Diamond for Web-api: https://github.com/DiamondMVC/Diamond/wiki/Using-Diamond-For-WebApi
+
+Using Diamond for Web-server: https://github.com/DiamondMVC/Diamond/wiki/Using-Diamond-For-WebServer
+
 ## Features - Web
 
 * Full control over requests / responses when wanted.
