@@ -22,12 +22,32 @@ mixin template ExtensionEmit(ExtensionType extensionType, string extensionHandle
       import std.string : format;
       import std.array : replace;
 
-      emitResult ~= q{{
-        import __extension_%s = %s;
+      static if (
+        extensionType == ExtensionType.applicationStart ||
+        extensionType == ExtensionType.customGrammar ||
+        extensionType == ExtensionType.partParser ||
+        extensionType == ExtensionType.httpSettings ||
+        extensionType == ExtensionType.httpRequest ||
+        extensionType == ExtensionType.handleError ||
+        extensionType == ExtensionType.staticFileExtension
+      )
+      {
+        emitResult ~= q{{
+          import __extension_%s = %s;
 
-        %s
-      }}.format(emitEntry.name, emitEntry.moduleName,
-        extensionHandler.replace("{{extensionEntry}}", "__extension_" ~ emitEntry.name));
+          %s
+        }}.format(emitEntry.name, emitEntry.moduleName,
+          extensionHandler.replace("{{extensionEntry}}", "__extension_" ~ emitEntry.name));
+      }
+      else
+      {
+        emitResult ~= q{
+          import __extension_%s = %s;
+
+          %s
+        }.format(emitEntry.name, emitEntry.moduleName,
+          extensionHandler.replace("{{extensionEntry}}", "__extension_" ~ emitEntry.name));
+      }
     }
 
     return emitResult;
