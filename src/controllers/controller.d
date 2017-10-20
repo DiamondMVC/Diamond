@@ -211,6 +211,11 @@ static if (isWebServer)
 
       return action();
     }
+
+    import diamond.extensions;
+    mixin ExtensionEmit!(ExtensionType.controllerExtension, q{
+      mixin {{extensionEntry}}.extensions;
+    });
   }
 }
 // A webapi will not have a view associated with it, thus all information such as the request etc. is available within the controller
@@ -388,6 +393,11 @@ else static if (isWebApi)
 
       return action();
     }
+
+    import diamond.extensions;
+    mixin ExtensionEmit!(ExtensionType.controllerExtension, q{
+      mixin {{extensionEntry}}.extensions;
+    });
   }
 
   /// Mixin template for generating the controllers.

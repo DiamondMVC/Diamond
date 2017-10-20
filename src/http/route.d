@@ -14,7 +14,7 @@ static if (isWeb)
   import diamond.errors : enforce;
 
   // A http route.
-  class Route
+  final class Route
   {
     private:
     /// The raw route url.
@@ -27,6 +27,7 @@ static if (isWeb)
     string[] _params;
 
     public:
+    final:
     /**
     * Creates a new route.
     * Params:

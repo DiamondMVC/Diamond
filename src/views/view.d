@@ -418,5 +418,10 @@ static if (!isWebApi)
     {
       return prepare();
     }
+
+    import diamond.extensions;
+    mixin ExtensionEmit!(ExtensionType.viewExtension, q{
+      mixin {{extensionEntry}}.extensions;
+    });
   }
 }

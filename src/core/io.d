@@ -7,6 +7,22 @@ module diamond.core.io;
 
 import stdio = std.stdio : writeln, writefln, readln;
 
+/// Mixin template to handle files at compile-time.
+mixin template handleCTFEFile(string fileName, string fileHandler)
+{
+  /// Function that must be called to handle the file.
+  void handle()
+  {
+    static if (__traits(compiles, { auto s = import(fileName); }))
+    {
+      mixin("{
+        enum __fileResult = import(fileName);
+        " ~ fileHandler ~
+      "}");
+    }
+  }
+}
+
 /**
 * Prints a message to the standard output.
 * Params:

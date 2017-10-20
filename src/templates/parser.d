@@ -66,6 +66,20 @@ private
       ContentMode.discardContent, CharacterIncludeMode.none, false, true
     );
 
+    import diamond.extensions;
+    mixin ExtensionEmit!(ExtensionType.customGrammar, q{
+      Grammar[char] customGrammars = {{extensionEntry}}.createGrammars();
+
+      if (customGrammars)
+      {
+        foreach (key,value; customGrammars)
+        {
+          grammars[key] = value;
+        }
+      }
+    });
+    emitExtension();
+
     return grammars;
   }
 }

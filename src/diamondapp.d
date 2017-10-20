@@ -29,6 +29,12 @@ static if (isWeb)
   {
     try
     {
+      import diamond.extensions;
+      mixin ExtensionEmit!(ExtensionType.applicationStart, q{
+        {{extensionEntry}}.onApplicationStart();
+      });
+      emitExtension();
+
       loadWebConfig();
 
       loadStaticFiles();
@@ -94,17 +100,32 @@ static if (isWeb)
     settings.accessLogToConsole = webConfig.accessLogToConsole;
     settings.errorPageHandler = (HTTPServerRequest request, HTTPServerResponse response, HTTPServerErrorInfo error)
     {
-        auto e = cast(Exception)error.exception;
+      import diamond.extensions;
+      mixin ExtensionEmit!(ExtensionType.handleError, q{
+        if (!{{extensionEntry}}.handleError(request, response, error))
+        {
+          return;
+        }
+      });
+      emitExtension();
 
-        if (e)
-        {
-          handleUserException(e,request,response,error);
-        }
-        else
-        {
-          handleUserError(error.exception,request,response,error);
-        }
+      auto e = cast(Exception)error.exception;
+
+      if (e)
+      {
+        handleUserException(e,request,response,error);
+      }
+      else
+      {
+        handleUserError(error.exception,request,response,error);
+      }
     };
+
+    import diamond.extensions;
+    mixin ExtensionEmit!(ExtensionType.httpSettings, q{
+      {{extensionEntry}}.handleSettings(setting);
+    });
+    emitExtension();
 
     listenHTTP(settings, &handleHTTPListen);
   }
@@ -119,82 +140,100 @@ static if (isWeb)
   {
     try
     {
-        if (webSettings && !webSettings.onBeforeRequest(request, response))
+      import diamond.extensions;
+      mixin ExtensionEmit!(ExtensionType.httpRequest, q{
+        if (!{{extensionEntry}}.handleRequest(request, response))
         {
-          throw new HTTPStatusException(HTTPStatus.badRequest);
-        }
-
-        auto route = new Route(request);
-        auto staticFile = _staticFiles.get(route.name, null);
-
-        if (staticFile)
-        {
-          foreach (headerKey,headerValue; webConfig.defaultHeaders.staticFiles)
-          {
-            response.headers[headerKey] = headerValue;
-          }
-
-          import std.array : split, join;
-          request.path = "/" ~ request.path.split("/")[2 .. $].join("/");
-
-          if (webSettings)
-          {
-            webSettings.onStaticFile(request, response);
-          }
-
-          staticFile(request, response);
           return;
         }
+      });
+      emitExtension();
 
-        static if (isWebServer)
-        {
-          auto page = getView(request, response, route, true);
+      if (webSettings && !webSettings.onBeforeRequest(request, response))
+      {
+        throw new HTTPStatusException(HTTPStatus.badRequest);
+      }
 
-          if (!page)
+      auto route = new Route(request);
+      auto staticFile = _staticFiles.get(route.name, null);
+
+      if (staticFile)
+      {
+        import diamond.extensions;
+        mixin ExtensionEmit!(ExtensionType.staticFileExtension, q{
+          if (!{{extensionEntry}}.handleStaticFile(request, response))
           {
-            throw new HTTPStatusException(HTTPStatus.NotFound);
+            return;
           }
+        });
+        emitExtension();
 
+        foreach (headerKey,headerValue; webConfig.defaultHeaders.staticFiles)
+        {
+          response.headers[headerKey] = headerValue;
+        }
+
+        import std.array : split, join;
+        request.path = "/" ~ request.path.split("/")[2 .. $].join("/");
+
+        if (webSettings)
+        {
+          webSettings.onStaticFile(request, response);
+        }
+
+        staticFile(request, response);
+        return;
+      }
+
+      static if (isWebServer)
+      {
+        auto page = getView(request, response, route, true);
+
+        if (!page)
+        {
+          throw new HTTPStatusException(HTTPStatus.NotFound);
+        }
+
+        foreach (headerKey,headerValue; webConfig.defaultHeaders.general)
+        {
+          response.headers[headerKey] = headerValue;
+        }
+
+        auto pageResult = page.generate();
+
+        if (pageResult && pageResult.length)
+        {
+          response.bodyWriter.write(pageResult);
+        }
+      }
+      else
+      {
+        auto controllerAction = getControllerAction(route.name);
+
+        if (!controllerAction)
+        {
+          throw new HTTPStatusException(HTTPStatus.NotFound);
+        }
+
+        auto status = controllerAction(request, response, route).handle();
+
+        if (status == Status.notFound)
+        {
+          throw new HTTPStatusException(HTTPStatus.NotFound);
+        }
+        else if (status != Status.end)
+        {
           foreach (headerKey,headerValue; webConfig.defaultHeaders.general)
           {
             response.headers[headerKey] = headerValue;
           }
-
-          auto pageResult = page.generate();
-
-          if (pageResult && pageResult.length)
-          {
-            response.bodyWriter.write(pageResult);
-          }
         }
-        else
-        {
-          auto controllerAction = getControllerAction(route.name);
+      }
 
-          if (!controllerAction)
-          {
-            throw new HTTPStatusException(HTTPStatus.NotFound);
-          }
-
-          auto status = controllerAction(request, response, route).handle();
-
-          if (status == Status.notFound)
-          {
-            throw new HTTPStatusException(HTTPStatus.NotFound);
-          }
-          else if (status != Status.end)
-          {
-            foreach (headerKey,headerValue; webConfig.defaultHeaders.general)
-            {
-              response.headers[headerKey] = headerValue;
-            }
-          }
-        }
-
-        if (webSettings)
-        {
-          webSettings.onAfterRequest(request, response);
-        }
+      if (webSettings)
+      {
+        webSettings.onAfterRequest(request, response);
+      }
     }
     catch (Throwable t)
     {

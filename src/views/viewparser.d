@@ -58,6 +58,18 @@ static if (!isWebApi)
           continue;
         }
 
+        import diamond.extensions;
+        mixin ExtensionEmit!(ExtensionType.partParser, q{
+          {{extensionEntry}}.parsePart(
+            part,
+            viewName,
+            viewClassMembersGeneration, viewConstructorGeneration,
+            viewModelGenerateGeneration,
+            viewCodeGeneration
+          );
+        });
+        emitExtension();
+
         switch (part.contentMode)
         {
           case ContentMode.appendContent:
