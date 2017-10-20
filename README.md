@@ -24,6 +24,8 @@ Using Diamond for Web-api: https://github.com/DiamondMVC/Diamond/wiki/Using-Diam
 
 Using Diamond for Web-server: https://github.com/DiamondMVC/Diamond/wiki/Using-Diamond-For-WebServer
 
+Extensions: https://github.com/DiamondMVC/Diamond/wiki/Extensions
+
 ## Features - Web
 
 * Full control over requests / responses when wanted.
