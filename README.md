@@ -157,7 +157,9 @@ Diamond supports dub and compiles as a source library.
 
 * First get a D compiler here: https://dlang.org/download.html
 * Then download and install DUB: http://code.dlang.org/download
-* After that download this empty Diamond project: (WebServer) *insert link here* (WebApi) *insert link here*
+* After that download this empty Diamond project:
+  * (WebServer) https://github.com/DiamondMVC/Diamond-Template-WebServer
+  * (WebApi) https://github.com/DiamondMVC/Diamond-Template-WebApi
 * Invoke *dub build* on the root folder of the project (The folder with dub.json)
 * It should build the project and create an executable that you can run
 * Run the executable and access it in the browser with *http://127.0.0.1:8080/*
