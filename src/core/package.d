@@ -12,4 +12,5 @@ public
   import diamond.core.debugging;
   import diamond.core.io;
   import diamond.core.websettings;
+  import diamond.core.collections;
 }

@@ -9,19 +9,19 @@ import diamond.core.apptype;
 
 static if (isWeb)
 {
+  import std.string : strip, format, toLower;
+  import std.traits : hasUDA, getUDAs;
+
   import vibe.d;
 
   import diamond.controllers.action;
   import diamond.controllers.status;
   import diamond.controllers.basecontroller;
   import diamond.controllers.mapattributes;
-}
+  import diamond.controllers.authentication;
+  import diamond.core.collections;
 
-static if (isWeb)
-{
-  import std.string : strip, format, toLower;
-  import std.traits : hasUDA, getUDAs;
-
+  /// The format used for default mappings.
   enum defaultMappingFormat = q{
     static if (hasUDA!(%s.%s, HttpDefault))
     {
@@ -29,6 +29,7 @@ static if (isWeb)
     }
   };
 
+  /// The format used for mandatory formats.
   enum mandatoryMappingFormat = q{
     static if (hasUDA!(%s.%s, HttpMandatory))
     {
@@ -36,6 +37,7 @@ static if (isWeb)
     }
   };
 
+  /// The format used for actions.
   enum actionMappingFormat = q{
     static if (hasUDA!(%s.%s, HttpAction))
     {
@@ -43,10 +45,32 @@ static if (isWeb)
 
       mapAction(
         action_%s.method,
-        (action_%s.action && action_%s.action.strip().length ?
-        action_%s.action : "%s").toLower(),
+        (
+          action_%s.action && action_%s.action.strip().length ?
+          action_%s.action : "%s"
+        ).toLower(),
         &controller.%s
       );
+    }
+  };
+
+  /// The format used for disabled authentication.
+  enum disableAuthFormat = q{
+    static if (hasUDA!(%s.%s, HttpDisableAuth))
+    {
+      static if (hasUDA!(%s.%s, HttpDefault))
+      {
+        _disabledAuth.add("/");
+      }
+      else static if (hasUDA!(%s.%s, HttpAction))
+      {
+        _disabledAuth.add(
+          (
+            action_%s.action && action_%s.action.strip().length ?
+            action_%s.action : "%s"
+          ).toLower()
+        );
+      }
     }
   };
 }
@@ -60,6 +84,12 @@ static if (isWebServer)
     private:
     /// The view associatedi with the controller.
     TView _view;
+
+    /// The authentication used for the controller.
+    IControllerAuth _auth;
+
+    /// Hash set of actions with disabled authentication.
+    HashSet!string _disabledAuth;
 
     protected:
     /**
@@ -78,6 +108,15 @@ static if (isWebServer)
       import controllers;
       auto controller = cast(TController)this;
 
+      static if (hasUDA!(TController, HttpAuthentication))
+      {
+        enum authenticationUDA = getUDAs!(TController, HttpAuthentication)[0];
+
+        mixin("_auth = new " ~ authenticationUDA.authenticationClass ~ ";");
+        _disabledAuth = new HashSet!string;
+      }
+
+
       foreach (member; __traits(derivedMembers, TController))
       {
         static if (member != "__ctor")
@@ -91,6 +130,12 @@ static if (isWebServer)
             member, member,
             member, member,
             member
+          ));
+          mixin(disableAuthFormat.format(
+            TController.stringof, member,
+            TController.stringof, member,
+            TController.stringof, member,
+            member, member, member, member
           ));
         }
       }
@@ -167,6 +212,17 @@ static if (isWebServer)
     {
       if (_view.isDefaultRoute)
       {
+        if (_auth && !_disabledAuth["/"])
+        {
+          auto authStatus = _auth.isAuthenticated(view.httpRequest);
+
+          if (!authStatus || !authStatus.authenticated)
+          {
+            _auth.authenticationFailed(authStatus);
+            return Status.end;
+          }
+        }
+
         if (_mandatoryAction)
         {
           auto mandatoryResult = _mandatoryAction();
@@ -199,6 +255,17 @@ static if (isWebServer)
         return Status.notFound;
       }
 
+      if (_auth && !_disabledAuth[_view.route.action])
+      {
+        auto authStatus = _auth.isAuthenticated(view.httpRequest);
+
+        if (!authStatus || !authStatus.authenticated)
+        {
+          _auth.authenticationFailed(authStatus);
+          return Status.end;
+        }
+      }
+
       if (_mandatoryAction)
       {
         auto mandatoryResult = _mandatoryAction();
@@ -229,10 +296,18 @@ else static if (isWebApi)
     private:
     /// The request.
     HTTPServerRequest _request;
+
     /// The response.
     HTTPServerResponse _response;
+
     /// The route.
     Route _route;
+
+    /// The authentication used for the controller.
+    IControllerAuth _auth;
+
+    /// Hash set of actions with disabled authentication.
+    HashSet!string _disabledAuth;
 
     protected:
     /**
@@ -254,6 +329,14 @@ else static if (isWebApi)
       import controllers;
       auto controller = cast(TController)this;
 
+      static if (hasUDA!(TController, HttpAuthentication))
+      {
+        enum authenticationUDA = getUDAs!(TController, HttpAuthentication)[0];
+
+        mixin("_auth = new " ~ authenticationUDA.authenticationClass ~ ";");
+        _disabledAuth = new HashSet!string;
+      }
+
       foreach (member; __traits(derivedMembers, TController))
       {
         static if (member != "__ctor")
@@ -267,6 +350,12 @@ else static if (isWebApi)
             member, member,
             member, member,
             member
+          ));
+          mixin(disableAuthFormat.format(
+            TController.stringof, member,
+            TController.stringof, member,
+            TController.stringof, member,
+            member, member, member, member
           ));
         }
       }
@@ -349,6 +438,17 @@ else static if (isWebApi)
     {
       if (!route.action)
       {
+        if (_auth && !_disabledAuth["/"])
+        {
+          auto authStatus = _auth.isAuthenticated(httpRequest);
+
+          if (!authStatus || !authStatus.authenticated)
+          {
+            _auth.authenticationFailed(authStatus);
+            return Status.end;
+          }
+        }
+
         if (_mandatoryAction)
         {
           auto mandatoryResult = _mandatoryAction();
@@ -379,6 +479,17 @@ else static if (isWebApi)
       if (!action)
       {
         return Status.notFound;
+      }
+
+      if (_auth && !_disabledAuth[route.action])
+      {
+        auto authStatus = _auth.isAuthenticated(httpRequest);
+
+        if (!authStatus || !authStatus.authenticated)
+        {
+          _auth.authenticationFailed(authStatus);
+          return Status.end;
+        }
       }
 
       if (_mandatoryAction)

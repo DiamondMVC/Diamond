@@ -26,4 +26,14 @@ static if (isWeb)
     /// The name of the action. Equivalent to /route/{action}
     string action;
   }
+
+  /// Attribute for authentication.
+  struct HttpAuthentication
+  {
+    /// The class to use for authentcation. It must implement IControllerAuth.
+    string authenticationClass;
+  }
+
+  /// Attribute for disabling authentication.
+  struct HttpDisableAuth { }
 }
