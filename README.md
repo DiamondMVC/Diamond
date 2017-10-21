@@ -26,6 +26,8 @@ Using Diamond for Web-server: https://github.com/DiamondMVC/Diamond/wiki/Using-D
 
 Extensions: https://github.com/DiamondMVC/Diamond/wiki/Extensions
 
+Authentication: https://github.com/DiamondMVC/Diamond/wiki/Authentication
+
 ## Features - Web
 
 * Full control over requests / responses when wanted.
@@ -74,6 +76,7 @@ Extensions: https://github.com/DiamondMVC/Diamond/wiki/Extensions
   * Status.end (Will end the request; useful for json responses etc. *Note: using the json() function already does it for you.)*
   * Status.notFound (Will issue a 404 status for the response.)
 * Can map mandatory actions that are executed on every requests. (Useful for authentication etc.)
+* Easy integrated authentication
 
 ### Controllers (WebServer)
 
