@@ -9,7 +9,7 @@ import diamond.core.apptype;
 
 static if (isWeb)
 {
-  import std.string : strip, format, toLower;
+  import std.string : strip, format;
   import std.traits : hasUDA, getUDAs;
 
   import vibe.d;
@@ -20,6 +20,24 @@ static if (isWeb)
   import diamond.controllers.mapattributes;
   import diamond.controllers.authentication;
   import diamond.core.collections;
+
+  private string firstToLower(string s)
+  {
+    import std.string : toLower;
+    import std.conv : to;
+
+    if (!s)
+    {
+      return s;
+    }
+
+    if (s.length == 1)
+    {
+      return s.toLower();
+    }
+
+    return to!string(s[0]).toLower() ~ s[1 .. $];
+  }
 
   /// The format used for default mappings.
   enum defaultMappingFormat = q{
@@ -48,7 +66,7 @@ static if (isWeb)
         (
           action_%s.action && action_%s.action.strip().length ?
           action_%s.action : "%s"
-        ).toLower(),
+        ).firstToLower(),
         &controller.%s
       );
     }
@@ -68,7 +86,7 @@ static if (isWeb)
           (
             action_%s.action && action_%s.action.strip().length ?
             action_%s.action : "%s"
-          ).toLower()
+          ).firstToLower()
         );
       }
     }
@@ -214,7 +232,7 @@ static if (isWebServer)
       {
         if (_auth && !_disabledAuth["/"])
         {
-          auto authStatus = _auth.isAuthenticated(view.httpRequest);
+          auto authStatus = _auth.isAuthenticated(view.httpRequest, view.httpResponse);
 
           if (!authStatus || !authStatus.authenticated)
           {
@@ -257,7 +275,7 @@ static if (isWebServer)
 
       if (_auth && !_disabledAuth[_view.route.action])
       {
-        auto authStatus = _auth.isAuthenticated(view.httpRequest);
+        auto authStatus = _auth.isAuthenticated(view.httpRequest, view.httpResponse);
 
         if (!authStatus || !authStatus.authenticated)
         {
@@ -440,7 +458,7 @@ else static if (isWebApi)
       {
         if (_auth && !_disabledAuth["/"])
         {
-          auto authStatus = _auth.isAuthenticated(httpRequest);
+          auto authStatus = _auth.isAuthenticated(httpRequest, httpResponse);
 
           if (!authStatus || !authStatus.authenticated)
           {
@@ -483,7 +501,7 @@ else static if (isWebApi)
 
       if (_auth && !_disabledAuth[route.action])
       {
-        auto authStatus = _auth.isAuthenticated(httpRequest);
+        auto authStatus = _auth.isAuthenticated(httpRequest, httpResponse);
 
         if (!authStatus || !authStatus.authenticated)
         {
@@ -528,12 +546,10 @@ else static if (isWebApi)
 
   		  auto controllerCollectionResult = "";
 
-        import std.string : toLower;
-
   		  foreach (controller; controllerInitializers)
         {
           import std.string : format;
-			    controllerCollectionResult ~= format(generateFormat, controller.toLower(), controller);
+			    controllerCollectionResult ~= format(generateFormat, controller.firstToLower(), controller);
   		  }
 
   		  return controllerCollectionResult;
