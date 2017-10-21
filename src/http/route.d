@@ -13,6 +13,24 @@ static if (isWeb)
 
   import diamond.errors : enforce;
 
+  private string firstToLower(string s)
+  {
+    import std.string : toLower;
+    import std.conv : to;
+
+    if (!s)
+    {
+      return s;
+    }
+
+    if (s.length == 1)
+    {
+      return s.toLower();
+    }
+
+    return to!string(s[0]).toLower() ~ s[1 .. $];
+  }
+
   // A http route.
   final class Route
   {
@@ -37,7 +55,7 @@ static if (isWeb)
     {
       enforce(url && url.length, "Invalid route url.");
 
-      import std.string : strip, toLower;
+      import std.string : strip;
 
       url = url.strip();
       _raw = url;
@@ -46,7 +64,7 @@ static if (isWeb)
       {
         import diamond.core : webConfig;
 
-        _name = webConfig.homeRoute.toLower();
+        _name = webConfig.homeRoute.firstToLower();
         return;
       }
 
@@ -67,7 +85,7 @@ static if (isWeb)
 
       enforce(!routeData[$-1].canFind("?"), "Found query string in the routing url.");
 
-      _name = routeData[0].strip().toLower();
+      _name = routeData[0].strip().firstToLower();
 
       if (routeData.length > 1)
       {
