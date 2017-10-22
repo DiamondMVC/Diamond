@@ -28,6 +28,8 @@ Extensions: https://github.com/DiamondMVC/Diamond/wiki/Extensions
 
 Authentication: https://github.com/DiamondMVC/Diamond/wiki/Authentication
 
+Blog posts: https://github.com/DiamondMVC/Diamond/wiki/Blog-Posts
+
 ## Features - Web
 
 * Full control over requests / responses when wanted.
