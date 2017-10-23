@@ -9,11 +9,11 @@ import diamond.core.apptype;
 
 static if (isWeb)
 {
-  import core.time : minutes;
+  import core.time : msecs, minutes;
   import std.datetime : Clock, SysTime;
 
   import vibe.crypto.cryptorand;
-  import vibe.d : HTTPServerRequest, HTTPServerResponse;
+  import vibe.d : HTTPServerRequest, HTTPServerResponse, runTask;
 
   import diamond.http.cookies;
   import diamond.errors.checks;
@@ -135,6 +135,7 @@ static if (isWeb)
   string getSessionValue(HTTPServerRequest request, HTTPServerResponse response, string name)
   {
     enforce(request, "You must specify the request to get the session value from.");
+	enforce(response, "You must specify the response to get the session value from.");
 
     auto session = getSession(request, response);
 
@@ -156,6 +157,7 @@ static if (isWeb)
   )
   {
     enforce(request, "You must specify the request to set the session value for.");
+	enforce(response, "You must specify the response to set the session value for.");
 
     auto session = getSession(request, response);
 
@@ -188,19 +190,17 @@ static if (isWeb)
     session = new HttpSession;
 
     import diamond.core.senc;
+
     session.ipAddress = request.clientAddress.toAddressString();
     session.id = SENC.encode(randomBuffer) ~ SENC.encode(session.ipAddress);
     _sessions[session.id] = session;
 
-    auto time = webConfig.sessionAliveTime;
-
-    response.createCookie(sessionCookieName, session.id, time * 60);
+    response.createCookie(sessionCookieName, session.id, webConfig.sessionAliveTime * 60);
     session.endTime = Clock.currTime();
-    session.endTime = session.endTime + time.minutes;
-    session.values["Test"] = "Hello!";
+    session.endTime = session.endTime + webConfig.sessionAliveTime.minutes;
+
     request.cookies.add(sessionCookieName, session.id);
 
-    import vibe.d : runTask;
     runTask((HttpSession session) { invalidateSession(session, 3); }, session);
 
     return session;
@@ -211,12 +211,13 @@ static if (isWeb)
   * Params:
   *   session = The session to invalidate.
   *   retries = The amount of retries left, if it failed to remove the session.
+  *   isRetry = Boolean determining whether the invalidation is a retry or not.
   */
-  private void invalidateSession(HttpSession session, size_t retries)
+  private void invalidateSession(HttpSession session, size_t retries, bool isRetry = false)
   {
     import vibe.core.core : sleep;
 
-    auto time = (webConfig.sessionAliveTime + 2).minutes;
+    auto time = isRetry ? 100.msecs : (webConfig.sessionAliveTime + 2).minutes;
 
     sleep(time);
 
@@ -228,7 +229,7 @@ static if (isWeb)
     {
       if (retries)
       {
-        runTask((HttpSession s, size_t r) { invalidateSession(s, r); }, session, retries--);
+        runTask((HttpSession s, size_t r) { invalidateSession(s, r, true); }, session, retries--);
       }
     }
   }
