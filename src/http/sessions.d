@@ -105,7 +105,7 @@ static if (isWeb)
   )
   {
     import std.variant : Variant;
-    // Checks whethe the request has already got its session assigned.
+    // Checks whether the request has already got its session assigned.
     Variant cachedSession = request.context.get(sessionCookieName);
 
     if (cachedSession.hasValue)
@@ -146,7 +146,7 @@ static if (isWeb)
   string getSessionValue(HTTPServerRequest request, HTTPServerResponse response, string name, string defaultValue = null)
   {
     enforce(request, "You must specify the request to get the session value from.");
-	enforce(response, "You must specify the response to get the session value from.");
+    enforce(response, "You must specify the response to get the session value from.");
 
     auto session = getSession(request, response);
 
@@ -168,7 +168,7 @@ static if (isWeb)
   )
   {
     enforce(request, "You must specify the request to set the session value for.");
-	enforce(response, "You must specify the response to set the session value for.");
+    enforce(response, "You must specify the response to set the session value for.");
 
     auto session = getSession(request, response);
 
@@ -196,7 +196,7 @@ static if (isWeb)
     }
 
     ubyte[64] randomBuffer;
-		_randomGenerator.read(randomBuffer);
+    _randomGenerator.read(randomBuffer);
 
     session = new HttpSession;
 
@@ -210,11 +210,37 @@ static if (isWeb)
     session.endTime = Clock.currTime();
     session.endTime = session.endTime + webConfig.sessionAliveTime.minutes;
 
-    request.cookies.add(sessionCookieName, session.id);
+    request.context[sessionCookieName] = session;
 
     runTask((HttpSession session) { invalidateSession(session, 3); }, session);
 
     return session;
+  }
+
+  /**
+  * Updates the session end time.
+  * Params:
+  *   request =    The request.
+  *   response =   The response.
+  *   newEndTime = The new end time.
+  */
+  void updateSessionEndTime(HTTPServerRequest request, HTTPServerResponse response, SysTime newEndTime)
+  {
+    auto session = enforceInput(getSession(request, response, false), "Found no session.");
+    session.endTime = newEndTime;
+  }
+
+  /**
+  * Clears the session values for a session.
+  * Params:
+  *   request =  The request.
+  *   response = The response.
+  */
+  void clearSessionValues(HTTPServerRequest request, HTTPServerResponse response)
+  {
+    auto session = enforceInput(getSession(request, response), "No session found.");
+
+    session.values.clear();
   }
 
   /**
@@ -234,7 +260,15 @@ static if (isWeb)
 
     try
     {
-      _sessions.remove(session.id);
+      // The endtime differs from the default, so we cycle once more.
+      if (Clock.currTime() < session.endTime)
+      {
+        runTask((HttpSession session) { invalidateSession(session, 3); }, session);
+      }
+      else
+      {
+        _sessions.remove(session.id);
+      }
     }
     catch (Throwable)
     {
