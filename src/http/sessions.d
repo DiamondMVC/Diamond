@@ -104,6 +104,15 @@ static if (isWeb)
     bool createSessionIfInvalid = true
   )
   {
+    import std.variant : Variant;
+    // Checks whethe the request has already got its session assigned.
+    Variant cachedSession = request.context.get(sessionCookieName);
+
+    if (cachedSession.hasValue)
+    {
+      return cachedSession.get!HttpSession;
+    }
+
     auto sessionId = getCookie(request, sessionCookieName);
     auto session = _sessions.get(sessionId, null);
 
@@ -120,6 +129,8 @@ static if (isWeb)
       return createSession(request, response);
     }
 
+    request.context[sessionCookieName] = session;
+
     return session;
   }
 
@@ -130,16 +141,16 @@ static if (isWeb)
   *   response =  The response.
   *   name =      The name of the value to retrieve.
   * Returns:
-  *   Returns the value retrieved or null if not found.
+  *   Returns the value retrieved or defaultValue if not found.
   */
-  string getSessionValue(HTTPServerRequest request, HTTPServerResponse response, string name)
+  string getSessionValue(HTTPServerRequest request, HTTPServerResponse response, string name, string defaultValue = null)
   {
     enforce(request, "You must specify the request to get the session value from.");
 	enforce(response, "You must specify the response to get the session value from.");
 
     auto session = getSession(request, response);
 
-    return session.values.get(name, null);
+    return session.values.get(name, defaultValue);
   }
 
   /**

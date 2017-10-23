@@ -20,24 +20,7 @@ static if (isWeb)
   import diamond.controllers.mapattributes;
   import diamond.controllers.authentication;
   import diamond.core.collections;
-
-  private string firstToLower(string s)
-  {
-    import std.string : toLower;
-    import std.conv : to;
-
-    if (!s)
-    {
-      return s;
-    }
-
-    if (s.length == 1)
-    {
-      return s.toLower();
-    }
-
-    return to!string(s[0]).toLower() ~ s[1 .. $];
-  }
+  import diamond.core.string : firstToLower;
 
   /// The format used for default mappings.
   enum defaultMappingFormat = q{
