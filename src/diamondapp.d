@@ -12,6 +12,7 @@ static if (isWeb)
   import diamond.core;
   import diamond.http;
   import diamond.errors;
+  import diamond.authentication;
 
   static if (isWebServer)
   {
@@ -29,13 +30,24 @@ static if (isWeb)
   {
     try
     {
+      loadWebConfig();
+
+      defaultPermission = true;
+      requirePermissionMethod(HTTPMethod.GET, PermissionType.readAccess);
+      requirePermissionMethod(HTTPMethod.POST, PermissionType.writeAccess);
+      requirePermissionMethod(HTTPMethod.PUT, PermissionType.updateAccess);
+      requirePermissionMethod(HTTPMethod.DELETE, PermissionType.deleteAccess);
+
       import diamond.extensions;
       mixin ExtensionEmit!(ExtensionType.applicationStart, q{
         {{extensionEntry}}.onApplicationStart();
       });
       emitExtension();
 
-      loadWebConfig();
+      if (webSettings)
+      {
+        webSettings.onApplicationStart();
+      }
 
       loadStaticFiles();
 
@@ -141,7 +153,7 @@ static if (isWeb)
     try
     {
       createSession(request, response);
-      
+
       import diamond.extensions;
       mixin ExtensionEmit!(ExtensionType.httpRequest, q{
         if (!{{extensionEntry}}.handleRequest(request, response))
@@ -157,10 +169,42 @@ static if (isWeb)
       }
 
       auto route = new Route(request);
+
+      if (hasRoles)
+      {
+        //validateAuthentication(); // checks the authentication and validates it
+                                  // also sets the role in the session ...
+
+        auto role = getRole(request);
+
+        import std.array : split;
+
+        auto hasRootAccess = hasAccess(role, request.method, route.name.split(webConfig.specialRouteSplitter)[0]);
+
+        if
+        (
+          !hasRootAccess ||
+          (
+            route.action &&
+            !hasAccess(role, request.method, route.name ~ "/" ~ route.action)
+          )
+        )
+        {
+          throw new HTTPStatusException(HTTPStatus.unauthorized);
+        }
+      }
+
       auto staticFile = _staticFiles.get(route.name, null);
 
       if (staticFile)
       {
+        auto role = getRole(request);
+
+        if (hasRoles && !hasAccess(role, request.method, route.toString()))
+        {
+          throw new HTTPStatusException(HTTPStatus.unauthorized);
+        }
+
         import diamond.extensions;
         mixin ExtensionEmit!(ExtensionType.staticFileExtension, q{
           if (!{{extensionEntry}}.handleStaticFile(request, response))

@@ -107,6 +107,8 @@ static if (isWeb)
     bool accessLogToConsole;
     /// The time sessions are stored in memory.
     long sessionAliveTime;
+    // A special string representation that splits the root routes when checking ACL.
+    string specialRouteSplitter;
   }
 
   /// A web address.
@@ -145,9 +147,24 @@ static if (isWeb)
 
     _webConfig = deserializeJson!WebConfig(readText("config/web.json"));
 
+    if (_webConfig.homeRoute[0] == '/')
+    {
+      _webConfig.homeRoute = _webConfig.homeRoute[1 .. $];
+    }
+
+    if (_webConfig.homeRoute[$-1] == '/')
+    {
+      _webConfig.homeRoute = _webConfig.homeRoute[0 .. $-1];
+    }
+
     if (_webConfig.sessionAliveTime <= 0)
     {
       _webConfig.sessionAliveTime = 30;
+    }
+
+    if (!_webConfig.specialRouteSplitter)
+    {
+      _webConfig.specialRouteSplitter = "-";
     }
   }
 }

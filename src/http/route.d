@@ -13,24 +13,6 @@ static if (isWeb)
 
   import diamond.errors : enforce;
 
-  private string firstToLower(string s)
-  {
-    import std.string : toLower;
-    import std.conv : to;
-
-    if (!s)
-    {
-      return s;
-    }
-
-    if (s.length == 1)
-    {
-      return s.toLower();
-    }
-
-    return to!string(s[0]).toLower() ~ s[1 .. $];
-  }
-
   // A http route.
   final class Route
   {
@@ -56,6 +38,7 @@ static if (isWeb)
       enforce(url && url.length, "Invalid route url.");
 
       import std.string : strip;
+      import diamond.core.string : firstToLower;
 
       url = url.strip();
       _raw = url;

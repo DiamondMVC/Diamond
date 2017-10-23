@@ -22,6 +22,9 @@ static if (isWeb)
     this() { }
 
     public:
+    /// Function invoked when the application starts.
+    abstract void onApplicationStart();
+
     /*
     * Function invoked before a request has been processed.
     * Params:
