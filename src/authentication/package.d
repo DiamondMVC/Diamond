@@ -9,4 +9,5 @@ public
 {
   import diamond.authentication.roles;
   import diamond.authentication.permissions;
+  import diamond.authentication.auth;
 }

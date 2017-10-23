@@ -13,6 +13,7 @@ static if (isWeb)
   import std.traits : hasUDA, getUDAs;
 
   import vibe.d;
+  public import vibe.d : HTTPMethod;
 
   import diamond.controllers.action;
   import diamond.controllers.status;

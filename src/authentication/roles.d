@@ -9,10 +9,11 @@ import diamond.core.apptype;
 
 static if (isWeb)
 {
-  import vibe.d : HTTPServerRequest;
+  import vibe.d : HTTPServerRequest, HTTPServerResponse;
 
   import diamond.errors.checks;
   import diamond.authentication.permissions;
+  import diamond.http;
 
   /// The storage key for the authentication roles.
   private static const __gshared roleStorageKey = "__D_AUTH_ROLE";
@@ -24,7 +25,7 @@ static if (isWeb)
   private static __gshared Role defaultRole;
 
   /// Gets a boolean determining whether there are roles or not.
-  @property bool hasRoles() { return _roles.length > 0; }
+  @property bool hasRoles() { return _roles.length > 0 && defaultRole !is null; }
 
   /// Wrapper around a role.
   final class Role
@@ -205,6 +206,70 @@ static if (isWeb)
     Variant role = request.context.get(roleStorageKey);
 
     return role.hasValue ? role.get!Role : defaultRole;
+  }
+
+  /**
+  * Sets the role.
+  * Params:
+  *   request = The request.
+  *   role =    The role.
+  */
+  package(diamond.authentication) void setRole(HTTPServerRequest request, Role role)
+  {
+    enforce(request, "No request specified.");
+    enforce(role, "No role specified.");
+
+    request.context[roleStorageKey] = role;
+  }
+
+  /**
+  * Sets the role from the session.
+  * Params:
+  *   request =          The request.
+  *   response =         The response.
+  *   defaultIsInvalid = Boolean determining whether the default role is an invalid role.
+  * Returns:
+  *   Returns true if the role was set from the session.
+  */
+  package(diamond.authentication) bool setRoleFromSession
+  (
+    HTTPServerRequest request, HTTPServerResponse response,
+    bool defaultIsInvalid
+  )
+  {
+    enforce(request, "No request specified.");
+
+    auto sessionRole = getSessionValue(request, response, roleStorageKey, null);
+
+    if (sessionRole !is null)
+    {
+      auto role = getRole(sessionRole);
+
+      if (defaultIsInvalid && role == defaultRole)
+      {
+        return false;
+      }
+
+      setRole(request, role);
+      return true;
+    }
+
+    return false;
+  }
+
+  /**
+  * Sets the session role.
+  * Params:
+  *   request =  The request.
+  *   response = The response.
+  *   role =     The role.
+  */
+  package(diamond.authentication) void setSessionRole
+  (
+    HTTPServerRequest request, HTTPServerResponse response, Role role
+  )
+  {
+    setSessionValue(request, response, roleStorageKey, role.name);
   }
 
   /**

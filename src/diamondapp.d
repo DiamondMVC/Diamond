@@ -172,8 +172,7 @@ static if (isWeb)
 
       if (hasRoles)
       {
-        //validateAuthentication(); // checks the authentication and validates it
-                                  // also sets the role in the session ...
+        validateAuthentication(request, response);
 
         auto role = getRole(request);
 
