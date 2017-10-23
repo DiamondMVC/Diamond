@@ -8,4 +8,6 @@ module diamond.http;
 public
 {
   import diamond.http.route;
+  import diamond.http.cookies;
+  import diamond.http.sessions;
 }

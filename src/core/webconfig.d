@@ -105,6 +105,8 @@ static if (isWeb)
     WebHeaders defaultHeaders;
     /// Boolean determining whether the access log should be redirected to the console.
     bool accessLogToConsole;
+    /// The time sessions are stored in memory.
+    long sessionAliveTime;
   }
 
   /// A web address.
@@ -142,5 +144,10 @@ static if (isWeb)
     import std.file : readText;
 
     _webConfig = deserializeJson!WebConfig(readText("config/web.json"));
+
+    if (_webConfig.sessionAliveTime <= 0)
+    {
+      _webConfig.sessionAliveTime = 30;
+    }
   }
 }

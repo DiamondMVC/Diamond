@@ -13,4 +13,5 @@ public
   import diamond.core.io;
   import diamond.core.websettings;
   import diamond.core.collections;
+  import diamond.core.senc;
 }

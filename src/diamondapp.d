@@ -140,6 +140,8 @@ static if (isWeb)
   {
     try
     {
+      createSession(request, response);
+      
       import diamond.extensions;
       mixin ExtensionEmit!(ExtensionType.httpRequest, q{
         if (!{{extensionEntry}}.handleRequest(request, response))
