@@ -146,7 +146,7 @@ static if (isWeb)
   string getSessionValue(HTTPServerRequest request, HTTPServerResponse response, string name, string defaultValue = null)
   {
     enforce(request, "You must specify the request to get the session value from.");
-	  enforce(response, "You must specify the response to get the session value from.");
+    enforce(response, "You must specify the response to get the session value from.");
 
     auto session = getSession(request, response);
 
@@ -168,7 +168,7 @@ static if (isWeb)
   )
   {
     enforce(request, "You must specify the request to set the session value for.");
-	  enforce(response, "You must specify the response to set the session value for.");
+    enforce(response, "You must specify the response to set the session value for.");
 
     auto session = getSession(request, response);
 
@@ -196,7 +196,7 @@ static if (isWeb)
     }
 
     ubyte[64] randomBuffer;
-		_randomGenerator.read(randomBuffer);
+    _randomGenerator.read(randomBuffer);
 
     session = new HttpSession;
 
