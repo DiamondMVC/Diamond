@@ -48,6 +48,10 @@ Blog posts: https://github.com/DiamondMVC/Diamond/wiki/Blog-Posts
   * isWebServer (true for web-servers)
   * isWebApi (true for web-apis)
   * isWeb, isWebServer and isWebApi will be false for standalone.
+ * ACL & Authentication tied to it
+ * Separate authentication that can be used either with or without the ACL
+ * CSRF Protection
+ * Easy integrated cookie/session API.
 
 ### Views (WebServer)
 
