@@ -12,7 +12,6 @@ static if (isWeb)
   import core.time : msecs, minutes;
   import std.datetime : Clock, SysTime;
 
-  import vibe.crypto.cryptorand;
   import vibe.d : HTTPServerRequest, HTTPServerResponse, runTask;
 
   import diamond.http.cookies;
@@ -77,17 +76,8 @@ static if (isWeb)
     }
   }
 
-  /// The random generator used to generate session ids.
-  private __gshared SHA1HashMixerRNG _randomGenerator;
-
   /// The collection of currently stored sessions.
   private __gshared HttpSession[string] _sessions;
-
-  /// Shared static constructor for the module.
-  shared static this()
-  {
-    _randomGenerator = new SHA1HashMixerRNG();
-  }
 
   /**
   * Gets a session.
@@ -146,7 +136,7 @@ static if (isWeb)
   string getSessionValue(HTTPServerRequest request, HTTPServerResponse response, string name, string defaultValue = null)
   {
     enforce(request, "You must specify the request to get the session value from.");
-	  enforce(response, "You must specify the response to get the session value from.");
+    enforce(response, "You must specify the response to get the session value from.");
 
     auto session = getSession(request, response);
 
@@ -168,11 +158,35 @@ static if (isWeb)
   )
   {
     enforce(request, "You must specify the request to set the session value for.");
-	  enforce(response, "You must specify the response to set the session value for.");
+    enforce(response, "You must specify the response to set the session value for.");
 
     auto session = getSession(request, response);
 
     session.values[name] = value;
+  }
+
+  /**
+  * Removes a session value.
+  * Params:
+  *   request =   The request.
+  *   response =  The response.
+  *   name =      The name of the value to remove.
+  */
+  void removeSessionValue
+  (
+    HTTPServerRequest request, HTTPServerResponse response,
+    string name
+  )
+  {
+    enforce(request, "You must specify the request to set the session value for.");
+    enforce(response, "You must specify the response to set the session value for.");
+
+    auto session = getSession(request, response);
+
+    if (session.values && name in session.values)
+    {
+      session.values.remove(name);
+    }
   }
 
   /**
@@ -195,15 +209,12 @@ static if (isWeb)
       return session;
     }
 
-    ubyte[64] randomBuffer;
-		_randomGenerator.read(randomBuffer);
-
     session = new HttpSession;
 
-    import diamond.core.senc;
+    import diamond.security.sessiontoken;
 
     session.ipAddress = request.clientAddress.toAddressString();
-    session.id = SENC.encode(randomBuffer) ~ SENC.encode(session.ipAddress);
+    session.id = sessionToken.generate(session.ipAddress);
     _sessions[session.id] = session;
 
     response.createCookie(sessionCookieName, session.id, webConfig.sessionAliveTime * 60);

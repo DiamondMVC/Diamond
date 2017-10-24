@@ -406,6 +406,45 @@ static if (!isWebApi)
       {
         append(retrieveModel!(name, TModel)(model, sectionName));
       }
+
+      static if (isWebServer)
+      {
+        import CSRF = diamond.security.csrf;
+
+        /// Clears the current csrf token. This is recommended before generating CSRF token fields.
+        void clearCSRFToken()
+        {
+          CSRF.clearCSRFToken(httpRequest, httpResponse);
+        }
+
+        /**
+        * Appends a hidden-field with a generated token that can be used for csrf protection.
+        * Params:
+        *   name =       A custom name for the field.
+        *   appendName = Boolean determining if the custom name should be appened to the default name "formToken".
+        */
+        void appendCSRFTokenField(string name = null, bool appendName = false)
+        {
+          bool hasName = name && name.strip().length;
+
+          if (!hasName)
+          {
+            name = "formToken";
+          }
+          else if (appendName && hasName)
+          {
+            name = "formToken_" ~ name;
+          }
+
+          auto csrfToken = CSRF.generateCSRFToken(httpRequest, httpResponse);
+
+          append
+          (
+            `<input type="hidden" value="%s" name="%s" id="%s">`
+            .format(csrfToken, name, name)
+          );
+        }
+      }
     }
 
     /**
