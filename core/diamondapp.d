@@ -239,12 +239,27 @@ static if (isWeb)
           throw new HTTPStatusException(HTTPStatus.NotFound);
         }
 
+        string pageResult;
+
+        if (webConfig.shouldCacheViews && page.cached)
+        {
+          pageResult = getCachedViewFromSession(request, response, page.name);
+        }
+
         foreach (headerKey,headerValue; webConfig.defaultHeaders.general)
         {
           response.headers[headerKey] = headerValue;
         }
 
-        auto pageResult = page.generate();
+        if (!pageResult)
+        {
+          pageResult = page.generate();
+
+          if (pageResult && pageResult.length && webConfig.shouldCacheViews && page.cached)
+          {
+            cacheViewInSession(request, response, page.name, pageResult);
+          }
+        }
 
         if (pageResult && pageResult.length)
         {

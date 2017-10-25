@@ -109,6 +109,8 @@ static if (isWeb)
     long sessionAliveTime;
     // A special string representation that splits the root routes when checking ACL.
     string specialRouteSplitter;
+    /// Boolean determnining whether views can be cached or not.
+    bool shouldCacheViews;
   }
 
   /// A web address.

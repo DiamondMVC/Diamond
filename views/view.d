@@ -48,6 +48,9 @@ static if (!isWebApi)
 
       /// The root path.
       string _rootPath;
+
+      /// Boolean determnining whether the view can be cached or not.
+      bool _cached;
     }
 
     /// The name of the view.
@@ -98,11 +101,27 @@ static if (!isWebApi)
       }
     }
 
+    static if (isWebServer)
+    {
+      protected:
+      @property
+      {
+        /// Sets a boolean determining whether the view can be cached or not.
+        void cached(bool canBeCached)
+        {
+          _cached = canBeCached;
+        }
+      }
+    }
+
     public:
     @property
     {
       static if (isWebServer)
       {
+        /// Gets a boolean determining whether the view can be cached or not.
+        bool cached() { return _cached; }
+
         /// Gets the request.
         HTTPServerRequest httpRequest() { return _request; }
 
