@@ -5,7 +5,7 @@
 		"Jacob Jensen"
 	],
 	"license": "The MIT License (MIT)",
-	"copyright": "Copyright © 2016 Jacob Jensen",
+	"copyright": "Copyright © 2016-2017 Jacob Jensen",
 	"targetType": "sourceLibrary",
 	"sourcePaths": [
 		"authentication", "controllers", "core",
