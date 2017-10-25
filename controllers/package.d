@@ -13,4 +13,5 @@ public
   import diamond.controllers.controller;
   import diamond.controllers.mapattributes;
   import diamond.controllers.authentication;
+  import diamond.controllers.rest;
 }

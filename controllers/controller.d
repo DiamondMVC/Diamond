@@ -10,7 +10,8 @@ import diamond.core.apptype;
 static if (isWeb)
 {
   import std.string : strip, format;
-  import std.traits : hasUDA, getUDAs;
+  import std.traits : fullyQualifiedName, hasUDA, getUDAs;
+  import std.array : split, array;
 
   import vibe.d;
   public import vibe.d : HTTPMethod;
@@ -22,6 +23,16 @@ static if (isWeb)
   import diamond.controllers.authentication;
   import diamond.core.collections;
   import diamond.core.string : firstToLower;
+  import diamond.errors;
+  import diamond.controllers.rest;
+
+  package(diamond.controllers)
+  {
+    /// Specially mapped routes.
+    RoutePart[][string] _mappedRoutes;
+    /// Mapped controllers.
+    HashSet!string _mappedControllers;
+  }
 
   /// The format used for default mappings.
   enum defaultMappingFormat = q{
@@ -43,13 +54,57 @@ static if (isWeb)
   enum actionMappingFormat = q{
     static if (hasUDA!(%s.%s, HttpAction))
     {
-      static const action_%s = getUDAs!(%s.%s, HttpAction)[0];
+      static action_%s = getUDAs!(%s.%s, HttpAction)[0];
+
+      auto routeData = _mappedRoutes.get("%s", null);
+
+      if (routeData)
+      {
+        if (routeData[0].identifier == "<>")
+        {
+          action_%s.action = null;
+        }
+      }
 
       mapAction(
         action_%s.method,
         (
           action_%s.action && action_%s.action.strip().length ?
           action_%s.action : "%s"
+        ).firstToLower(),
+        &controller.%s
+      );
+    }
+  };
+
+  /// The format used for special mapped actions.
+  enum actionSpecialMappingFormat = q{
+    static if (hasUDA!(%s.%s, HttpAction))
+    {
+      static action_%s2 = getUDAs!(%s.%s, HttpAction)[0];
+
+      if (action_%s2.action && action_%s2.action.strip().length)
+      {
+        auto routingData = parseRoute(action_%s2.action);
+
+        if (routingData.length > 1)
+        {
+          _mappedRoutes["%s"] = routingData;
+
+          action_%s2.action = routingData[0].identifier;
+
+          if (action_%s2.action == "<>")
+          {
+            action_%s2.action = null;
+          }
+        }
+      }
+
+      mapAction(
+        action_%s2.method,
+        (
+          action_%s2.action && action_%s2.action.strip().length ?
+          action_%s2.action : "%s"
         ).firstToLower(),
         &controller.%s
       );
@@ -118,27 +173,68 @@ static if (isWebServer)
         _disabledAuth = new HashSet!string;
       }
 
-
-      foreach (member; __traits(derivedMembers, TController))
+      if (!_mappedControllers)
       {
-        static if (member != "__ctor")
+        _mappedControllers = new HashSet!string;
+      }
+
+      auto fullName = fullyQualifiedName!TController;
+
+      if (!_mappedControllers[fullName])
+      {
+        _mappedControllers.add(fullName);
+
+        foreach (member; __traits(derivedMembers, TController))
         {
-          mixin(defaultMappingFormat.format(TController.stringof, member, member));
-          mixin(mandatoryMappingFormat.format(TController.stringof, member, member));
-          mixin(actionMappingFormat.format(
-            TController.stringof, member,
-            member, TController.stringof, member,
-            member,
-            member, member,
-            member, member,
-            member
-          ));
-          mixin(disableAuthFormat.format(
-            TController.stringof, member,
-            TController.stringof, member,
-            TController.stringof, member,
-            member, member, member, member
-          ));
+          static if (member != "__ctor")
+          {
+            mixin(defaultMappingFormat.format(TController.stringof, member, member));
+            mixin(mandatoryMappingFormat.format(TController.stringof, member, member));
+            mixin(actionSpecialMappingFormat.format(
+              TController.stringof, member,
+              member, TController.stringof, member,
+              member, member,
+              member,
+              member,
+              member,
+              member, member, member,
+              member, member,
+              member, member,
+              member
+            ));
+            mixin(disableAuthFormat.format(
+              TController.stringof, member,
+              TController.stringof, member,
+              TController.stringof, member,
+              member, member, member, member
+            ));
+          }
+        }
+      }
+      else
+      {
+        foreach (member; __traits(derivedMembers, TController))
+        {
+          static if (member != "__ctor")
+          {
+            mixin(defaultMappingFormat.format(TController.stringof, member, member));
+            mixin(mandatoryMappingFormat.format(TController.stringof, member, member));
+            mixin(actionMappingFormat.format(
+              TController.stringof, member,
+              member, TController.stringof, member,
+              member, member,
+              member,
+              member, member,
+              member, member,
+              member
+            ));
+            mixin(disableAuthFormat.format(
+              TController.stringof, member,
+              TController.stringof, member,
+              TController.stringof, member,
+              member, member, member, member
+            ));
+          }
         }
       }
     }
@@ -278,6 +374,13 @@ static if (isWebServer)
         }
       }
 
+      auto routeData = _mappedRoutes.get(_view.route.action, null);
+
+      if (routeData)
+      {
+        validateRoute(routeData, view.route.params);
+      }
+
       return action();
     }
 
@@ -339,26 +442,63 @@ else static if (isWebApi)
         _disabledAuth = new HashSet!string;
       }
 
-      foreach (member; __traits(derivedMembers, TController))
+      auto fullName = fullyQualifiedName!TController;
+
+      if (!_mappedControllers[fullName])
       {
-        static if (member != "__ctor")
+        _mappedControllers.add(fullName);
+
+        foreach (member; __traits(derivedMembers, TController))
         {
-          mixin(defaultMappingFormat.format(TController.stringof, member, member));
-          mixin(mandatoryMappingFormat.format(TController.stringof, member, member));
-          mixin(actionMappingFormat.format(
-            TController.stringof, member,
-            member, TController.stringof, member,
-            member,
-            member, member,
-            member, member,
-            member
-          ));
-          mixin(disableAuthFormat.format(
-            TController.stringof, member,
-            TController.stringof, member,
-            TController.stringof, member,
-            member, member, member, member
-          ));
+          static if (member != "__ctor")
+          {
+            mixin(defaultMappingFormat.format(TController.stringof, member, member));
+            mixin(mandatoryMappingFormat.format(TController.stringof, member, member));
+            mixin(actionSpecialMappingFormat.format(
+              TController.stringof, member,
+              member, TController.stringof, member,
+              member, member,
+              member,
+              member,
+              member,
+              member, member, member,
+              member, member,
+              member, member,
+              member
+            ));
+            mixin(disableAuthFormat.format(
+              TController.stringof, member,
+              TController.stringof, member,
+              TController.stringof, member,
+              member, member, member, member
+            ));
+          }
+        }
+      }
+      else
+      {
+        foreach (member; __traits(derivedMembers, TController))
+        {
+          static if (member != "__ctor")
+          {
+            mixin(defaultMappingFormat.format(TController.stringof, member, member));
+            mixin(mandatoryMappingFormat.format(TController.stringof, member, member));
+            mixin(actionMappingFormat.format(
+              TController.stringof, member,
+              member, TController.stringof, member,
+              member, member,
+              member,
+              member, member,
+              member, member,
+              member
+            ));
+            mixin(disableAuthFormat.format(
+              TController.stringof, member,
+              TController.stringof, member,
+              TController.stringof, member,
+              member, member, member, member
+            ));
+          }
         }
       }
     }
@@ -502,6 +642,13 @@ else static if (isWebApi)
         {
           return mandatoryResult;
         }
+      }
+
+      auto routeData = _mappedRoutes.get(_view.route.action, null);
+
+      if (routeData)
+      {
+        validateRoute(routeData, view.route.params);
       }
 
       return action();
