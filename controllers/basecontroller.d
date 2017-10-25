@@ -9,14 +9,133 @@ import diamond.core.apptype;
 
 static if (isWeb)
 {
+  import std.conv : to;
+  import std.variant : Variant;
+  import std.traits : EnumMembers;
+  import std.algorithm : filter;
+  import std.array : array;
+  import std.string : strip;
+
   import vibe.d : HTTPServerRequest, HTTPServerResponse, HTTPMethod;
 
   import diamond.controllers.action;
   import diamond.controllers.status;
+  import diamond.errors;
+  import diamond.core.collections;
+  import diamond.controllers.rest;
 
   /// Wrapper for a base controller.
   abstract class BaseController
   {
+    package(diamond.controllers)
+    {
+      /// Data passed by the request in a RESTful manner.
+      Variant[string] _data;
+
+      /**
+      * Valiates a route and the passed source data to it.
+      * Params:
+      *   routeData =  The route part data.
+      *   sourceData = The data passed.
+      */
+      void validateRoute(RoutePart[] routeData, string[] sourceData)
+      {
+        if (!sourceData)
+        {
+          throw new RouteException("Passed no data to the route.");
+        }
+
+        sourceData = sourceData.filter!(d => d && d.strip().length).array;
+
+        if (sourceData.length != (routeData.length - 1))
+        {
+          throw new RouteException("Passed invalid amount of arguments to the route.");
+        }
+
+        foreach (i; 0 .. sourceData.length)
+        {
+          auto rData = routeData[i + 1];
+          auto data = sourceData[i].strip();
+
+          switch (rData.routeType)
+          {
+            case RouteType.identifier:
+            {
+              if (rData.identifier != data)
+              {
+                throw new RouteException("Expected '" ~ rData.identifier ~ "' as identifier in the route.");
+              }
+
+              break;
+            }
+
+            case RouteType.type:
+            {
+              final switch (rData.type)
+              {
+                foreach (memberIndex, member; EnumMembers!RouteDataType)
+                {
+                  mixin(
+                    "case RouteDataType." ~
+                    to!string(cast(RouteDataType)member) ~
+                    ": mapValue!" ~
+                    member ~
+                    "(data); break;"
+                  );
+                }
+              }
+
+              break;
+            }
+
+            case RouteType.typeIdentifier:
+            {
+              final switch (rData.type)
+              {
+                foreach (memberIndex, member; EnumMembers!RouteDataType)
+                {
+                  mixin(
+                    "case RouteDataType." ~
+                    to!string(cast(RouteDataType)member) ~
+                    ": mapValue!" ~
+                    member ~
+                    "(data, rData.identifier); break;"
+                  );
+                }
+              }
+
+              break;
+            }
+
+            default: break;
+          }
+        }
+      }
+
+      /**
+      * Maps a value that was passed to the route in a RESTful manner.
+      * Params:
+      *   data = The to be mapped.
+      *   mapName = The name to map it as. If no name is passed then conversion is just validated.
+      */
+      void mapValue(T)(string data, string mapName = null)
+      {
+        static if (is(typeof(T) == typeof(string)))
+        {
+          alias value = data;
+        }
+        else
+        {
+          T value = to!T(data);
+        }
+
+        if (mapName)
+        {
+          _data[mapName] = value;
+        }
+      }
+    }
+
     protected:
     /// Alias for the action entry.
     alias ActionEntry = Action[string];
@@ -134,6 +253,24 @@ static if (isWeb)
     void mapMandatory(Status function() f)
     {
       _mandatoryAction = new Action(f);
+    }
+
+    T get(T)(string name, T defaultValue = T.init)
+    {
+      Variant emptyVariant;
+      auto value = _data.get(name, emptyVariant);
+
+      return value.hasValue ? value.get!T : defaultValue;
+    }
+
+    T get(T)(size_t index, T defaultValue = T.init)
+    {
+      if (index < 0 || index >= view.route.params.length)
+      {
+        return defaultValue;
+      }
+
+      return view.route.get!T(index);
     }
   }
 }
