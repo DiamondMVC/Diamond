@@ -135,6 +135,8 @@ static if (isWeb)
 // WebServer's will have a view associated with the controller, the view then contains information about the request etc.
 static if (isWebServer)
 {
+  public import diamond.views.view;
+
   /// Wrapper around a controller.
   class Controller(TView) : BaseController
   {
