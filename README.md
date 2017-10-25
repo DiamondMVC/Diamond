@@ -52,6 +52,7 @@ Blog posts: https://github.com/DiamondMVC/Diamond/wiki/Blog-Posts
  * Separate authentication that can be used either with or without the ACL
  * CSRF Protection
  * Easy integrated cookie/session API.
+ * The network can be restricted to specific ips.
 
 ### Views (WebServer)
 
@@ -67,6 +68,7 @@ Blog posts: https://github.com/DiamondMVC/Diamond/wiki/Blog-Posts
 * Allows for sections, which is useful to only render a part of the view. (Very useful for responsive designs)
 * Can be passed to controllers by their base view
 * Layout views can be changed dynamically
+* Expensive views can be cached.
 
 ### Models
 
@@ -86,6 +88,7 @@ Blog posts: https://github.com/DiamondMVC/Diamond/wiki/Blog-Posts
 * Can map mandatory actions that are executed on every requests. (Useful for authentication etc.)
 * Easy integrated authentication (Can be combined with ACL)
 * RESTful
+* Specific actions can be restricted to specific ips.
 
 ### Controllers (WebServer)
 
