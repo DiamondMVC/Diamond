@@ -34,6 +34,9 @@ static if (isWeb)
     string authenticationClass;
   }
 
+  /// Attribute for restricting controller actions to the restricted ips.
+  struct HttpRestricted {}
+
   /// Attribute for disabling authentication.
   struct HttpDisableAuth { }
 

@@ -25,6 +25,7 @@ static if (isWeb)
   import diamond.core.string : firstToLower;
   import diamond.errors;
   import diamond.controllers.rest;
+  import diamond.security;
 
   package(diamond.controllers)
   {
@@ -50,19 +51,37 @@ static if (isWeb)
     }
   };
 
+  /// The format for creating the http acton member.
+  enum actionNameFormat = "static HttpAction action_%s;\r\n";
+
   /// The format used for actions.
   enum actionMappingFormat = q{
     static if (hasUDA!(%s.%s, HttpAction))
     {
       static action_%s = getUDAs!(%s.%s, HttpAction)[0];
 
-      auto routeData = _mappedRoutes.get("%s", null);
-
-      if (routeData)
+      if (action_%s.action && action_%s.action.strip().length)
       {
-        if (routeData[0].identifier == "<>")
+        auto routingData = _mappedRoutes.get("%s", null);
+
+        if (!routingData && !_mappedControllers[fullyQualifiedName!TController])
         {
-          action_%s.action = null;
+          routingData = parseRoute(action_%s.action);
+
+          if (routingData && routingData.length > 1)
+          {
+            _mappedRoutes["%s"] = routingData;
+
+            action_%s.action = routingData[0].identifier;
+          }
+        }
+
+        if (routingData && routingData.length)
+        {
+          if (routingData[0].identifier == "<>")
+          {
+            action_%s.action = null;
+          }
         }
       }
 
@@ -71,40 +90,6 @@ static if (isWeb)
         (
           action_%s.action && action_%s.action.strip().length ?
           action_%s.action : "%s"
-        ).firstToLower(),
-        &controller.%s
-      );
-    }
-  };
-
-  /// The format used for special mapped actions.
-  enum actionSpecialMappingFormat = q{
-    static if (hasUDA!(%s.%s, HttpAction))
-    {
-      static action_%s2 = getUDAs!(%s.%s, HttpAction)[0];
-
-      if (action_%s2.action && action_%s2.action.strip().length)
-      {
-        auto routingData = parseRoute(action_%s2.action);
-
-        if (routingData.length > 1)
-        {
-          _mappedRoutes["%s"] = routingData;
-
-          action_%s2.action = routingData[0].identifier;
-
-          if (action_%s2.action == "<>")
-          {
-            action_%s2.action = null;
-          }
-        }
-      }
-
-      mapAction(
-        action_%s2.method,
-        (
-          action_%s2.action && action_%s2.action.strip().length ?
-          action_%s2.action : "%s"
         ).firstToLower(),
         &controller.%s
       );
@@ -122,6 +107,26 @@ static if (isWeb)
       else static if (hasUDA!(%s.%s, HttpAction))
       {
         _disabledAuth.add(
+          (
+            action_%s.action && action_%s.action.strip().length ?
+            action_%s.action : "%s"
+          ).firstToLower()
+        );
+      }
+    }
+  };
+
+  /// The format used for restricted connections.
+  enum restrictedFormat = q{
+    static if (hasUDA!(%s.%s, HttpRestricted))
+    {
+      static if (hasUDA!(%s.%s, HttpDefault))
+      {
+        _restrictedActions.add("/");
+      }
+      else static if (hasUDA!(%s.%s, HttpAction))
+      {
+        _restrictedActions.add(
           (
             action_%s.action && action_%s.action.strip().length ?
             action_%s.action : "%s"
@@ -150,6 +155,9 @@ static if (isWebServer)
     /// Hash set of actions with disabled authentication.
     HashSet!string _disabledAuth;
 
+    /// Hash set of actions with restrictions.
+    HashSet!string _restrictedActions;
+
     protected:
     /**
     * Creates a new controller.
@@ -175,69 +183,53 @@ static if (isWebServer)
         _disabledAuth = new HashSet!string;
       }
 
+      _restrictedActions = new HashSet!string;
+
+      auto fullName = fullyQualifiedName!TController;
+
       if (!_mappedControllers)
       {
         _mappedControllers = new HashSet!string;
       }
 
-      auto fullName = fullyQualifiedName!TController;
+      foreach (member; __traits(derivedMembers, TController))
+      {
+        static if (member != "__ctor")
+        {
+          mixin(defaultMappingFormat.format(TController.stringof, member, member));
+          mixin(mandatoryMappingFormat.format(TController.stringof, member, member));
+          mixin(actionMappingFormat.format(
+            TController.stringof, member,
+            member, TController.stringof, member,
+            member, member,
+            member,
+            member,
+            member,
+            member,
+            member,
+            member,
+            member, member,
+            member, member,
+            member
+          ));
+          mixin(disableAuthFormat.format(
+            TController.stringof, member,
+            TController.stringof, member,
+            TController.stringof, member,
+            member, member, member, member
+          ));
+          mixin(restrictedFormat.format(
+            TController.stringof, member,
+            TController.stringof, member,
+            TController.stringof, member,
+            member, member, member, member
+          ));
+        }
+      }
 
       if (!_mappedControllers[fullName])
       {
         _mappedControllers.add(fullName);
-
-        foreach (member; __traits(derivedMembers, TController))
-        {
-          static if (member != "__ctor")
-          {
-            mixin(defaultMappingFormat.format(TController.stringof, member, member));
-            mixin(mandatoryMappingFormat.format(TController.stringof, member, member));
-            mixin(actionSpecialMappingFormat.format(
-              TController.stringof, member,
-              member, TController.stringof, member,
-              member, member,
-              member,
-              member,
-              member,
-              member, member, member,
-              member, member,
-              member, member,
-              member
-            ));
-            mixin(disableAuthFormat.format(
-              TController.stringof, member,
-              TController.stringof, member,
-              TController.stringof, member,
-              member, member, member, member
-            ));
-          }
-        }
-      }
-      else
-      {
-        foreach (member; __traits(derivedMembers, TController))
-        {
-          static if (member != "__ctor")
-          {
-            mixin(defaultMappingFormat.format(TController.stringof, member, member));
-            mixin(mandatoryMappingFormat.format(TController.stringof, member, member));
-            mixin(actionMappingFormat.format(
-              TController.stringof, member,
-              member, TController.stringof, member,
-              member, member,
-              member,
-              member, member,
-              member, member,
-              member
-            ));
-            mixin(disableAuthFormat.format(
-              TController.stringof, member,
-              TController.stringof, member,
-              TController.stringof, member,
-              member, member, member, member
-            ));
-          }
-        }
       }
     }
 
@@ -312,6 +304,11 @@ static if (isWebServer)
     {
       if (_view.isDefaultRoute)
       {
+        if (_restrictedActions["/"])
+        {
+          validateRestrictedIPs(view.httpRequest);
+        }
+
         if (_auth && !_disabledAuth["/"])
         {
           auto authStatus = _auth.isAuthenticated(view.httpRequest, view.httpResponse);
@@ -353,6 +350,11 @@ static if (isWebServer)
       if (!action)
       {
         return Status.notFound;
+      }
+
+      if (_restrictedActions[_view.route.action])
+      {
+        validateRestrictedIPs(view.httpRequest);
       }
 
       if (_auth && !_disabledAuth[_view.route.action])
@@ -416,6 +418,9 @@ else static if (isWebApi)
     /// Hash set of actions with disabled authentication.
     HashSet!string _disabledAuth;
 
+    /// Hash set of actions with restrictions.
+    HashSet!string _restrictedActions;
+
     protected:
     /**
     * Creates a new controller.
@@ -444,6 +449,8 @@ else static if (isWebApi)
         _disabledAuth = new HashSet!string;
       }
 
+      _restrictedActions = new HashSet!string;
+
       auto fullName = fullyQualifiedName!TController;
 
       if (!_mappedControllers)
@@ -451,62 +458,44 @@ else static if (isWebApi)
         _mappedControllers = new HashSet!string;
       }
 
+      foreach (member; __traits(derivedMembers, TController))
+      {
+        static if (member != "__ctor")
+        {
+          mixin(defaultMappingFormat.format(TController.stringof, member, member));
+          mixin(mandatoryMappingFormat.format(TController.stringof, member, member));
+          mixin(actionMappingFormat.format(
+            TController.stringof, member,
+            member, TController.stringof, member,
+            member, member,
+            member,
+            member,
+            member,
+            member,
+            member,
+            member,
+            member, member,
+            member, member,
+            member
+          ));
+          mixin(disableAuthFormat.format(
+            TController.stringof, member,
+            TController.stringof, member,
+            TController.stringof, member,
+            member, member, member, member
+          ));
+          mixin(restrictedFormat.format(
+            TController.stringof, member,
+            TController.stringof, member,
+            TController.stringof, member,
+            member, member, member, member
+          ));
+        }
+      }
+
       if (!_mappedControllers[fullName])
       {
         _mappedControllers.add(fullName);
-
-        foreach (member; __traits(derivedMembers, TController))
-        {
-          static if (member != "__ctor")
-          {
-            mixin(defaultMappingFormat.format(TController.stringof, member, member));
-            mixin(mandatoryMappingFormat.format(TController.stringof, member, member));
-            mixin(actionSpecialMappingFormat.format(
-              TController.stringof, member,
-              member, TController.stringof, member,
-              member, member,
-              member,
-              member,
-              member,
-              member, member, member,
-              member, member,
-              member, member,
-              member
-            ));
-            mixin(disableAuthFormat.format(
-              TController.stringof, member,
-              TController.stringof, member,
-              TController.stringof, member,
-              member, member, member, member
-            ));
-          }
-        }
-      }
-      else
-      {
-        foreach (member; __traits(derivedMembers, TController))
-        {
-          static if (member != "__ctor")
-          {
-            mixin(defaultMappingFormat.format(TController.stringof, member, member));
-            mixin(mandatoryMappingFormat.format(TController.stringof, member, member));
-            mixin(actionMappingFormat.format(
-              TController.stringof, member,
-              member, TController.stringof, member,
-              member, member,
-              member,
-              member, member,
-              member, member,
-              member
-            ));
-            mixin(disableAuthFormat.format(
-              TController.stringof, member,
-              TController.stringof, member,
-              TController.stringof, member,
-              member, member, member, member
-            ));
-          }
-        }
       }
     }
 
@@ -587,6 +576,11 @@ else static if (isWebApi)
     {
       if (!route.action)
       {
+        if (_restrictedActions["/"])
+        {
+          validateRestrictedIPs(httpRequest);
+        }
+
         if (_auth && !_disabledAuth["/"])
         {
           auto authStatus = _auth.isAuthenticated(httpRequest, httpResponse);
@@ -628,6 +622,11 @@ else static if (isWebApi)
       if (!action)
       {
         return Status.notFound;
+      }
+
+      if (_restrictedActions[route.action])
+      {
+        validateRestrictedIPs(httpRequest);
       }
 
       if (_auth && !_disabledAuth[route.action])

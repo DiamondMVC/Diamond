@@ -11,4 +11,5 @@ public
   import diamond.security.generictoken;
   import diamond.security.sessiontoken;
   import diamond.security.csrf;
+  import diamond.security.network;
 }
