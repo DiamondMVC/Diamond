@@ -91,6 +91,8 @@ static if (isWeb)
   /// Web configurations.
   class WebConfig
   {
+    import vibe.data.serialization : optional;
+
     /// The name of the web application.
     string name;
     /// The routes that are mapped to static files.
@@ -104,13 +106,17 @@ static if (isWeb)
     /// The default headers the web application uses.
     WebHeaders defaultHeaders;
     /// Boolean determining whether the access log should be redirected to the console.
-    bool accessLogToConsole;
+    @optional bool accessLogToConsole;
     /// The time sessions are stored in memory.
-    long sessionAliveTime;
+    @optional long sessionAliveTime;
     // A special string representation that splits the root routes when checking ACL.
-    string specialRouteSplitter;
+    @optional string specialRouteSplitter;
     /// Boolean determnining whether views can be cached or not.
-    bool shouldCacheViews;
+    @optional bool shouldCacheViews;
+    /// An array of global restricted ip addresses.
+    @optional string[] globalRestrictedIPs;
+    /// An array of restricted ip addresses.
+    @optional string[] restrictedIPs;
   }
 
   /// A web address.

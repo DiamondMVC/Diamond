@@ -13,6 +13,7 @@ static if (isWeb)
   import diamond.http;
   import diamond.errors;
   import diamond.authentication;
+  import diamond.security;
 
   static if (isWebServer)
   {
@@ -152,6 +153,8 @@ static if (isWeb)
   {
     try
     {
+      validateGlobalRestrictedIPs(request);
+
       createSession(request, response);
 
       import diamond.extensions;
