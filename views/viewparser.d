@@ -36,7 +36,6 @@ static if (!isWebApi)
     string viewPlaceHolderGeneration = "";
     bool hasController;
     bool useBaseView;
-    string layoutName = null;
 
     foreach (sectionName,parts; allParts)
     {
@@ -95,7 +94,7 @@ static if (!isWebApi)
               viewModelGenerateGeneration, viewPlaceHolderGeneration,
               useBaseView,
               hasController,
-              layoutName, route
+              route
             );
             break;
           }
@@ -119,7 +118,7 @@ static if (!isWebApi)
         hasController ? controllerHandleFormat : "",
         viewPlaceHolderGeneration,
         viewCodeGeneration,
-        layoutName ? endLayoutFormat.format(layoutName) : endFormat
+        endFormat
       );
     }
     else
@@ -131,7 +130,7 @@ static if (!isWebApi)
         viewModelGenerateGeneration,
         viewPlaceHolderGeneration,
         viewCodeGeneration,
-        layoutName ? endLayoutFormat.format(layoutName) : endFormat
+        endFormat
       );
     }
   }
@@ -178,8 +177,8 @@ static if (!isWebApi)
   *   viewConstructorGeneration =   The resulting string of the view's constructor.
   *   viewModelGenerateGeneration = The resulting string of the view's model-generate function.
   *   viewPlaceHolderGeneration =   The resulting string of the view's placeholder generation.
+  *   useBaseView =                 Boolean determining whether the view should use the base view for controllers.
   *   hasController =               Boolean determining whether the view has a controller or not.
-  *   layoutName =                  The name of the view's layout.
   *   route =                       The name of the view's route. (null if no route or if stand-alone.)
   */
   void parseMetaContent(Part part,
@@ -190,7 +189,6 @@ static if (!isWebApi)
     ref string viewPlaceHolderGeneration,
     ref bool useBaseView,
     ref bool hasController,
-    ref string layoutName,
     ref string route)
   {
     string[string] metaData;
@@ -257,7 +255,7 @@ static if (!isWebApi)
 
         case "layout":
         {
-          layoutName = value.replace("\n", "");
+          viewConstructorGeneration ~= layoutConstructorFormat.format(value.replace("\n", ""));
           break;
         }
 
