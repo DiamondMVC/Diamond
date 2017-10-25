@@ -52,6 +52,7 @@ Blog posts: https://github.com/DiamondMVC/Diamond/wiki/Blog-Posts
  * Separate authentication that can be used either with or without the ACL
  * CSRF Protection
  * Easy integrated cookie/session API.
+ * RESTful
 
 ### Views (WebServer)
 
