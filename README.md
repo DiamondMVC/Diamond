@@ -52,7 +52,6 @@ Blog posts: https://github.com/DiamondMVC/Diamond/wiki/Blog-Posts
  * Separate authentication that can be used either with or without the ACL
  * CSRF Protection
  * Easy integrated cookie/session API.
- * RESTful
 
 ### Views (WebServer)
 
@@ -66,6 +65,8 @@ Blog posts: https://github.com/DiamondMVC/Diamond/wiki/Blog-Posts
 * Can render other views within itself
 * Any type of D code can be written within views.
 * Allows for sections, which is useful to only render a part of the view. (Very useful for responsive designs)
+* Can be passed to controllers by their base view
+* Layout views can be changed dynamically
 
 ### Models
 
@@ -83,7 +84,8 @@ Blog posts: https://github.com/DiamondMVC/Diamond/wiki/Blog-Posts
   * Status.end (Will end the request; useful for json responses etc. *Note: using the json() function already does it for you.)*
   * Status.notFound (Will issue a 404 status for the response.)
 * Can map mandatory actions that are executed on every requests. (Useful for authentication etc.)
-* Easy integrated authentication
+* Easy integrated authentication (Can be combined with ACL)
+* RESTful
 
 ### Controllers (WebServer)
 
@@ -95,6 +97,7 @@ Blog posts: https://github.com/DiamondMVC/Diamond/wiki/Blog-Posts
 ### Controllers (WebApi)
 
 * Can access the request, response etc. directly.
+* Can have multiple routes associated with them.
 
 ## Features - Standalone
 
@@ -110,6 +113,7 @@ Blog posts: https://github.com/DiamondMVC/Diamond/wiki/Blog-Posts
 * Any type of D code can be written within views.
 * Can be used for any type of template rendering such as email, UI etc.
 * Allows for sections, which is useful to only render a part of the view. (Very useful for responsive designs)
+* Layout views can be changed dynamically
 
 ### Models
 
