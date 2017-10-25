@@ -444,6 +444,11 @@ else static if (isWebApi)
 
       auto fullName = fullyQualifiedName!TController;
 
+      if (!_mappedControllers)
+      {
+        _mappedControllers = new HashSet!string;
+      }
+
       if (!_mappedControllers[fullName])
       {
         _mappedControllers.add(fullName);
@@ -644,11 +649,11 @@ else static if (isWebApi)
         }
       }
 
-      auto routeData = _mappedRoutes.get(_view.route.action, null);
+      auto routeData = _mappedRoutes.get(route.action, null);
 
       if (routeData)
       {
-        validateRoute(routeData, view.route.params);
+        validateRoute(routeData, route.params);
       }
 
       return action();
@@ -663,41 +668,68 @@ else static if (isWebApi)
   /// Mixin template for generating the controllers.
   mixin template GenerateControllers(string[] controllerInitializers)
   {
-  	  import controllers;
+    import std.traits : hasUDA, getUDAs;
+	  import controllers;
 
-       /// Generates the controller collection.
-  	  string generateControllerCollection()
+    /// Format for generating the routes for controllers.
+    private enum generateFormat = q{
+      static if (hasUDA!(%sController, HttpRoutes))
       {
-  		  enum generateFormat = q{
-  		      controllerCollection["%s"] = new GenerateControllerAction((request, response, route)
-            {
-  			       return new %sController(request, response, route);
-  		      });
-  		  };
+        static const controller_%s = getUDAs!(%sController, HttpRoutes)[0];
 
-  		  auto controllerCollectionResult = "";
-
-  		  foreach (controller; controllerInitializers)
+        foreach (controllerRoute; controller_%s.routes)
         {
-          import std.string : format;
-			    controllerCollectionResult ~= format(generateFormat, controller.firstToLower(), controller);
-  		  }
+          import diamond.core.string : firstToLower;
 
-  		  return controllerCollectionResult;
-  	  }
-
-      /// The controller collection.
-      GenerateControllerAction[string] controllerCollection;
-
-      /// Gets a controller by its name
-      GenerateControllerAction getControllerAction(string name)
-      {
-        if (!controllerCollection || !controllerCollection.length)
-        {
-          mixin(generateControllerCollection);
+          controllerCollection[controllerRoute.firstToLower()] = new GenerateControllerAction((request, response, route)
+          {
+             return new %sController(request, response, route);
+          });
         }
+      }
+      else
+      {
+        controllerCollection["%s"] = new GenerateControllerAction((request, response, route)
+        {
+           return new %sController(request, response, route);
+        });
+      }
+    };
 
-  		  return controllerCollection.get(name, null);
-  	 }
+     /// Generates the controller collection.
+	  string generateControllerCollection()
+    {
+		  auto controllerCollectionResult = "";
+
+		  foreach (controller; controllerInitializers)
+      {
+        import std.string : format;
+		    controllerCollectionResult ~=
+          format
+          (
+            generateFormat,
+            controller, controller, controller,
+            controller, controller,
+            controller.firstToLower(),
+            controller
+          );
+		  }
+
+		  return controllerCollectionResult;
+	  }
+
+    /// The controller collection.
+    GenerateControllerAction[string] controllerCollection;
+
+    /// Gets a controller by its name
+    GenerateControllerAction getControllerAction(string name)
+    {
+      if (!controllerCollection || !controllerCollection.length)
+      {
+        mixin(generateControllerCollection);
+      }
+
+		  return controllerCollection.get(name, null);
+	 }
   }
 }

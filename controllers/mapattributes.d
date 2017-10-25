@@ -36,4 +36,37 @@ static if (isWeb)
 
   /// Attribute for disabling authentication.
   struct HttpDisableAuth { }
+
+  static if (isWebApi)
+  {
+    /// Attribute for declaring routes.
+    struct HttpRoutes
+    {
+      /// The routes.
+      string[] routes;
+
+      /**
+      * Creates a new http routes attribute.
+      * Params:
+      *   route = The route.
+      */
+      this(string route)
+      {
+        routes = [route];
+      }
+
+      /**
+      * Creates a new http routes attribute.
+      * Params:
+      *   routes = The routes.
+      */
+      this(string[] routes)
+      {
+        this.routes = routes;
+      }
+
+      /// Dsiabling the regular struct constructor.
+      @disable this();
+    }
+  }
 }
