@@ -174,7 +174,7 @@ static if (!isWebApi)
   /// The format for the model member.
   enum modelMemberFormat = "%s model;\r\n";
 
-  /// The format for ending a view generate call without a layout.
+  /// The format for ending a view generate call.
   enum endFormat = q{
     if (sectionName && sectionName.length)
     {
@@ -183,18 +183,6 @@ static if (!isWebApi)
     else
     {
       return super.prepare();
-    }
-  };
-
-  /// The format for ending a view generate call with a layout.
-  enum endLayoutFormat = q{
-    if (sectionName && sectionName.length)
-    {
-      return generate(null);
-    }
-    else
-    {
-      return super.prepare("%s");
     }
   };
 
@@ -211,4 +199,7 @@ static if (!isWebApi)
 
   /// The format for escaped arguments.
   enum escapedFormat = "escape(%s);\r\n";
+
+  /// The format used for layout's in the constructor.
+  enum layoutConstructorFormat = "super.layoutName = \"%s\";\r\n";
 }

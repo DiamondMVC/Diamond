@@ -45,6 +45,9 @@ static if (!isWebApi)
 
       /// The route.
       Route _route;
+
+      /// The root path.
+      string _rootPath;
     }
 
     /// The name of the view.
@@ -56,8 +59,8 @@ static if (!isWebApi)
     /// The result.
     string _result;
 
-    /// The root path.
-    string _rootPath;
+    /// The layout view.
+    string _layoutName;
 
     protected:
     static if (isWebServer)
@@ -156,6 +159,15 @@ static if (!isWebApi)
       {
         _name = name;
       }
+
+      /// Gets the layout name.
+      string layoutName() { return _layoutName; }
+
+      /// Sets the layout name.
+      void layoutName(string newLayoutName)
+      {
+        _layoutName = newLayoutName;
+      }
     }
 
     final
@@ -173,18 +185,16 @@ static if (!isWebApi)
 
       /**
       * Prepares the view with its layout, placeholders etc.
-      * Params:
-      *   layoutName = The name of the layout to prepare the view with.
       * Returns:
       *   The resulting string after the view has been rendered with its layout.
       */
-      string prepare(string layoutName = null)
+      string prepare()
       {
         string result = _result.dup;
 
-        if (layoutName)
+        if (_layoutName && _layoutName.strip().length)
         {
-          auto layoutView = view(layoutName);
+          auto layoutView = view(_layoutName);
 
           if (layoutView)
           {
