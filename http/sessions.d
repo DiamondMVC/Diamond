@@ -17,6 +17,7 @@ static if (isWeb)
   import diamond.http.cookies;
   import diamond.errors.checks;
   import diamond.core.webconfig;
+  import diamond.core.collections;
 
   /// The name of the session cookie.
   private static const __gshared sessionCookieName = "__D_SESSION";
@@ -59,8 +60,17 @@ static if (isWeb)
     /// The value os the session.
     string[string] values;
 
+    /// Cached views.
+    HashSet!string cachedViews;
+
+    /// The directory for the session view cache.
+    string directory;
+
     /// Creates a new http session instance.
-    this() { }
+    this()
+    {
+      cachedViews = new HashSet!string;
+    }
 
     public:
     @property
@@ -78,6 +88,12 @@ static if (isWeb)
 
   /// The collection of currently stored sessions.
   private __gshared HttpSession[string] _sessions;
+
+  /// The next session group id.
+  private size_t nextSessionGroupId;
+
+  /// The sessions met.
+  private size_t sessionsMet;
 
   /**
   * Gets a session.
@@ -190,6 +206,72 @@ static if (isWeb)
   }
 
   /**
+  * Caches a view in the session.
+  * Params:
+  *   request =  The request.
+  *   response = The response.
+  *   viewName = The view to cache.
+  *   result =   The result of the view to cache.
+  */
+  void cacheViewInSession
+  (
+    HTTPServerRequest request, HTTPServerResponse response,
+    string viewName, string result
+  )
+  {
+    enforce(request, "You must specify the request to cache the view for.");
+    enforce(response, "You must specify the response to cache the view for.");
+
+    auto session = getSession(request, response);
+
+    session.cachedViews.add(viewName);
+
+    import std.file : exists, write, mkdirRecurse;
+
+    if (!exists(session.directory))
+    {
+      mkdirRecurse(session.directory);
+    }
+
+    write(session.directory ~ "/" ~ viewName ~ ".html", result);
+  }
+
+  /**
+  * Gets a view from the session cache.
+  * Params:
+  *   request =  The request.
+  *   response = The response.
+  *   viewName = The view to retrieve.
+  * Returns:
+  *   The result of the cached view if found, null otherwise.
+  */
+  string getCachedViewFromSession
+  (
+    HTTPServerRequest request, HTTPServerResponse response,
+    string viewName
+  )
+  {
+    enforce(request, "You must specify the request to get the cached view from.");
+    enforce(response, "You must specify the response to get the cached view from.");
+
+    auto session = getSession(request, response);
+
+    import std.file : exists, readText;
+
+    if (session.cachedViews[viewName])
+    {
+      auto sessionViewFile = session.directory ~ "/" ~ viewName ~ ".html";
+
+      if (exists(sessionViewFile))
+      {
+        return readText(sessionViewFile);
+      }
+    }
+
+    return null;
+  }
+
+  /**
   * Creates a http session.
   * Params:
   *   request =   The request.
@@ -211,11 +293,23 @@ static if (isWeb)
 
     session = new HttpSession;
 
+    sessionsMet++;
+
+    if (sessionsMet >= 1000)
+    {
+      sessionsMet = 0;
+      nextSessionGroupId++;
+    }
+
     import diamond.security.sessiontoken;
 
     session.ipAddress = request.clientAddress.toAddressString();
     session.id = sessionToken.generate(session.ipAddress);
     _sessions[session.id] = session;
+
+    import std.conv : to;
+
+    session.directory = "sessions/" ~ to!string(nextSessionGroupId) ~ "/" ~ session.id[$-52 .. $] ~ "/";
 
     response.createCookie(sessionCookieName, session.id, webConfig.sessionAliveTime * 60);
     session.endTime = Clock.currTime();
@@ -278,6 +372,17 @@ static if (isWeb)
       }
       else
       {
+        try
+        {
+          import std.file : exists, rmdirRecurse;
+
+          if (exists(session.directory))
+          {
+            rmdirRecurse(session.directory);
+          }
+        }
+        catch (Throwable t) { }
+
         _sessions.remove(session.id);
       }
     }

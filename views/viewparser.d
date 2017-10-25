@@ -259,6 +259,16 @@ static if (!isWebApi)
           break;
         }
 
+        case "cache":
+        {
+          if (to!bool(value))
+          {
+            viewConstructorGeneration ~= "super.cached = true;\r\n";
+          }
+
+          break;
+        }
+
         default: break;
       }
     }
