@@ -94,10 +94,10 @@ static if (!isWebApi)
     };
 
     /// The format for the controller member.
-    enum controllerMemberFormat = "%s!view_%s controller;\r\n";
+    enum controllerMemberFormat = "%s!%s controller;\r\n";
 
     /// The format for controller constructors.
-    enum controllerConstructorFormat = "controller = new %s!view_%s(this);\r\n";
+    enum controllerConstructorFormat = "controller = new %s!%s(this);\r\n";
 
   }
   else

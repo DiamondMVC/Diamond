@@ -14,6 +14,7 @@ static if (!isWebApi)
 
   import std.string : strip, format;
   import std.array : replace, split;
+  import std.conv : to;
 
   /**
   * Parses the view parts into a view class.
@@ -34,6 +35,7 @@ static if (!isWebApi)
     string viewCodeGeneration = "";
     string viewPlaceHolderGeneration = "";
     bool hasController;
+    bool useBaseView;
     string layoutName = null;
 
     foreach (sectionName,parts; allParts)
@@ -91,6 +93,7 @@ static if (!isWebApi)
               viewName,
               viewClassMembersGeneration, viewConstructorGeneration,
               viewModelGenerateGeneration, viewPlaceHolderGeneration,
+              useBaseView,
               hasController,
               layoutName, route
             );
@@ -185,6 +188,7 @@ static if (!isWebApi)
     ref string viewConstructorGeneration,
     ref string viewModelGenerateGeneration,
     ref string viewPlaceHolderGeneration,
+    ref bool useBaseView,
     ref bool hasController,
     ref string layoutName,
     ref string route)
@@ -236,11 +240,17 @@ static if (!isWebApi)
 
         static if (isWebServer)
         {
+          case "controllerUseBaseView":
+          {
+            useBaseView = to!bool(value);
+            break;
+          }
+
           case "controller":
           {
             hasController = true;
-            viewClassMembersGeneration ~= controllerMemberFormat.format(value, viewName);
-            viewConstructorGeneration ~= controllerConstructorFormat.format(value, viewName);
+            viewClassMembersGeneration ~= controllerMemberFormat.format(value, useBaseView ? "View" : "view_" ~ viewName);
+            viewConstructorGeneration ~= controllerConstructorFormat.format(value, useBaseView ? "View" : "view_" ~ viewName);
             break;
           }
         }

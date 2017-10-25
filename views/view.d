@@ -21,6 +21,16 @@ static if (!isWebApi)
     import diamond.http;
   }
 
+  /**
+  * Template to get the type name of a view.
+  * Params:
+  *   name = The name of the view.
+  */
+  template ViewTypeName(string name)
+  {
+    mixin("alias ViewTypeName = view_" ~ name ~ ";");
+  }
+
   /// The abstract wrapper for views.
   abstract class View
   {
@@ -287,6 +297,27 @@ static if (!isWebApi)
         }
 
         append(result);
+      }
+
+      /**
+      * Gets th current view as a specific view.
+      * Params:
+      *   name = The name of the view to get the view as.
+      * Returns:
+      *   The view converted to the specific view.
+      */
+      auto asView(string name)()
+      {
+        mixin("import diamondapp : getView, view_" ~ name ~ ";");
+
+        static if (isWebServer)
+        {
+          mixin("return cast(view_" ~ name ~ ")this;");
+        }
+        else
+        {
+          mixin("return cast(view_" ~ name ~ ")this;");
+        }
       }
 
       /**
