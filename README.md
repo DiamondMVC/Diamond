@@ -26,7 +26,7 @@ Using Diamond for Web-server: https://github.com/DiamondMVC/Diamond/wiki/Using-D
 
 Extensions: https://github.com/DiamondMVC/Diamond/wiki/Extensions
 
-Authentication: https://github.com/DiamondMVC/Diamond/wiki/Authentication
+Authentication & ACL: https://github.com/DiamondMVC/Diamond/wiki/Authentication-&-ACL
 
 Blog posts: https://github.com/DiamondMVC/Diamond/wiki/Blog-Posts
 
