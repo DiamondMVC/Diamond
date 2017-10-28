@@ -45,6 +45,9 @@ static if (isWeb)
       });
       emitExtension();
 
+      import websettings;
+      initializeWebSettings();
+
       if (webSettings)
       {
         webSettings.onApplicationStart();
