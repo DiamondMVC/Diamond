@@ -271,6 +271,10 @@ static if (isWeb)
         {
           response.bodyWriter.write(pageResult);
         }
+        else
+        {
+          response.bodyWriter.write("\n");
+        }
       }
       else
       {
