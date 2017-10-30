@@ -3,13 +3,13 @@
 * License: MIT (https://github.com/DiamondMVC/Diamond/blob/master/LICENSE)
 * Author: Jacob Jensen (bausshf)
 */
-module diamond.security.sessiontoken;
+module diamond.security.tokens.sessiontoken;
 
 import diamond.core.apptype;
 
 static if (isWeb)
 {
-  import diamond.security.tokengenerator;
+  import diamond.security.tokens.tokengenerator;
 
   /// Wrapper for a session token generator.
   final class SessionToken : TokenGenerator
@@ -29,7 +29,7 @@ static if (isWeb)
     */
     override string generate()
     {
-      import diamond.security.generictoken;
+      import diamond.security.tokens.generictoken;
 
       return genericToken.generate();
     }

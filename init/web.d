@@ -3,9 +3,9 @@
 * License: MIT (https://github.com/DiamondMVC/Diamond/blob/master/LICENSE)
 * Author: Jacob Jensen (bausshf)
 */
-module diamondapp;
+module diamond.init.web;
 
-import diamond.core : isWeb;
+import diamond.core.apptype;
 
 static if (isWeb)
 {
@@ -17,7 +17,7 @@ static if (isWeb)
 
   static if (isWebServer)
   {
-    import diamond.views;
+    public import diamond.views;
   }
 
   import vibe.d : HTTPServerRequestDelegateS, HTTPServerSettings, HTTPServerRequest,
@@ -66,6 +66,7 @@ static if (isWeb)
     catch (Throwable t)
     {
       handleUnhandledError(t);
+      throw t;
     }
   }
 
@@ -134,6 +135,11 @@ static if (isWeb)
       else
       {
         handleUserError(error.exception,request,response,error);
+
+        if (error.exception)
+        {
+          throw error.exception;
+        }
       }
     };
 
@@ -203,101 +209,20 @@ static if (isWeb)
 
       if (staticFile)
       {
-        auto role = getRole(request);
-
-        if (hasRoles && !hasAccess(role, request.method, route.toString()))
-        {
-          throw new HTTPStatusException(HTTPStatus.unauthorized);
-        }
-
-        import diamond.extensions;
-        mixin ExtensionEmit!(ExtensionType.staticFileExtension, q{
-          if (!{{extensionEntry}}.handleStaticFile(request, response))
-          {
-            return;
-          }
-        });
-        emitExtension();
-
-        foreach (headerKey,headerValue; webConfig.defaultHeaders.staticFiles)
-        {
-          response.headers[headerKey] = headerValue;
-        }
-
-        import std.array : split, join;
-        request.path = "/" ~ request.path.split("/")[2 .. $].join("/");
-
-        if (webSettings)
-        {
-          webSettings.onStaticFile(request, response);
-        }
-
-        staticFile(request, response);
+        import diamond.init.files;
+        handleStaticFiles(request, response, route, staticFile);
         return;
       }
 
       static if (isWebServer)
       {
-        auto page = getView(request, response, route, true);
-
-        if (!page)
-        {
-          throw new HTTPStatusException(HTTPStatus.NotFound);
-        }
-
-        string pageResult;
-
-        if (webConfig.shouldCacheViews && page.cached)
-        {
-          pageResult = getCachedViewFromSession(request, response, page.name);
-        }
-
-        foreach (headerKey,headerValue; webConfig.defaultHeaders.general)
-        {
-          response.headers[headerKey] = headerValue;
-        }
-
-        if (!pageResult)
-        {
-          pageResult = page.generate();
-
-          if (pageResult && pageResult.length && webConfig.shouldCacheViews && page.cached)
-          {
-            cacheViewInSession(request, response, page.name, pageResult);
-          }
-        }
-
-        if (pageResult && pageResult.length)
-        {
-          response.bodyWriter.write(pageResult);
-        }
-        else
-        {
-          response.bodyWriter.write("\n");
-        }
+        import diamond.init.server;
+        handleWebServer(request, response, route);
       }
       else
       {
-        auto controllerAction = getControllerAction(route.name);
-
-        if (!controllerAction)
-        {
-          throw new HTTPStatusException(HTTPStatus.NotFound);
-        }
-
-        auto status = controllerAction(request, response, route).handle();
-
-        if (status == Status.notFound)
-        {
-          throw new HTTPStatusException(HTTPStatus.NotFound);
-        }
-        else if (status != Status.end)
-        {
-          foreach (headerKey,headerValue; webConfig.defaultHeaders.general)
-          {
-            response.headers[headerKey] = headerValue;
-          }
-        }
+        import diamond.init.api;
+        handleWebApi(request, response, route);
       }
 
       if (webSettings)
@@ -316,24 +241,8 @@ static if (isWeb)
       else
       {
         handleUserError(t,request,response,null);
+        throw t;
       }
     }
-  }
-}
-else
-{
-  import diamond.views;
-
-  mixin GenerateViews;
-
-  import std.array : join;
-  mixin(generateViewsResult.join(""));
-
-  mixin GenerateGetView;
-
-  /// Shared static constructor for stand-alone applications.
-  shared static this()
-  {
-    // ...
   }
 }

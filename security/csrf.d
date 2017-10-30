@@ -34,7 +34,7 @@ static if (isWeb)
       return token;
     }
 
-    import diamond.security.generictoken;
+    import diamond.security.tokens.generictoken;
 
     token = genericToken.generate()[0 .. 64];
 

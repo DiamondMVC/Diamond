@@ -7,9 +7,7 @@ module diamond.security;
 
 public
 {
-  import diamond.security.tokengenerator;
-  import diamond.security.generictoken;
-  import diamond.security.sessiontoken;
+  import diamond.security.tokens;
   import diamond.security.csrf;
   import diamond.security.network;
 }
