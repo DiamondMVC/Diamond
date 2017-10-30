@@ -10,7 +10,8 @@
 	"sourcePaths": [
 		"authentication", "controllers", "core",
 		"errors", "extensions", "http",
-		"security", "templates", "views"
+		"init", "security", "templates",
+		"views"
 	],
 	"dependencies": {
 		"vibe-d": {
