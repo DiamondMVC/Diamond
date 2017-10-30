@@ -301,7 +301,7 @@ static if (isWeb)
       nextSessionGroupId++;
     }
 
-    import diamond.security.sessiontoken;
+    import diamond.security.tokens.sessiontoken;
 
     session.ipAddress = request.clientAddress.toAddressString();
     session.id = sessionToken.generate(session.ipAddress);

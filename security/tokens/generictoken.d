@@ -3,13 +3,13 @@
 * License: MIT (https://github.com/DiamondMVC/Diamond/blob/master/LICENSE)
 * Author: Jacob Jensen (bausshf)
 */
-module diamond.security.generictoken;
+module diamond.security.tokens.generictoken;
 
 import diamond.core.apptype;
 
 static if (isWeb)
 {
-  import diamond.security.tokengenerator;
+  import diamond.security.tokens.tokengenerator;
 
   /// Wrapper for a generic token generator.
   final class GenericToken : TokenGenerator
@@ -17,7 +17,7 @@ static if (isWeb)
     import vibe.crypto.cryptorand;
 
     private:
-    /// The random generator for the generic token.
+    /// The random generator for the generic token. TODO: Better RNG implementation ...
     SHA1HashMixerRNG _randomGenerator;
 
     /// Creates a new generic token generator.
