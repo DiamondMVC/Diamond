@@ -9,17 +9,14 @@ import diamond.core.apptype;
 
 static if (isWeb)
 {
-  import vibe.d : HTTPServerRequest, HTTPServerResponse;
+  import diamond.http;
 
   /// Wrapper for an authentication status.
   final class AuthStatus
   {
     private:
-    /// The request.
-    HTTPServerRequest _httpRequest;
-
-    /// The response.
-    HTTPServerResponse _httpResponse;
+    /// The client.
+    HttpClient _client;
 
     /// Boolean determining whether the authentication was successful or not.
     bool _authenticated;
@@ -31,26 +28,21 @@ static if (isWeb)
     /**
     * Creates a new authentcation status.
     * Params:
-    *   request =       The request that was authenticated.
-    *   response =      The response for the request.
+    *   client =       The client that was authenticated.
     *   authenticated = Boolean determining whehter the authentication was successful or not.
     *   message =       (optional) The message of the authentication status.
     */
-    this(HTTPServerRequest request, HTTPServerResponse response, bool authenticated, string message = null)
+    this(HttpClient client, bool authenticated, string message = null)
     {
-      _httpRequest = request;
-      _httpResponse = response;
+      _client = client;
       _authenticated = authenticated;
       _message = message;
     }
 
     @property
     {
-      /// Gets the request that was authenticated.
-      HTTPServerRequest httpRequest() { return _httpRequest; }
-
-      /// Gets the response for the request.
-      HTTPServerResponse httpResponse() { return _httpResponse; }
+      /// Gets the client that was authenticated.
+      HttpClient client() { return _client; }
 
       /// Gets a boolean determining whether the authentication was successful or not.
       bool authenticated() { return _authenticated; }
@@ -64,14 +56,13 @@ static if (isWeb)
   interface IControllerAuth
   {
     /**
-    * Function called to validate authentication for a request.
+    * Function called to validate authentication for a client.
     * Params:
-    *   request =   The request to validate for authentication.
-    *   response =  The response for the authentication.
+    *   client =   The client to validate for authentication.
     * Returns:
-    *   True if the request is authenticated.
+    *   True if the client is authenticated.
     */
-    AuthStatus isAuthenticated(HTTPServerRequest request, HTTPServerResponse response);
+    AuthStatus isAuthenticated(HttpClient client);
 
     /**
     * Function called when authentication fails.

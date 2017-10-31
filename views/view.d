@@ -16,8 +16,6 @@ static if (!isWebApi)
 
   static if (isWebServer)
   {
-    import vibe.d : HTTPServerRequest, HTTPServerResponse, HTTPMethod;
-
     import diamond.http;
   }
 
@@ -37,14 +35,8 @@ static if (!isWebApi)
     private:
     static if (isWebServer)
     {
-      /// The request.
-      HTTPServerRequest _request;
-
-      /// The response.
-      HTTPServerResponse _response;
-
-      /// The route.
-      Route _route;
+      /// The client.
+      HttpClient _client;
 
       /// The root path.
       string _rootPath;
@@ -71,21 +63,18 @@ static if (!isWebApi)
       /**
       * Creates a new view.
       * Params:
-      *   request =   The request of the view.
-      *   response =  The response of the view.
+      *   client =    The client.
       *   name =      The name of the view.
-      *   route =     The route of the view.
       */
-      this(HTTPServerRequest request, HTTPServerResponse response,
-        string name, Route route)
+      this(HttpClient client, string name)
       {
-        _request = request;
-        _response = response;
+        import diamond.errors.checks;
+        
+        _client = enforceInput(client, "Cannot create a view without an associated client.");
         _name = name;
-        _route = route;
 
         _placeHolders["doctype"] = "<!DOCTYPE html>";
-        _placeHolders["defaultRoute"] = _route.name;
+        _placeHolders["defaultRoute"] = _client.route.name;
       }
     }
     else
@@ -122,22 +111,19 @@ static if (!isWebApi)
         /// Gets a boolean determining whether the view can be cached or not.
         bool cached() { return _cached; }
 
-        /// Gets the request.
-        HTTPServerRequest httpRequest() { return _request; }
-
-        /// Gets the response.
-        HTTPServerResponse httpResponse() { return _response; }
+        /// Gets the client.
+        HttpClient client() { return _client; }
 
         /// Gets the method.
-        HTTPMethod httpMethod() { return _request.method; }
+        HttpMethod httpMethod() { return _client.method; }
 
         /// Gets the route.
-        Route route() { return _route; }
+        Route route() { return _client.route; }
 
         /// Gets a boolean determining whether the route is the default route or not.
         bool isDefaultRoute()
         {
-          return !_route.action || !route.action.length;
+          return !route.action || !route.action.length;
         }
 
         /// Gets the root path.
@@ -151,7 +137,7 @@ static if (!isWebApi)
           // This makes sure that it's not retrieving the page's route, but the requests.
           // It's useful in terms of a view redirecting to another view internally.
           // Since the redirected view will have the route of the redirection and not the request.
-          scope auto path = httpRequest.path == "/" ? "default" : httpRequest.path[1 .. $];
+          scope auto path = client.path == "/" ? "default" : client.path[1 .. $];
           scope auto route = path.split("/").filter!(p => p && p.strip().length).array;
 
           if (!route || route.length <= 1)
@@ -363,7 +349,7 @@ static if (!isWebApi)
 
         static if (isWebServer)
         {
-          mixin("return cast(view_" ~ name ~ ")getView(_request, _response, new Route(name), checkRoute);");
+          mixin("return cast(view_" ~ name ~ ")getView(_client, new Route(name), checkRoute);");
         }
         else
         {
@@ -386,7 +372,7 @@ static if (!isWebApi)
 
         static if (isWebServer)
         {
-          return getView(this.httpRequest, this.httpResponse, new Route(name), checkRoute);
+          return getView(_client, new Route(name), checkRoute);
         }
         else
         {
@@ -474,7 +460,7 @@ static if (!isWebApi)
         /// Clears the current csrf token. This is recommended before generating CSRF token fields.
         void clearCSRFToken()
         {
-          CSRF.clearCSRFToken(httpRequest, httpResponse);
+          CSRF.clearCSRFToken(_client);
         }
 
         /**
@@ -496,7 +482,7 @@ static if (!isWebApi)
             name = "formToken_" ~ name;
           }
 
-          auto csrfToken = CSRF.generateCSRFToken(httpRequest, httpResponse);
+          auto csrfToken = CSRF.generateCSRFToken(_client);
 
           append
           (

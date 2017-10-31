@@ -18,8 +18,6 @@ static if (!isWebApi)
 
     static if (isWebServer)
     {
-      import vibe.d : HTTPServerRequest, HTTPServerResponse;
-
       import diamond.http;
 
       /**
@@ -30,8 +28,7 @@ static if (!isWebApi)
       string generateGetView()
       {
         string getViewMixin = "
-          View getView(HTTPServerRequest request, HTTPServerResponse response,
-            Route route, bool checkRoute)
+          View getView(HttpClient client, Route route, bool checkRoute)
           {
             auto viewName =
               routableViews.get(route.name, checkRoute ? null : route.name);
@@ -52,7 +49,8 @@ static if (!isWebApi)
           getViewMixin ~= format(q{
             case "%s":
             {
-              return new view_%s(request, response, "%s", route);
+              client.route = route;
+              return new view_%s(client, "%s");
             }
           }, viewName, viewName, viewName);
         }

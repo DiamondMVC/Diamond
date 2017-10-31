@@ -22,8 +22,7 @@ static if (isWeb)
 
   import vibe.d : HTTPServerRequestDelegateS, HTTPServerSettings, HTTPServerRequest,
                   HTTPServerResponse, HTTPServerErrorInfo, listenHTTP,
-                  HTTPStatusException, HTTPStatus,
-                  HTTPMethod,
+                  HTTPMethod, HTTPStatus, HTTPStatusException,
                   serveStaticFiles;
 
   /// Entry point for the web application.
@@ -34,10 +33,10 @@ static if (isWeb)
       loadWebConfig();
 
       defaultPermission = true;
-      requirePermissionMethod(HTTPMethod.GET, PermissionType.readAccess);
-      requirePermissionMethod(HTTPMethod.POST, PermissionType.writeAccess);
-      requirePermissionMethod(HTTPMethod.PUT, PermissionType.updateAccess);
-      requirePermissionMethod(HTTPMethod.DELETE, PermissionType.deleteAccess);
+      requirePermissionMethod(HttpMethod.GET, PermissionType.readAccess);
+      requirePermissionMethod(HttpMethod.POST, PermissionType.writeAccess);
+      requirePermissionMethod(HttpMethod.PUT, PermissionType.updateAccess);
+      requirePermissionMethod(HttpMethod.DELETE, PermissionType.deleteAccess);
 
       import diamond.extensions;
       mixin ExtensionEmit!(ExtensionType.applicationStart, q{
@@ -162,72 +161,69 @@ static if (isWeb)
   {
     try
     {
-      validateGlobalRestrictedIPs(request);
+      auto client = new HttpClient(request, response, new Route(request));
 
-      createSession(request, response);
+      validateGlobalRestrictedIPs(client);
 
       import diamond.extensions;
       mixin ExtensionEmit!(ExtensionType.httpRequest, q{
-        if (!{{extensionEntry}}.handleRequest(request, response))
+        if (!{{extensionEntry}}.handleRequest(client))
         {
           return;
         }
       });
       emitExtension();
 
-      if (webSettings && !webSettings.onBeforeRequest(request, response))
+      if (webSettings && !webSettings.onBeforeRequest(client))
       {
-        throw new HTTPStatusException(HTTPStatus.badRequest);
+        client.error(HttpStatus.badRequest);
       }
-
-      auto route = new Route(request);
 
       if (hasRoles)
       {
-        validateAuthentication(request, response);
-
-        auto role = getRole(request);
-
         import std.array : split;
 
-        auto hasRootAccess = hasAccess(role, request.method, route.name.split(webConfig.specialRouteSplitter)[0]);
+        auto hasRootAccess = hasAccess(
+          client.role, client.method,
+          client.route.name.split(webConfig.specialRouteSplitter)[0]
+        );
 
         if
         (
           !hasRootAccess ||
           (
-            route.action &&
-            !hasAccess(role, request.method, route.name ~ "/" ~ route.action)
+            client.route.action &&
+            !hasAccess(client.role, client.method, client.route.name ~ "/" ~ client.route.action)
           )
         )
         {
-          throw new HTTPStatusException(HTTPStatus.unauthorized);
+          client.error(HttpStatus.unauthorized);
         }
       }
 
-      auto staticFile = _staticFiles.get(route.name, null);
+      auto staticFile = _staticFiles.get(client.route.name, null);
 
       if (staticFile)
       {
         import diamond.init.files;
-        handleStaticFiles(request, response, route, staticFile);
+        handleStaticFiles(client, staticFile);
         return;
       }
 
       static if (isWebServer)
       {
         import diamond.init.server;
-        handleWebServer(request, response, route);
+        handleWebServer(client);
       }
       else
       {
         import diamond.init.api;
-        handleWebApi(request, response, route);
+        handleWebApi(client);
       }
 
       if (webSettings)
       {
-        webSettings.onAfterRequest(request, response);
+        webSettings.onAfterRequest(client);
       }
     }
     catch (Throwable t)

@@ -33,7 +33,7 @@ static if (isWeb)
     * Params:
     *   url = The url of the route.
     */
-    this(string url)
+    package(diamond) this(string url)
     {
       enforce(url && url.length, "Invalid route url.");
 

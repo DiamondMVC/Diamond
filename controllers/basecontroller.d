@@ -16,8 +16,7 @@ static if (isWeb)
   import std.array : array;
   import std.string : strip;
 
-  import vibe.d : HTTPServerRequest, HTTPServerResponse, HTTPMethod;
-
+  import diamond.http;
   import diamond.controllers.action;
   import diamond.controllers.status;
   import diamond.errors;
@@ -140,7 +139,7 @@ static if (isWeb)
     /// Alias for the action entry.
     alias ActionEntry = Action[string];
     /// Alias for the method entry.
-    alias MethodEntry = ActionEntry[HTTPMethod];
+    alias MethodEntry = ActionEntry[HttpMethod];
 
     /// Collection of actions.
     public MethodEntry _actions;
@@ -166,7 +165,7 @@ static if (isWeb)
     *     action =    The action name.
     *     fun =       The controller action associated with the mapping.
     */
-    void mapAction(HTTPMethod method, string action, Action fun)
+    void mapAction(HttpMethod method, string action, Action fun)
     {
       _actions[method][action] = fun;
     }
@@ -178,7 +177,7 @@ static if (isWeb)
     *     action =    The action name.
     *     d =       The controller action associated with the mapping.
     */
-    void mapAction(HTTPMethod method, string action, Status delegate() d)
+    void mapAction(HttpMethod method, string action, Status delegate() d)
     {
       _actions[method][action] = new Action(d);
     }
@@ -190,7 +189,7 @@ static if (isWeb)
     *     action =    The action name.
     *     f =       The controller action associated with the mapping.
     */
-    void mapAction(HTTPMethod method, string action, Status function() f)
+    void mapAction(HttpMethod method, string action, Status function() f)
     {
       _actions[method][action] = new Action(f);
     }
@@ -255,22 +254,20 @@ static if (isWeb)
       _mandatoryAction = new Action(f);
     }
 
+    /**
+    * Gets a value from the passed data.
+    * Params:
+    *   name =          The name of the value to get.
+    *   defaultValue =  The default value.
+    * Returns:
+    *   Returns the value if found, else the default value.
+    */
     T get(T)(string name, T defaultValue = T.init)
     {
       Variant emptyVariant;
       auto value = _data.get(name, emptyVariant);
 
       return value.hasValue ? value.get!T : defaultValue;
-    }
-
-    T get(T)(size_t index, T defaultValue = T.init)
-    {
-      if (index < 0 || index >= view.route.params.length)
-      {
-        return defaultValue;
-      }
-
-      return view.route.get!T(index);
     }
   }
 }

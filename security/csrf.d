@@ -9,9 +9,7 @@ import diamond.core.apptype;
 
 static if (isWeb)
 {
-  import vibe.d : HTTPServerRequest, HTTPServerResponse;
-
-  import diamond.http.sessions;
+  import diamond.http;
   import diamond.errors.checks;
 
   /// The key of the token's storage in the session.
@@ -20,14 +18,13 @@ static if (isWeb)
   /**
   * Generates a CSRF token.
   * Params:
-  *   request = The request.
-  *   response = The response.
+  *   client = The client.
   * Returns:
   *   The generated csrf token. If a token already exist, the existing token is returned.
   */
-  string generateCSRFToken(HTTPServerRequest request, HTTPServerResponse response)
+  string generateCSRFToken(HttpClient client)
   {
-    auto token = getSessionValue(request, response, CSRFTokenKey);
+    auto token = client.session.getValue(CSRFTokenKey);
 
     if (token)
     {
@@ -38,7 +35,7 @@ static if (isWeb)
 
     token = genericToken.generate()[0 .. 64];
 
-    setSessionValue(request, response, CSRFTokenKey, token);
+    client.session.setValue(CSRFTokenKey, token);
 
     return token;
   }
@@ -46,19 +43,17 @@ static if (isWeb)
   /**
   * Clears the csrf token.
   * Params:
-  *   request =  The request.
-  *   response = The response.
+  *   client =  The client.
   */
-  void clearCSRFToken(HTTPServerRequest request, HTTPServerResponse response)
+  void clearCSRFToken(HttpClient client)
   {
-    removeSessionValue(request, response, CSRFTokenKey);
+    client.session.removeValue(CSRFTokenKey);
   }
 
   /**
   * Checks whether a token is a valid csrf token for the request.
   * Params:
-  *   request =     The request.
-  *   response =    The response.
+  *   client =     The client.
   *   token =       The token to validate.
   *   removeToken = Boolean determining whether the token should be cleared after validation.
   * Returns:
@@ -66,17 +61,17 @@ static if (isWeb)
   */
   bool isValidCSRFToken
   (
-    HTTPServerRequest request, HTTPServerResponse response,
+    HttpClient client,
     string token, bool removeToken
   )
   {
     enforce(token && token.length == 64, "Invalid csrf token.");
 
-    auto csrfToken = getSessionValue(request, response, CSRFTokenKey);
+    auto csrfToken = client.session.getValue(CSRFTokenKey);
 
     if (csrfToken && removeToken)
     {
-      removeSessionValue(request, response, CSRFTokenKey);
+      client.session.removeValue(CSRFTokenKey);
     }
 
     return csrfToken !is null && token == csrfToken;

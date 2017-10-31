@@ -64,20 +64,18 @@ static if (isWeb)
 
   static if (isWebApi)
   {
-    import diamond.controllers.basecontroller;
     /// Wrapper for a controller's generate action
     class GenerateControllerAction
     {
       import diamond.controllers.basecontroller;
-      import diamond.http : Route;
-      import vibe.d : HTTPServerRequest, HTTPServerResponse;
+      import diamond.http;
 
       private:
       /// The associated delegate.
-      BaseController delegate(HTTPServerRequest,HTTPServerResponse,Route) _delegate;
+      BaseController delegate(HttpClient) _delegate;
 
       /// The associated function pointer.
-      BaseController function(HTTPServerRequest,HTTPServerResponse,Route) _functionPointer;
+      BaseController function(HttpClient) _functionPointer;
 
       public:
       /**
@@ -85,7 +83,7 @@ static if (isWeb)
       *   Params:
       *       d = The delegate.
       */
-      this(BaseController delegate(HTTPServerRequest,HTTPServerResponse,Route) d)
+      this(BaseController delegate(HttpClient) d)
       {
           _delegate = d;
       }
@@ -95,7 +93,7 @@ static if (isWeb)
       *   Params:
       *       f = The function pointer..
       */
-      this(BaseController function(HTTPServerRequest,HTTPServerResponse,Route) f)
+      this(BaseController function(HttpClient) f)
       {
           _functionPointer = f;
       }
@@ -103,21 +101,19 @@ static if (isWeb)
       /**
       *   Operator overload for using the wrapper as a call.
       *   Params:
-      *     request =   The request
-      *     response =  The response
-      *     route =     The route
+      *     client =   The client
       *   Returns:
       *     The controller.
       */
-      BaseController opCall(HTTPServerRequest request, HTTPServerResponse response, Route route)
+      BaseController opCall(HttpClient client)
       {
           if (_delegate)
           {
-            return _delegate(request, response, route);
+            return _delegate(client);
           }
           else if (_functionPointer)
           {
-            return _functionPointer(request, response, route);
+            return _functionPointer(client);
           }
 
           return null;

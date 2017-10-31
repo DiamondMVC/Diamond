@@ -17,6 +17,8 @@ static if (isWeb)
   {
     import vibe.d : HTTPServerRequest, HTTPServerResponse, HTTPServerErrorInfo;
 
+    import diamond.http.client;
+
     protected:
     /// Creates a new instance of the web settings.
     this() { }
@@ -28,20 +30,18 @@ static if (isWeb)
     /*
     * Function invoked before a request has been processed.
     * Params:
-    *   request =  The request to be processed.
-    *   response = The response.
+    *   client =  The client.
     * Returns:
     *   True if the request can be processed, false otherwise.
     */
-    abstract bool onBeforeRequest(HTTPServerRequest request, HTTPServerResponse response);
+    abstract bool onBeforeRequest(HttpClient client);
 
     /*
     * Function invoked after a request has been processed successfully.
     * Params:
-    *   request =  The request that were processed.
-    *   response = The response.
+    *   client =  The client.
     */
-    abstract void onAfterRequest(HTTPServerRequest request, HTTPServerResponse response);
+    abstract void onAfterRequest(HttpClient client);
 
     /*
     * Function invoked when an error has been encountered.
@@ -51,8 +51,11 @@ static if (isWeb)
     *   response =    The response.
     *   error =       The error information (this can be null)
     */
-    abstract void onHttpError(Throwable thrownError, HTTPServerRequest request,
-      HTTPServerResponse response, HTTPServerErrorInfo error);
+    abstract void onHttpError
+    (
+      Throwable thrownError, HTTPServerRequest request,
+      HTTPServerResponse response, HTTPServerErrorInfo error
+    );
 
     /*
     * Function invoked when a page or an action cannot be found.
@@ -66,10 +69,9 @@ static if (isWeb)
     /*
     * Function invoked before a static file is processed.
     * Params:
-    *   request =  The request.
-    *   response = The response.
+    *   client =  The client.
     */
-    abstract void onStaticFile(HTTPServerRequest request, HTTPServerResponse response);
+    abstract void onStaticFile(HttpClient client);
   }
 
   @property

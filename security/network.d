@@ -9,53 +9,51 @@ import diamond.core.apptype;
 
 static if (isWeb)
 {
-  import vibe.d : HTTPServerRequest, HTTPStatusException, HTTPStatus;
-
   import diamond.core.webconfig;
+  import diamond.http;
 
   /**
-  * Validates the request ip against the "restrictedIPs" field in the web configuration file.
+  * Validates the client ip against the "restrictedIPs" field in the web configuration file.
   * Params:
-  *   request = The request to validate the ip of.
+  *   client = The client to validate the ip of.
   */
-  void validateRestrictedIPs(HTTPServerRequest request)
+  void validateRestrictedIPs(HttpClient client)
   {
     if (webConfig.restrictedIPs)
     {
-      validateRestrictedIPs(webConfig.restrictedIPs, request);
+      validateRestrictedIPs(webConfig.restrictedIPs, client);
     }
   }
 
   /**
-  * Validates the request ip against the "globalRestrictedIPs" field in the web configuration file.
+  * Validates the client ip against the "globalRestrictedIPs" field in the web configuration file.
   * Params:
-  *   request = The request to validate the ip of.
+  *   client = The client to validate the ip of.
   */
-  void validateGlobalRestrictedIPs(HTTPServerRequest request)
+  void validateGlobalRestrictedIPs(HttpClient client)
   {
     if (webConfig.globalRestrictedIPs)
     {
-      validateRestrictedIPs(webConfig.globalRestrictedIPs, request);
+      validateRestrictedIPs(webConfig.globalRestrictedIPs, client);
     }
   }
 
   /**
-  * Validates the request ip against the passed restricted ips.
+  * Validates the client ip against the passed restricted ips.
   * Params:
   *   restrictedIPs = The restricted ips to validate with.
-  *   request =       The request to validate the ip of.
+  *   client =       The client to validate the ip of.
   */
   private void validateRestrictedIPs
   (
-    const(string[]) restrictedIPs, HTTPServerRequest request
+    const(string[]) restrictedIPs, HttpClient client
   )
   {
     bool allowed;
-    auto clientIp = request.clientAddress.toAddressString();
 
     foreach (ip; restrictedIPs)
     {
-      if (clientIp == ip)
+      if (client.ipAddress == ip)
       {
         allowed = true;
         break;
@@ -64,7 +62,7 @@ static if (isWeb)
 
     if (!allowed)
     {
-      throw new HTTPStatusException(HTTPStatus.unauthorized);
+      client.error(HttpStatus.unauthorized);
     }
   }
 }

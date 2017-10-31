@@ -9,38 +9,29 @@ import diamond.core.apptype;
 
 static if (isWebApi)
 {
-  import vibe.d : HTTPServerRequest, HTTPServerResponse,
-                  HTTPStatusException, HTTPStatus;
-
   import diamond.http;
 
   /**
   * The handler for a webapi request.
   * Params:
-  *   request =   The request.
-  *   response =  The response.
-  *   route =     The route.
+  *   client = The client.
   */
-  void handleWebApi
-  (
-    HTTPServerRequest request, HTTPServerResponse response,
-    Route route
-  )
+  void handleWebApi(HttpClient client)
   {
     import diamond.init.web : getControllerAction;
 
-    auto controllerAction = getControllerAction(route.name);
+    auto controllerAction = getControllerAction(client.route.name);
 
     if (!controllerAction)
     {
-      throw new HTTPStatusException(HTTPStatus.NotFound);
+      client.notFound();
     }
 
-    auto status = controllerAction(request, response, route).handle();
+    auto status = controllerAction(client).handle();
 
     if (status == Status.notFound)
     {
-      throw new HTTPStatusException(HTTPStatus.NotFound);
+      client.notFound();
     }
     else if (status != Status.end)
     {
@@ -48,7 +39,7 @@ static if (isWebApi)
 
       foreach (headerKey,headerValue; webConfig.defaultHeaders.general)
       {
-        response.headers[headerKey] = headerValue;
+        client.rawResponse.headers[headerKey] = headerValue;
       }
     }
   }
