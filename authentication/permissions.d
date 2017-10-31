@@ -9,9 +9,8 @@ import diamond.core.apptype;
 
 static if (isWeb)
 {
-  import vibe.d : HTTPMethod;
-
   import diamond.http;
+  import diamond.http.method; // Bug: Cannot get acess to members from this module through "diamond.http"
   import diamond.authentication.roles;
 
   /// Enumeration of permission types.
@@ -82,7 +81,7 @@ static if (isWeb)
   }
 
   /// The permissions for http methods.
-  private static __gshared PermissionType[][HTTPMethod] permissions;
+  private static __gshared PermissionType[][HttpMethod] permissions;
 
   /// Boolean for the default permission access.
   public static __gshared bool defaultPermission;
@@ -96,7 +95,7 @@ static if (isWeb)
   *   method =     The method.
   *   permission = The permission.
   */
-  void unrequirePermissionMethod(HTTPMethod method, PermissionType permission)
+  void unrequirePermissionMethod(HttpMethod method, PermissionType permission)
   {
     import std.algorithm : filter;
     import std.array : array;
@@ -110,7 +109,7 @@ static if (isWeb)
   *   method =     The method.
   *   permission = The permission.
   */
-  void requirePermissionMethod(HTTPMethod method, PermissionType permission)
+  void requirePermissionMethod(HttpMethod method, PermissionType permission)
   {
     permissions[method] ~= permission;
   }
@@ -124,7 +123,7 @@ static if (isWeb)
   * Returns:
   *   Returns true if the role has access, false otherwise.
   */
-  bool hasAccess(Role role, HTTPMethod method, string resource)
+  bool hasAccess(Role role, HttpMethod method, string resource)
   {
     bool access = true;
     auto accessPermissions = permissions.get(method, defaultPermissions);

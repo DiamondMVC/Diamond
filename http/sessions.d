@@ -11,83 +11,21 @@ static if (isWeb)
 {
   import core.time : msecs, minutes;
   import std.datetime : Clock, SysTime;
+  import std.variant : Variant;
 
-  import vibe.d : HTTPServerRequest, HTTPServerResponse, runTask;
+  import vibe.d : runTask;
 
-  import diamond.http.cookies;
-  import diamond.errors.checks;
   import diamond.core.webconfig;
   import diamond.core.collections;
+  import diamond.errors.checks;
+  import diamond.http.cookies;
+  import diamond.http.client;
 
   /// The name of the session cookie.
   private static const __gshared sessionCookieName = "__D_SESSION";
 
-  /// Wrapper for a http session.
-  final class HttpSession
-  {
-    private:
-    /// The id of the session.
-    string _id;
-
-    /// The ip address of the session.
-    string _ipAddress;
-
-    /// The time when the session ends.
-    SysTime _endTime;
-
-    final:
-    @property
-    {
-      /// Sets the id.
-      void id(string newId)
-      {
-        _id = newId;
-      }
-
-      /// Sets the ip address.
-      void ipAddress(string newIPAddress)
-      {
-        _ipAddress = newIPAddress;
-      }
-
-      /// Sets the time when the session ends.
-      void endTime(SysTime newEndTime)
-      {
-        _endTime = newEndTime;
-      }
-    }
-
-    /// The value os the session.
-    string[string] values;
-
-    /// Cached views.
-    HashSet!string cachedViews;
-
-    /// The directory for the session view cache.
-    string directory;
-
-    /// Creates a new http session instance.
-    this()
-    {
-      cachedViews = new HashSet!string;
-    }
-
-    public:
-    @property
-    {
-      /// Gets the id.
-      string id() { return _id; }
-
-      /// Gets the ip address.
-      string ipAddress() { return _ipAddress; }
-
-      /// Gets the time when the session ends.
-      SysTime endTime() { return _endTime; }
-    }
-  }
-
   /// The collection of currently stored sessions.
-  private __gshared HttpSession[string] _sessions;
+  private __gshared InternalHttpSession[string] _sessions;
 
   /// The next session group id.
   private size_t nextSessionGroupId;
@@ -95,257 +33,271 @@ static if (isWeb)
   /// The sessions met.
   private size_t sessionsMet;
 
+  /// Wrapper for the internal http session.
+  private final class InternalHttpSession
+  {
+    /// The id of the session.
+    string id;
+
+    /// The ip address of the session.
+    string ipAddress;
+
+    /// The time when the session ends.
+    SysTime endTime;
+
+    /// The value os the session.
+    Variant[string] values;
+
+    /// Cached views.
+    HashSet!string cachedViews;
+
+    /// The directory for the session view cache.
+    string directory;
+
+    final:
+    /// Creates a new http session instance.
+    this()
+    {
+      cachedViews = new HashSet!string;
+    }
+  }
+
+  /// Wrapper around a http session.
+  final class HttpSession
+  {
+    private:
+    /// The client.
+    HttpClient _client;
+
+    /// The session.
+    InternalHttpSession _session;
+
+    /**
+    * Creates a new http session.
+    * Params:
+    *   client =  The client.
+    *   session = The internal http session.
+    */
+    this(HttpClient client, InternalHttpSession session)
+    {
+      _client = enforceInput(client, "Cannot create a session without a client.");
+      _session = enforceInput(session, "Cannot create a session without an internal session.");
+    }
+
+    public:
+    /**
+    * Gets a session value.
+    * Params:
+    *   name =         The name of the value to retrieve.
+    *   defaultValue = The default value to return if no value could be retrieved.
+    * Returns:
+    *   Returns the value retrieved or defaultValue if not found.
+    */
+    T getValue(T = string)(string name, T defaultValue = null)
+    {
+      Variant value = _session.values.get(name, Variant.init);
+
+      if (!value.hasValue)
+      {
+        return defaultValue;
+      }
+
+      return value.get!T;
+    }
+
+    /**
+    * Sets a session value.
+    * Params:
+    *   name =      The name of the value.
+    *   value =     The value.
+    */
+    void setValue(T = string)(string name, T value)
+    {
+      _session.values[name] = value;
+    }
+
+    /**
+    * Removes a session value.
+    * Params:
+    *   name = The name of the value to remove.
+    */
+    void removeValue(string name)
+    {
+      if (_session.values && name in _session.values)
+      {
+        _session.values.remove(name);
+      }
+    }
+
+    /**
+    * Caches a view in the session.
+    * Params:
+    *   viewName = The view to cache.
+    *   result =   The result of the view to cache.
+    */
+    void cacheView(string viewName, string result)
+    {
+      if (!webConfig.shouldCacheViews)
+      {
+        return;
+      }
+
+      _session.cachedViews.add(viewName);
+
+      import std.file : exists, write, mkdirRecurse;
+
+      if (!exists(_session.directory))
+      {
+        mkdirRecurse(_session.directory);
+      }
+
+      write(_session.directory ~ "/" ~ viewName ~ ".html", result);
+    }
+
+    /**
+    * Gets a view from the session cache.
+    * Params:
+    *   viewName = The view to retrieve.
+    * Returns:
+    *   The result of the cached view if found, null otherwise.
+    */
+    string getCachedView(string viewName)
+    {
+      if (!webConfig.shouldCacheViews)
+      {
+        return null;
+      }
+
+      import std.file : exists, readText;
+
+      if (_session.cachedViews[viewName])
+      {
+        auto sessionViewFile = _session.directory ~ "/" ~ viewName ~ ".html";
+
+        if (exists(sessionViewFile))
+        {
+          return readText(sessionViewFile);
+        }
+      }
+
+      return null;
+    }
+
+    /**
+    * Updates the session end time.
+    * Params:
+    *   newEndTime = The new end time.
+    */
+    void updateEndTime(SysTime newEndTime)
+    {
+      _session.endTime = newEndTime;
+    }
+
+    /// Clears the session values for a session.
+    void clearValues()
+    {
+      _session.values.clear();
+    }
+  }
+
   /**
   * Gets a session.
   * Params:
-  *   request =                The request.
-  *   response =               The response.
+  *   client =                 The client
   *   createSessionIfInvalid = Boolean determining whether a new session should be created if the session is invalid.
   * Returns:
   *   Returns the session.
   */
-  private HttpSession getSession
+  package(diamond.http) HttpSession getSession
   (
-    HTTPServerRequest request, HTTPServerResponse response,
+    HttpClient client,
     bool createSessionIfInvalid = true
   )
   {
-    import std.variant : Variant;
     // Checks whether the request has already got its session assigned.
-    Variant cachedSession = request.context.get(sessionCookieName);
+    auto cachedSession = client.getContext!HttpSession(sessionCookieName);
 
-    if (cachedSession.hasValue)
+    if (cachedSession)
     {
-      return cachedSession.get!HttpSession;
+      return cachedSession;
     }
 
-    auto sessionId = getCookie(request, sessionCookieName);
+    auto sessionId = client.cookies.get(sessionCookieName);
     auto session = _sessions.get(sessionId, null);
 
     if (createSessionIfInvalid &&
       (
         !session ||
-        session.ipAddress != request.clientAddress.toAddressString() ||
+        session.ipAddress != client.ipAddress ||
         Clock.currTime() >= session.endTime
       )
     )
     {
-      response.removeCookie(sessionCookieName);
+      client.cookies.remove(sessionCookieName);
 
-      return createSession(request, response);
+      return createSession(client);
     }
 
-    request.context[sessionCookieName] = session;
-
-    return session;
-  }
-
-  /**
-  * Gets a session value.
-  * Params:
-  *   request =   The request.
-  *   response =  The response.
-  *   name =      The name of the value to retrieve.
-  * Returns:
-  *   Returns the value retrieved or defaultValue if not found.
-  */
-  string getSessionValue(HTTPServerRequest request, HTTPServerResponse response, string name, string defaultValue = null)
-  {
-    enforce(request, "You must specify the request to get the session value from.");
-    enforce(response, "You must specify the response to get the session value from.");
-
-    auto session = getSession(request, response);
-
-    return session.values.get(name, defaultValue);
-  }
-
-  /**
-  * Sets a session value.
-  * Params:
-  *   request =   The request.
-  *   response =  The response.
-  *   name =      The name of the value.
-  *   value =     The value.
-  */
-  void setSessionValue
-  (
-    HTTPServerRequest request, HTTPServerResponse response,
-    string name, string value
-  )
-  {
-    enforce(request, "You must specify the request to set the session value for.");
-    enforce(response, "You must specify the response to set the session value for.");
-
-    auto session = getSession(request, response);
-
-    session.values[name] = value;
-  }
-
-  /**
-  * Removes a session value.
-  * Params:
-  *   request =   The request.
-  *   response =  The response.
-  *   name =      The name of the value to remove.
-  */
-  void removeSessionValue
-  (
-    HTTPServerRequest request, HTTPServerResponse response,
-    string name
-  )
-  {
-    enforce(request, "You must specify the request to set the session value for.");
-    enforce(response, "You must specify the response to set the session value for.");
-
-    auto session = getSession(request, response);
-
-    if (session.values && name in session.values)
+    if (!session)
     {
-      session.values.remove(name);
-    }
-  }
-
-  /**
-  * Caches a view in the session.
-  * Params:
-  *   request =  The request.
-  *   response = The response.
-  *   viewName = The view to cache.
-  *   result =   The result of the view to cache.
-  */
-  void cacheViewInSession
-  (
-    HTTPServerRequest request, HTTPServerResponse response,
-    string viewName, string result
-  )
-  {
-    enforce(request, "You must specify the request to cache the view for.");
-    enforce(response, "You must specify the response to cache the view for.");
-
-    auto session = getSession(request, response);
-
-    session.cachedViews.add(viewName);
-
-    import std.file : exists, write, mkdirRecurse;
-
-    if (!exists(session.directory))
-    {
-      mkdirRecurse(session.directory);
+      return null;
     }
 
-    write(session.directory ~ "/" ~ viewName ~ ".html", result);
-  }
+    auto httpSession = new HttpSession(client, session);
+    client.addContext(sessionCookieName, httpSession);
 
-  /**
-  * Gets a view from the session cache.
-  * Params:
-  *   request =  The request.
-  *   response = The response.
-  *   viewName = The view to retrieve.
-  * Returns:
-  *   The result of the cached view if found, null otherwise.
-  */
-  string getCachedViewFromSession
-  (
-    HTTPServerRequest request, HTTPServerResponse response,
-    string viewName
-  )
-  {
-    enforce(request, "You must specify the request to get the cached view from.");
-    enforce(response, "You must specify the response to get the cached view from.");
-
-    auto session = getSession(request, response);
-
-    import std.file : exists, readText;
-
-    if (session.cachedViews[viewName])
-    {
-      auto sessionViewFile = session.directory ~ "/" ~ viewName ~ ".html";
-
-      if (exists(sessionViewFile))
-      {
-        return readText(sessionViewFile);
-      }
-    }
-
-    return null;
+    return httpSession;
   }
 
   /**
   * Creates a http session.
   * Params:
-  *   request =   The request.
-  *   response =  The response.
+  *   client =  The client.
   * Returns:
   *   Returns the session.
   */
-  HttpSession createSession(HTTPServerRequest request, HTTPServerResponse response)
+  HttpSession createSession(HttpClient client)
   {
-    enforce(request, "You must specify a request to create the session for.");
-    enforce(response, "You must specify a response to create the session for.");
+    auto clientSession = getSession(client, false);
 
-    auto session = getSession(request, response, false);
-
-    if (session)
+    if (clientSession)
     {
-      return session;
+      return clientSession;
     }
 
-    session = new HttpSession;
-
-    sessionsMet++;
-
-    if (sessionsMet >= 1000)
-    {
-      sessionsMet = 0;
-      nextSessionGroupId++;
-    }
+    auto session = new InternalHttpSession;
 
     import diamond.security.tokens.sessiontoken;
 
-    session.ipAddress = request.clientAddress.toAddressString();
+    session.ipAddress = client.ipAddress;
     session.id = sessionToken.generate(session.ipAddress);
     _sessions[session.id] = session;
 
-    import std.conv : to;
+    if (webConfig.shouldCacheViews)
+    {
+      import std.conv : to;
 
-    session.directory = "sessions/" ~ to!string(nextSessionGroupId) ~ "/" ~ session.id[$-52 .. $] ~ "/";
+      sessionsMet++;
 
-    response.createCookie(sessionCookieName, session.id, webConfig.sessionAliveTime * 60);
+      if (sessionsMet >= 1000)
+      {
+        sessionsMet = 0;
+        nextSessionGroupId++;
+      }
+
+      session.directory = "sessions/" ~ to!string(nextSessionGroupId) ~ "/" ~ session.id[$-52 .. $] ~ "/";
+    }
+
+    client.cookies.create(sessionCookieName, session.id, webConfig.sessionAliveTime * 60);
     session.endTime = Clock.currTime();
     session.endTime = session.endTime + webConfig.sessionAliveTime.minutes;
 
-    request.context[sessionCookieName] = session;
+    clientSession = new HttpSession(client, session);
+    client.addContext(sessionCookieName, clientSession);
 
-    runTask((HttpSession session) { invalidateSession(session, 3); }, session);
+    runTask((InternalHttpSession session) { invalidateSession(session, 3); }, session);
 
-    return session;
-  }
-
-  /**
-  * Updates the session end time.
-  * Params:
-  *   request =    The request.
-  *   response =   The response.
-  *   newEndTime = The new end time.
-  */
-  void updateSessionEndTime(HTTPServerRequest request, HTTPServerResponse response, SysTime newEndTime)
-  {
-    auto session = enforceInput(getSession(request, response, false), "Found no session.");
-    session.endTime = newEndTime;
-  }
-
-  /**
-  * Clears the session values for a session.
-  * Params:
-  *   request =  The request.
-  *   response = The response.
-  */
-  void clearSessionValues(HTTPServerRequest request, HTTPServerResponse response)
-  {
-    auto session = enforceInput(getSession(request, response), "No session found.");
-
-    session.values.clear();
+    return clientSession;
   }
 
   /**
@@ -355,7 +307,7 @@ static if (isWeb)
   *   retries = The amount of retries left, if it failed to remove the session.
   *   isRetry = Boolean determining whether the invalidation is a retry or not.
   */
-  private void invalidateSession(HttpSession session, size_t retries, bool isRetry = false)
+  private void invalidateSession(InternalHttpSession session, size_t retries, bool isRetry = false)
   {
     import vibe.core.core : sleep;
 
@@ -368,20 +320,23 @@ static if (isWeb)
       // The endtime differs from the default, so we cycle once more.
       if (Clock.currTime() < session.endTime)
       {
-        runTask((HttpSession session) { invalidateSession(session, 3); }, session);
+        runTask((InternalHttpSession session) { invalidateSession(session, 3); }, session);
       }
       else
       {
-        try
+        if (webConfig.shouldCacheViews)
         {
-          import std.file : exists, rmdirRecurse;
-
-          if (exists(session.directory))
+          try
           {
-            rmdirRecurse(session.directory);
+            import std.file : exists, rmdirRecurse;
+
+            if (exists(session.directory))
+            {
+              rmdirRecurse(session.directory);
+            }
           }
+          catch (Throwable t) { }
         }
-        catch (Throwable t) { }
 
         _sessions.remove(session.id);
       }
@@ -390,7 +345,7 @@ static if (isWeb)
     {
       if (retries)
       {
-        runTask((HttpSession s, size_t r) { invalidateSession(s, r, true); }, session, retries--);
+        runTask((InternalHttpSession s, size_t r) { invalidateSession(s, r, true); }, session, retries--);
       }
     }
   }

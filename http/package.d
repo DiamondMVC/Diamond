@@ -8,6 +8,9 @@ module diamond.http;
 public
 {
   import diamond.http.route;
+  import diamond.http.method;
+  import diamond.http.status;
+  import diamond.http.client;
   import diamond.http.cookies;
   import diamond.http.sessions;
 }

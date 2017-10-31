@@ -15,4 +15,5 @@ public
   import diamond.core.collections;
   import diamond.core.senc;
   import diamond.core.string;
+  import diamond.core.traits;
 }

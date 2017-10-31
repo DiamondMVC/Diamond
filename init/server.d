@@ -9,31 +9,22 @@ import diamond.core.apptype;
 
 static if (isWebServer)
 {
-  import vibe.d : HTTPServerRequest, HTTPServerResponse,
-                  HTTPStatusException, HTTPStatus;
-
   import diamond.http;
 
   /**
   * The handler for a generic webserver request.
   * Params:
-  *   request =   The request.
-  *   response =  The response.
-  *   route =     The route.
+  *   client = The client.
   */
-  void handleWebServer
-  (
-    HTTPServerRequest request, HTTPServerResponse response,
-    Route route
-  )
+  void handleWebServer(HttpClient client)
   {
     import diamond.init.web : getView;
 
-    auto page = getView(request, response, route, true);
+    auto page = getView(client, client.route, true);
 
     if (!page)
     {
-      throw new HTTPStatusException(HTTPStatus.notFound);
+      client.notFound();
     }
 
     import diamond.core.webconfig;
@@ -42,33 +33,33 @@ static if (isWebServer)
 
     if (webConfig.shouldCacheViews && page.cached)
     {
-      pageResult = getCachedViewFromSession(request, response, page.name);
+      pageResult = client.session.getCachedView(page.name);
     }
 
     import diamond.core.webconfig;
 
     foreach (headerKey,headerValue; webConfig.defaultHeaders.general)
     {
-      response.headers[headerKey] = headerValue;
+      client.rawResponse.headers[headerKey] = headerValue;
     }
 
     if (!pageResult)
     {
       pageResult = page.generate();
 
-      if (pageResult && pageResult.length && webConfig.shouldCacheViews && page.cached)
+      if (webConfig.shouldCacheViews && pageResult && pageResult.length && page.cached)
       {
-        cacheViewInSession(request, response, page.name, pageResult);
+        client.session.cacheView(page.name, pageResult);
       }
     }
 
     if (pageResult && pageResult.length)
     {
-      response.bodyWriter.write(pageResult);
+      client.responseStream.write(pageResult);
     }
     else
     {
-      response.bodyWriter.write("\n");
+      client.responseStream.write("\n");
     }
   }
 }

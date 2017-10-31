@@ -9,99 +9,109 @@ import diamond.core.apptype;
 
 static if (isWeb)
 {
-  import vibe.d : HTTPServerRequest, HTTPServerResponse, Cookie;
+  import vibe.d : Cookie;
 
   import diamond.errors.checks;
   import diamond.core.senc;
+  import diamond.http.client;
 
-  /**
-  * Creates a cookie.
-  * Params:
-  *   response = The response to create a cookie for.
-  *   name =     The name of the cookie.
-  *   value =    The value of the cookie.
-  *   maxAge =   The max-age of the cookie. (Seconds the cookie will be alive.)
-  *   path =     The path of the cookie. (Default: "/")
-  */
-  void createCookie
-  (
-    HTTPServerResponse response,
-    string name, string value,
-    long maxAge,
-    string path = "/"
-  )
+  /// Wrapper around a http cookie collections.
+  final class HttpCookies
   {
-    enforce(response, "Cannot create a cookie without a response.");
+    private:
+    /// The client.
+    HttpClient _client;
 
-    auto cookie = new Cookie;
-    cookie.path = path;
-    cookie.maxAge = maxAge;
-    cookie.setValue(value, Cookie.Encoding.none);
+    public:
+    final:
+    /**
+    * Creates a new http cookie collection.
+    * Params:
+    *   client = The client.
+    */
+    package(diamond) this(HttpClient client)
+    {
+      _client = enforceInput(client, "Cannot create a cookie collection without a client.");
+    }
 
-    response.cookies[name] = cookie;
-  }
+    /**
+    * Creates a cookie.
+    * Params:
+    *   name =     The name of the cookie.
+    *   value =    The value of the cookie.
+    *   maxAge =   The max-age of the cookie. (Seconds the cookie will be alive.)
+    *   path =     The path of the cookie. (Default: "/")
+    */
+    void create
+    (
+      string name, string value,
+      long maxAge,
+      string path = "/"
+    )
+    {
+      auto cookie = new Cookie;
+      cookie.path = path;
+      cookie.maxAge = maxAge;
+      cookie.setValue(value, Cookie.Encoding.none);
 
-  /**
-  * Creates a cookie.
-  * Params:
-  *   response =  The response to create a cookie for.
-  *   name =      The name of the cookie.
-  *   buffer =    The buffer to encode into a SENC encoded cookie string.
-  *   maxAge =    The max-age of the cookie. (Seconds the cookie will be alive.)
-  *   path =      The path of the cookie. (Default: "/")
-  */
-  void createBufferedCookie
-  (
-    HTTPServerResponse response,
-    string name, ubyte[] buffer,
-    long maxAge,
-    string path = "/"
-  )
-  {
-    return createCookie(response, name, SENC.encode(buffer), maxAge, path);
-  }
+      _client.rawResponse.cookies[name] = cookie;
+    }
 
-  /**
-  * Gets a cookie.
-  * Params:
-  *   request = The request to get the cookie from.
-  *   name =    The name of the cookie.
-  * Returns:
-  *   Returns the cookie if found, null otherwise.
-  */
-  string getCookie(HTTPServerRequest request, string name)
-  {
-    enforce(request, "Cannot retrieve a cookie without a request.");
+    /**
+    * Creates a cookie.
+    * Params:
+    *   name =      The name of the cookie.
+    *   buffer =    The buffer to encode into a SENC encoded cookie string.
+    *   maxAge =    The max-age of the cookie. (Seconds the cookie will be alive.)
+    *   path =      The path of the cookie. (Default: "/")
+    */
+    void createBuffered
+    (
+      string name, ubyte[] buffer,
+      long maxAge,
+      string path = "/"
+    )
+    {
+      return create(name, SENC.encode(buffer), maxAge, path);
+    }
 
-    return request.cookies.get(name);
-  }
+    /**
+    * Gets a cookie.
+    * Params:
+    *   name =    The name of the cookie.
+    * Returns:
+    *   Returns the cookie if found, null otherwise.
+    */
+    string get(string name)
+    {
+      return _client.rawRequest.cookies.get(name);
+    }
 
-  /**
-  * Gets a buffered cookie encoded as a SENC encoded string.
-  * Params:
-  *   request = The request.
-  *   name =    The name.
-  * Returns:
-  *   Returns the buffer.
-  */
-  ubyte[] getBufferedCookie(HTTPServerRequest request, string name)
-  {
-    return SENC.decode(getCookie(request, name));
-  }
+    /**
+    * Gets a buffered cookie encoded as a SENC encoded string.
+    * Params:
+    *   name =    The name.
+    * Returns:
+    *   Returns the buffer.
+    */
+    ubyte[] getBuffered(string name)
+    {
+      return SENC.decode(get(name));
+    }
 
-  /**
-  * Removes a cookie.
-  * Params:
-  *   response = The response to remove the cookie from.
-  *   name =     The name of the cookie to remove.
-  */
-  void removeCookie(HTTPServerResponse response, string name)
-  {
-    auto cookie = new Cookie;
-    cookie.path = "/";
-    cookie.maxAge = 1;
-    cookie.setValue(null, Cookie.Encoding.none);
+    /**
+    * Removes a cookie.
+    * Params:
+    *   name =     The name of the cookie to remove.
+    */
+    void remove(string name)
+    {
+      auto cookie = new Cookie;
+      cookie.path = "/";
+      cookie.maxAge = 1;
+      cookie.setValue(null, Cookie.Encoding.none);
 
-    response.cookies[name] = cookie;
+      _client.rawResponse.cookies[name] = cookie;
+    }
   }
 }

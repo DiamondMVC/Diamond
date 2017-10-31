@@ -13,14 +13,14 @@ static if (isWeb)
   import std.traits : fullyQualifiedName, hasUDA, getUDAs;
   import std.array : split, array;
 
-  import vibe.d;
-  public import vibe.d : HTTPMethod;
+  public import diamond.http;
+  public import diamond.controllers.authentication;
+  public import diamond.authentication;
 
   import diamond.controllers.action;
   import diamond.controllers.status;
   import diamond.controllers.basecontroller;
   import diamond.controllers.mapattributes;
-  import diamond.controllers.authentication;
   import diamond.core.collections;
   import diamond.core.string : firstToLower;
   import diamond.errors;
@@ -265,11 +265,11 @@ static if (isWebServer)
       import diamond.core.webconfig;
       foreach (headerKey,headerValue; webConfig.defaultHeaders.general)
       {
-        _view.httpResponse.headers[headerKey] = headerValue;
+        _view.client.rawResponse.headers[headerKey] = headerValue;
       }
 
-      _view.httpResponse.headers["Content-Type"] = "text/json; charset=UTF-8";
-      _view.httpResponse.bodyWriter.write(s);
+      _view.client.rawResponse.headers["Content-Type"] = "text/json; charset=UTF-8";
+      _view.client.rawResponse.bodyWriter.write(s);
 
       return Status.end;
     }
@@ -282,17 +282,29 @@ static if (isWebServer)
     * Returns:
     *   The status required for the redirection to work properly. (Status.end)
     */
-    Status redirectTo(string url, HTTPStatus status = HTTPStatus.Found)
+    Status redirectTo(string url, HttpStatus status = HttpStatus.found)
     {
-      _view.httpResponse.redirect(url, status);
-
-      import diamond.core.webconfig;
-      foreach (headerKey,headerValue; webConfig.defaultHeaders.general)
-      {
-        _view.httpResponse.headers[headerKey] = headerValue;
-      }
+      _view.client.redirect(url, status);
 
       return Status.end;
+    }
+
+    /**
+    * Gets a value from the route's parameters by index.
+    * Params:
+    *   index =        The index.
+    *   defaultValue = The default value.
+    * Returns:
+    *   The value from the route's parameters if found, else the default value.
+    */
+    T getByIndex(T)(size_t index, T defaultValue = T.init)
+    {
+      if (index < 0 || index >= _view.route.params.length)
+      {
+        return defaultValue;
+      }
+
+      return _view.route.getData!T(index);
     }
 
     /**
@@ -306,12 +318,12 @@ static if (isWebServer)
       {
         if (_restrictedActions["/"])
         {
-          validateRestrictedIPs(view.httpRequest);
+          validateRestrictedIPs(view.client);
         }
 
         if (_auth && !_disabledAuth["/"])
         {
-          auto authStatus = _auth.isAuthenticated(view.httpRequest, view.httpResponse);
+          auto authStatus = _auth.isAuthenticated(view.client);
 
           if (!authStatus || !authStatus.authenticated)
           {
@@ -354,12 +366,12 @@ static if (isWebServer)
 
       if (_restrictedActions[_view.route.action])
       {
-        validateRestrictedIPs(view.httpRequest);
+        validateRestrictedIPs(view.client);
       }
 
       if (_auth && !_disabledAuth[_view.route.action])
       {
-        auto authStatus = _auth.isAuthenticated(view.httpRequest, view.httpResponse);
+        auto authStatus = _auth.isAuthenticated(view.client);
 
         if (!authStatus || !authStatus.authenticated)
         {
@@ -403,14 +415,8 @@ else static if (isWebApi)
   class Controller : BaseController
   {
     private:
-    /// The request.
-    HTTPServerRequest _request;
-
-    /// The response.
-    HTTPServerResponse _response;
-
-    /// The route.
-    Route _route;
+    /// The client.
+    HttpClient _client;
 
     /// The authentication used for the controller.
     IControllerAuth _auth;
@@ -425,18 +431,14 @@ else static if (isWebApi)
     /**
     * Creates a new controller.
     * Params:
-    *   request =    The request of the controller.
-    *   response =   The response of the controller.
-    *   route =      The route of the controller.
+    *   client =    The client of the controller.
     *   controller = The controller itself
     */
-    this(this TController)(HTTPServerRequest request, HTTPServerResponse response, Route route)
+    this(this TController)(HttpClient client)
     {
       super();
 
-      _request = request;
-      _response = response;
-      _route = route;
+      _client = client;
 
       import controllers;
       auto controller = cast(TController)this;
@@ -503,14 +505,12 @@ else static if (isWebApi)
     final:
     @property
     {
-        /// Gets the request.
-        auto httpRequest() { return _request; }
-        /// Gets the response.
-        auto httpResponse() { return _response; }
+        /// Gets the client.
+        auto client() { return _client; }
         /// Gets the http method.
-        auto httpMethod() { return _request.method; }
+        auto httpMethod() { return _client.method; }
         /// Gets the route.
-        auto route() { return _route; }
+        auto route() { return client.route; }
       }
 
     /**
@@ -537,11 +537,11 @@ else static if (isWebApi)
       import diamond.core.webconfig;
       foreach (headerKey,headerValue; webConfig.defaultHeaders.general)
       {
-        httpResponse.headers[headerKey] = headerValue;
+        _client.rawResponse.headers[headerKey] = headerValue;
       }
 
-      httpResponse.headers["Content-Type"] = "text/json; charset=UTF-8";
-      httpResponse.bodyWriter.write(s);
+      _client.rawResponse.headers["Content-Type"] = "text/json; charset=UTF-8";
+      _client.rawResponse.bodyWriter.write(s);
 
       return Status.end;
     }
@@ -554,17 +554,29 @@ else static if (isWebApi)
     * Returns:
     *   The status required for the redirection to work properly. (Status.end)
     */
-    Status redirectTo(string url, HTTPStatus status = HTTPStatus.Found)
+    Status redirectTo(string url, HttpStatus status = HttpStatus.found)
     {
-      httpResponse.redirect(url, status);
-
-      import diamond.core.webconfig;
-      foreach (headerKey,headerValue; webConfig.defaultHeaders.general)
-      {
-        httpResponse.headers[headerKey] = headerValue;
-      }
+      _client.redirect(url, status);
 
       return Status.end;
+    }
+
+    /**
+    * Gets a value from the route's parameters by index.
+    * Params:
+    *   index =        The index.
+    *   defaultValue = The default value.
+    * Returns:
+    *   The value from the route's parameters if found, else the default value.
+    */
+    T getByIndex(T)(size_t index, T defaultValue = T.init)
+    {
+      if (index < 0 || index >= route.params.length)
+      {
+        return defaultValue;
+      }
+
+      return route.getData!T(index);
     }
 
     /**
@@ -578,12 +590,12 @@ else static if (isWebApi)
       {
         if (_restrictedActions["/"])
         {
-          validateRestrictedIPs(httpRequest);
+          validateRestrictedIPs(_client);
         }
 
         if (_auth && !_disabledAuth["/"])
         {
-          auto authStatus = _auth.isAuthenticated(httpRequest, httpResponse);
+          auto authStatus = _auth.isAuthenticated(_client);
 
           if (!authStatus || !authStatus.authenticated)
           {
@@ -626,12 +638,12 @@ else static if (isWebApi)
 
       if (_restrictedActions[route.action])
       {
-        validateRestrictedIPs(httpRequest);
+        validateRestrictedIPs(client);
       }
 
       if (_auth && !_disabledAuth[route.action])
       {
-        auto authStatus = _auth.isAuthenticated(httpRequest, httpResponse);
+        auto authStatus = _auth.isAuthenticated(client);
 
         if (!authStatus || !authStatus.authenticated)
         {
@@ -682,17 +694,17 @@ else static if (isWebApi)
         {
           import diamond.core.string : firstToLower;
 
-          controllerCollection[controllerRoute.firstToLower()] = new GenerateControllerAction((request, response, route)
+          controllerCollection[controllerRoute.firstToLower()] = new GenerateControllerAction((client)
           {
-             return new %sController(request, response, route);
+             return new %sController(client);
           });
         }
       }
       else
       {
-        controllerCollection["%s"] = new GenerateControllerAction((request, response, route)
+        controllerCollection["%s"] = new GenerateControllerAction((client)
         {
-           return new %sController(request, response, route);
+           return new %sController(client);
         });
       }
     };

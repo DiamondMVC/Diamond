@@ -9,7 +9,7 @@ import diamond.core.apptype;
 
 static if (isWeb)
 {
-  import vibe.d : HTTPMethod;
+  import diamond.http.method;
 
   /// Attribute for default http actions.
   struct HttpDefault {}
@@ -21,7 +21,7 @@ static if (isWeb)
   struct HttpAction
   {
     /// The http method of the action.
-    HTTPMethod method;
+    HttpMethod method;
 
     /// The name of the action. Equivalent to /route/{action}
     string action;

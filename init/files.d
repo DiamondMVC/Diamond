@@ -9,39 +9,32 @@ import diamond.core.apptype;
 
 static if (isWeb)
 {
-  import vibe.d : HTTPServerRequest, HTTPServerResponse,
-                  HTTPStatusException, HTTPStatus,
-                  HTTPServerRequestDelegateS;
+  import vibe.d : HTTPServerRequestDelegateS;
 
-  import diamond.http : Route;
+  import diamond.http;
 
   /**
   * The handler for static file requests.
   * Params:
-  *   request =     The request.
-  *   response =    The response.
-  *   route =       The route.
+  *   client =     The client.
   *   staticFile =  The static file handler.
   */
   package(diamond.init) void handleStaticFiles
   (
-    HTTPServerRequest request, HTTPServerResponse response,
-    Route route,
+    HttpClient client,
     HTTPServerRequestDelegateS staticFile
   )
   {
     import diamond.authentication;
 
-    auto role = getRole(request);
-
-    if (hasRoles && !hasAccess(role, request.method, route.toString()))
+    if (hasRoles && !hasAccess(client.role, client.method, client.route.toString()))
     {
-      throw new HTTPStatusException(HTTPStatus.unauthorized);
+      client.error(HttpStatus.unauthorized);
     }
 
     import diamond.extensions;
     mixin ExtensionEmit!(ExtensionType.staticFileExtension, q{
-      if (!{{extensionEntry}}.handleStaticFile(request, response))
+      if (!{{extensionEntry}}.handleStaticFile(client))
       {
         return;
       }
@@ -52,19 +45,19 @@ static if (isWeb)
 
     foreach (headerKey,headerValue; webConfig.defaultHeaders.staticFiles)
     {
-      response.headers[headerKey] = headerValue;
+      client.rawResponse.headers[headerKey] = headerValue;
     }
 
     import std.array : split, join;
-    request.path = "/" ~ request.path.split("/")[2 .. $].join("/");
+    client.rawRequest.path = "/" ~ client.path.split("/")[2 .. $].join("/");
 
     import diamond.core.websettings;
 
     if (webSettings)
     {
-      webSettings.onStaticFile(request, response);
+      webSettings.onStaticFile(client);
     }
 
-    staticFile(request, response);
+    staticFile(client.rawRequest, client.rawResponse);
   }
 }

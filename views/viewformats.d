@@ -35,11 +35,9 @@ static if (!isWebApi)
         // viewClassMembers
         %s
 
-        this(HTTPServerRequest request,
-          HTTPServerResponse response,
-          string name, Route route)
+        this(HttpClient client, string name)
         {
-          super(request, response, name, route);
+          super(client, name);
 
           // viewConstructor
           %s

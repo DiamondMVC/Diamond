@@ -9,8 +9,6 @@ import diamond.core.apptype;
 
 static if (isWeb)
 {
-  import vibe.d : HTTPServerRequest, HTTPServerResponse;
-
   import diamond.errors.checks;
   import diamond.authentication.permissions;
   import diamond.http;
@@ -194,52 +192,48 @@ static if (isWeb)
   /**
   * Gets a role by its request.
   * Params:
-  *   request = The request.
+  *   client = The client.
   * Returns:
   *   The role if existing, defaultRole otherwise.
   */
-  Role getRole(HTTPServerRequest request)
+  Role getRole(HttpClient client)
   {
-    enforce(request, "No request specified.");
+    enforce(client, "No client specified.");
 
-    import std.variant : Variant;
-    Variant role = request.context.get(roleStorageKey);
-
-    return role.hasValue ? role.get!Role : defaultRole;
+    return client.getContext!Role(roleStorageKey, defaultRole);
   }
 
   /**
   * Sets the role.
   * Params:
-  *   request = The request.
+  *   client =  The client.
   *   role =    The role.
   */
-  package(diamond.authentication) void setRole(HTTPServerRequest request, Role role)
+  package(diamond.authentication) void setRole(HttpClient client, Role role)
   {
-    enforce(request, "No request specified.");
+    enforce(client, "No client specified.");
     enforce(role, "No role specified.");
 
-    request.context[roleStorageKey] = role;
+    client.addContext(roleStorageKey, role);
   }
 
   /**
   * Sets the role from the session.
   * Params:
-  *   request =          The request.
-  *   response =         The response.
+  *   client =           The client.
   *   defaultIsInvalid = Boolean determining whether the default role is an invalid role.
   * Returns:
   *   Returns true if the role was set from the session.
   */
   package(diamond.authentication) bool setRoleFromSession
   (
-    HTTPServerRequest request, HTTPServerResponse response,
+    HttpClient client,
     bool defaultIsInvalid
   )
   {
-    enforce(request, "No request specified.");
+    enforce(client, "No client specified.");
 
-    auto sessionRole = getSessionValue(request, response, roleStorageKey, null);
+    auto sessionRole = client.session.getValue!string(roleStorageKey, null);
 
     if (sessionRole !is null)
     {
@@ -250,7 +244,7 @@ static if (isWeb)
         return false;
       }
 
-      setRole(request, role);
+      setRole(client, role);
       return true;
     }
 
@@ -260,16 +254,15 @@ static if (isWeb)
   /**
   * Sets the session role.
   * Params:
-  *   request =  The request.
-  *   response = The response.
+  *   client =  The client.
   *   role =     The role.
   */
   package(diamond.authentication) void setSessionRole
   (
-    HTTPServerRequest request, HTTPServerResponse response, Role role
+    HttpClient client, Role role
   )
   {
-    setSessionValue(request, response, roleStorageKey, role.name);
+    client.session.setValue(roleStorageKey, role.name);
   }
 
   /**
