@@ -47,6 +47,11 @@ static if (isWebServer)
     {
       pageResult = page.generate();
 
+      if (client.redirected)
+      {
+        return;
+      }
+
       if (webConfig.shouldCacheViews && pageResult && pageResult.length && page.cached)
       {
         client.session.cacheView(page.name, pageResult);

@@ -250,6 +250,7 @@ static if (isWebServer)
     */
     Status json(T)(T jsonObject)
     {
+      import vibe.d : serializeToJsonString;
       return jsonString(jsonObject.serializeToJsonString());
     }
 
@@ -522,6 +523,8 @@ else static if (isWebApi)
     */
     Status json(T)(T jsonObject)
     {
+      import vibe.d : serializeToJsonString;
+      
       return jsonString(jsonObject.serializeToJsonString());
     }
 
