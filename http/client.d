@@ -47,6 +47,9 @@ static if (isWeb)
     /// The ip address.
     string _ipAddress;
 
+    /// Boolean determnining whether the client has been redirected or not.
+    bool _redirected;
+
     final:
     package(diamond)
     {
@@ -142,6 +145,9 @@ static if (isWeb)
       /// Gets the query string.
       string queryString() { return _request.queryString; }
 
+      /// Gets a mapped query of the query string.
+      auto query() { return _request.query; }
+
       /// Gets the generic http parameters.
       auto httpParams() { return _request.params; }
 
@@ -177,6 +183,9 @@ static if (isWeb)
 
       /// Gets the client certificate from the request.
       auto clientCertificate() { return _request.clientCertificate; }
+
+      /// Boolean determining whether the client has been redirected or not.
+      bool redirected() { return _redirected; }
 
       /// Gets the role associated with the client.
       Role role()
@@ -244,6 +253,8 @@ static if (isWeb)
       {
         _response.headers[headerKey] = headerValue;
       }
+
+      _redirected = true;
     }
 
     /**
