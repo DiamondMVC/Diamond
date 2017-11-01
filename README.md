@@ -213,3 +213,11 @@ Please follow the following guide-lines though:
 *Please view the wki for more information.*
 
 *Coming soon: Diamond website.*
+
+## Version & Branch Support
+
+Diamond only supports up to the 3 latest minor versions of itself, including pre-release versions.
+
+Currently supported versions: 2.1.0 - alpha-2.4.1
+
+No longer supported (Only available in release.): 2.0.0 - 2.0.1
