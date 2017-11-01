@@ -113,5 +113,17 @@ static if (isWeb)
 
       _client.rawResponse.cookies[name] = cookie;
     }
+
+    /**
+    * Checks whether a request has a cookie or not.
+    * Params:
+    *   name = The name of the cookie to check for existence.
+    * Returns:
+    *   True if the cookie exists, false otherwise.
+    */
+    bool has(string name)
+    {
+      return get(name) !is null;
+    }
   }
 }

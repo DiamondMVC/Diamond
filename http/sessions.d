@@ -93,7 +93,7 @@ static if (isWeb)
     * Returns:
     *   Returns the value retrieved or defaultValue if not found.
     */
-    T getValue(T = string)(string name, T defaultValue = null)
+    T getValue(T = string)(string name, T defaultValue = T.init)
     {
       Variant value = _session.values.get(name, Variant.init);
 
@@ -197,6 +197,18 @@ static if (isWeb)
     void clearValues()
     {
       _session.values.clear();
+    }
+
+    /**
+    * Checks whether a value is present in the session.
+    * Params:
+    *   name = The name of the value to check for presence.
+    * Returns:
+    *   True if the value is present, false otherwise.
+    */
+    bool hasValue(string name)
+    {
+      return _session.values.get(name, Variant.init).hasValue;
     }
   }
 
