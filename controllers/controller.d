@@ -37,42 +37,42 @@ static if (isWeb)
 
   /// The format used for default mappings.
   enum defaultMappingFormat = q{
-    static if (hasUDA!(%s.%s, HttpDefault))
+    static if (hasUDA!(%1$s.%2$s, HttpDefault))
     {
-      mapDefault(&controller.%s);
+      mapDefault(&controller.%2$s);
     }
   };
 
   /// The format used for mandatory formats.
   enum mandatoryMappingFormat = q{
-    static if (hasUDA!(%s.%s, HttpMandatory))
+    static if (hasUDA!(%1$s.%2$s, HttpMandatory))
     {
-      mapMandatory(&controller.%s);
+      mapMandatory(&controller.%2$s);
     }
   };
 
   /// The format for creating the http acton member.
-  enum actionNameFormat = "static HttpAction action_%s;\r\n";
+  enum actionNameFormat = "static HttpAction action_%2$s;\r\n";
 
   /// The format used for actions.
   enum actionMappingFormat = q{
-    static if (hasUDA!(%s.%s, HttpAction))
+    static if (hasUDA!(%1$s.%2$s, HttpAction))
     {
-      static action_%s = getUDAs!(%s.%s, HttpAction)[0];
+      static action_%2$s = getUDAs!(%1$s.%2$s, HttpAction)[0];
 
-      if (action_%s.action && action_%s.action.strip().length)
+      if (action_%2$s.action && action_%2$s.action.strip().length)
       {
-        auto routingData = _mappedRoutes.get("%s", null);
+        auto routingData = _mappedRoutes.get("%2$s", null);
 
         if (!routingData && !_mappedControllers[fullyQualifiedName!TController])
         {
-          routingData = parseRoute(action_%s.action);
+          routingData = parseRoute(action_%2$s.action);
 
           if (routingData && routingData.length > 1)
           {
-            _mappedRoutes["%s"] = routingData;
+            _mappedRoutes["%2$s"] = routingData;
 
-            action_%s.action = routingData[0].identifier;
+            action_%2$s.action = routingData[0].identifier;
           }
         }
 
@@ -80,36 +80,36 @@ static if (isWeb)
         {
           if (routingData[0].identifier == "<>")
           {
-            action_%s.action = null;
+            action_%2$s.action = null;
           }
         }
       }
 
       mapAction(
-        action_%s.method,
+        action_%2$s.method,
         (
-          action_%s.action && action_%s.action.strip().length ?
-          action_%s.action : "%s"
+          action_%2$s.action && action_%2$s.action.strip().length ?
+          action_%2$s.action : "%2$s"
         ).firstToLower(),
-        &controller.%s
+        &controller.%2$s
       );
     }
   };
 
   /// The format used for disabled authentication.
   enum disableAuthFormat = q{
-    static if (hasUDA!(%s.%s, HttpDisableAuth))
+    static if (hasUDA!(%1$s.%2$s, HttpDisableAuth))
     {
-      static if (hasUDA!(%s.%s, HttpDefault))
+      static if (hasUDA!(%1$s.%2$s, HttpDefault))
       {
         _disabledAuth.add("/");
       }
-      else static if (hasUDA!(%s.%s, HttpAction))
+      else static if (hasUDA!(%1$s.%2$s, HttpAction))
       {
         _disabledAuth.add(
           (
-            action_%s.action && action_%s.action.strip().length ?
-            action_%s.action : "%s"
+            action_%2$s.action && action_%2$s.action.strip().length ?
+            action_%2$s.action : "%2$s"
           ).firstToLower()
         );
       }
@@ -118,18 +118,18 @@ static if (isWeb)
 
   /// The format used for restricted connections.
   enum restrictedFormat = q{
-    static if (hasUDA!(%s.%s, HttpRestricted))
+    static if (hasUDA!(%1$s.%2$s, HttpRestricted))
     {
-      static if (hasUDA!(%s.%s, HttpDefault))
+      static if (hasUDA!(%1$s.%2$s, HttpDefault))
       {
         _restrictedActions.add("/");
       }
-      else static if (hasUDA!(%s.%s, HttpAction))
+      else static if (hasUDA!(%1$s.%2$s, HttpAction))
       {
         _restrictedActions.add(
           (
-            action_%s.action && action_%s.action.strip().length ?
-            action_%s.action : "%s"
+            action_%2$s.action && action_%2$s.action.strip().length ?
+            action_%2$s.action : "%2$s"
           ).firstToLower()
         );
       }
@@ -196,34 +196,11 @@ static if (isWebServer)
       {
         static if (member != "__ctor")
         {
-          mixin(defaultMappingFormat.format(TController.stringof, member, member));
-          mixin(mandatoryMappingFormat.format(TController.stringof, member, member));
-          mixin(actionMappingFormat.format(
-            TController.stringof, member,
-            member, TController.stringof, member,
-            member, member,
-            member,
-            member,
-            member,
-            member,
-            member,
-            member,
-            member, member,
-            member, member,
-            member
-          ));
-          mixin(disableAuthFormat.format(
-            TController.stringof, member,
-            TController.stringof, member,
-            TController.stringof, member,
-            member, member, member, member
-          ));
-          mixin(restrictedFormat.format(
-            TController.stringof, member,
-            TController.stringof, member,
-            TController.stringof, member,
-            member, member, member, member
-          ));
+          mixin(defaultMappingFormat.format(TController.stringof, member));
+          mixin(mandatoryMappingFormat.format(TController.stringof, member));
+          mixin(actionMappingFormat.format(TController.stringof, member));
+          mixin(disableAuthFormat.format(TController.stringof, member));
+          mixin(restrictedFormat.format(TController.stringof, member));
         }
       }
 
@@ -410,8 +387,6 @@ static if (isWebServer)
 // A webapi will not have a view associated with it, thus all information such as the request etc. is available within the controller
 else static if (isWebApi)
 {
-  import diamond.http : Route;
-
   /// Wrapper around a controller.
   class Controller : BaseController
   {
@@ -465,34 +440,11 @@ else static if (isWebApi)
       {
         static if (member != "__ctor")
         {
-          mixin(defaultMappingFormat.format(TController.stringof, member, member));
-          mixin(mandatoryMappingFormat.format(TController.stringof, member, member));
-          mixin(actionMappingFormat.format(
-            TController.stringof, member,
-            member, TController.stringof, member,
-            member, member,
-            member,
-            member,
-            member,
-            member,
-            member,
-            member,
-            member, member,
-            member, member,
-            member
-          ));
-          mixin(disableAuthFormat.format(
-            TController.stringof, member,
-            TController.stringof, member,
-            TController.stringof, member,
-            member, member, member, member
-          ));
-          mixin(restrictedFormat.format(
-            TController.stringof, member,
-            TController.stringof, member,
-            TController.stringof, member,
-            member, member, member, member
-          ));
+          mixin(defaultMappingFormat.format(TController.stringof, member));
+          mixin(mandatoryMappingFormat.format(TController.stringof, member));
+          mixin(actionMappingFormat.format(TController.stringof, member));
+          mixin(disableAuthFormat.format(TController.stringof, member));
+          mixin(restrictedFormat.format(TController.stringof, member));
         }
       }
 
@@ -524,7 +476,7 @@ else static if (isWebApi)
     Status json(T)(T jsonObject)
     {
       import vibe.d : serializeToJsonString;
-      
+
       return jsonString(jsonObject.serializeToJsonString());
     }
 
