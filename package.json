@@ -1,6 +1,6 @@
 {
 	"name": "diamond",
-	"description": "Powerful & Rich MVC / Template Framework.",
+	"description": "Powerful MVC / Template Framework inspired by ASP.NET MVC using vibe.d as backend.",
 	"authors": [
 		"Jacob Jensen"
 	],
