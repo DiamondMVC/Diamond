@@ -125,5 +125,29 @@ static if (isWeb)
     {
       return get(name) !is null;
     }
+
+    /**
+    * Gets the auth cookie.
+    * Returns:
+    *   Returns the auth cookie.
+    */
+    string getAuthCookie()
+    {
+      import diamondauth = diamond.authentication;
+
+      return diamondauth.getAuthCookie(_client);
+    }
+
+    /**
+    * Checks whether the auth cookie is present or not.
+    * Returns:
+    *   True if the auth cookie is present, false otherwise.
+    */
+    bool hasAuthCookie()
+    {
+      import diamondauth = diamond.authentication;
+
+      return diamondauth.hasAuthCookie(_client);
+    }
   }
 }

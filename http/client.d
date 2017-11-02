@@ -239,6 +239,20 @@ static if (isWeb)
     }
 
     /**
+    * Checks whether a value is present n the client's context or not.
+    * Params:
+    *   name = The name to check for existence.
+    * Returns:
+    *   True if the value is present, false otherwise.
+    */
+    bool hasContext(string name)
+    {
+      import std.variant : Variant;
+
+      return _request.context.get(name, Variant.init).hasValue;
+    }
+
+    /**
     * Redirects the client.
     * Params:
     *   url =    The url to redirect the client to.
