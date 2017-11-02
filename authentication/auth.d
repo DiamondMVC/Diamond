@@ -199,13 +199,17 @@ static if (isWeb)
   * Params:
   *   client =   The client.
   *   loginTime = The time the user can be logged in. (In minutes)
-  *   role =      The role to login as.
+  *   role =      The role to login as. (If the role is null then the session won't have a role, causing every request to be authenticated.)
   */
   void login(HttpClient client, long loginTime, Role role)
   {
     enforce(tokenSetter.f !is null || tokenSetter.d !is null, "No token setter found.");
 
-    setSessionRole(client, role);
+    if (role !is null)
+    {
+      setSessionRole(client, role);
+    }
+
     client.session.updateEndTime(Clock.currTime() + loginTime.minutes);
 
     auto token = enforceInput(tokenSetter.getAndSetToken(client), "Could not set token.");
@@ -234,5 +238,29 @@ static if (isWeb)
     {
       tokenInvalidator.invalidate(token, client);
     }
+  }
+
+  /**
+  * Gets the auth cookie from a client.
+  * Params:
+  *   client = The client to get the auth cookie from.
+  * Returns:
+  *   Returns the auth cookie.
+  */
+  string getAuthCookie(HttpClient client)
+  {
+    return client.cookies.get(authCookieKey);
+  }
+
+  /**
+  * Checks whether the client has the auth cookie or not.
+  * Params:
+  *   client = The client.
+  * Returns:
+  *   True if the client has the auth cookie, false otherwise.
+  */
+  bool hasAuthCookie(HttpClient client)
+  {
+    return client.cookies.has(authCookieKey);
   }
 }
