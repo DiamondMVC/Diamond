@@ -6,6 +6,8 @@
 
 It's inspired by **ASP.NET** and uses **[vibe.d](http://vibed.org/)** for its backend, making **Diamond** a very powerful framework.
 
+This site is only a temporary website until the actual website can be hosted.
+
 ## Feature Overview
 
 |General Features|Data & Storage|Views & Frontend|Controllers|More|Upcoming|
