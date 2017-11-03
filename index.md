@@ -10,14 +10,14 @@ It's inspired by **ASP.NET** and uses **[vibe.d](http://vibed.org/)** for its ba
 
 |General Features|Data & Storage|Views & Frontend|Controllers|More|Upcoming|
 |---|:---:|:---:|:---:|:---:|---:|
-| Low Memory & CPU Consumption | ORM | Compile-time Parsing | Auto-mapping | Authentication | Transactions |
-| MVC & HMVC | MySql ORM | Partial Views | View-integration | CSRF Protection | Unittesting |
-| RESTful | Caching | Layouts | Mandatory Actions | Cryptography | Logging |
-| Advanced Routing | Mongo | Fast & Performant Rendering |  | JSON/BSON | Flash-messages |
-| ACL | Redis | Dynamic |  | Asynchronous | Version-control |
-| Cross-platform | Request-context | Any D Code Can Be Executed |  | Fibers/Tasks | Localization |
-| Website/Webapi Support | Cookies |  |  | Sharding |  |
-|  | Sessions |  |  | Network Security & Restrictions |  |
+| [Low Memory & CPU Consumption](#low-memory--cpu-consumption) | [ORM](#orm) | [Compile-time Parsing](#compile-time-parsing) | [Auto-mapping](#auto-mapping) | [Authentication](#authentication) | [Transactions](#transactions) |
+| [MVC & HMVC](#mvc--hmvc) | [MySql ORM](#mysql-orm) | [Partial Views](#partial-views) | [View-integration](#view-integration) | [CSRF Protection](#csrf-protection) | [Unittesting](#unittesting) |
+| [RESTful](#restful) | [Caching](#caching) | [Layouts](#layouts) | [Mandatory Actions](#mandatory-actions) | [Cryptography](#cryptography) | [Logging](#logging) |
+| [Advanced Routing](#advanced-routing) | [Mongo](#mongo) | [Fast & Performant Rendering](#fast--performant-rendering) | | [JSON/BSON](#jsonbson) | [Flash-messages](#flash-messages) |
+| [ACL](#acl) | [Redis](#redis) | [Dynamic](#dynamic) | | [Asynchronous](#asynchronous) | [Version-control](#version-control) |
+| [Cross-platform](#cross-platform) | [Request-context](#request-context) | [Any D Code Can Be Executed](#any-d-code-can-be-executed) | | [Fibers/Tasks](#fiberstasks) | [Localization](#localization) |
+| [Website/Webapi Support](#websitewebapi-support) | [Cookies](#cookies) | | | [Sharding](#sharding) |
+| [Sessions](#sessions) | | | [Network Security & Restrictions](#network-security--restrictions) |
 
 ## General Features
 
