@@ -1,6 +1,5 @@
-<center>
-  [Home](https://diamondmvc.github.io/Diamond/) | [Download](https://diamondmvc.github.io/Diamond/download) | [Documentation](https://diamondmvc.github.io/Diamond/docs) | [Contributing](https://diamondmvc.github.io/Diamond/contrbuting)
-</center>
+[Home](https://diamondmvc.github.io/Diamond/) | [Download](https://diamondmvc.github.io/Diamond/download) | [Documentation](https://diamondmvc.github.io/Diamond/docs) | [Contributing](https://diamondmvc.github.io/Diamond/contrbuting)
+
 
 <br>
 <br>
