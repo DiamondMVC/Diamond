@@ -1,3 +1,9 @@
+|[Home](https://diamondmvc.github.io/Diamond/)|[Download](https://diamondmvc.github.io/Diamond/download)|[Documentation](https://diamondmvc.github.io/Diamond/docs)|[Contributing](https://diamondmvc.github.io/Diamond/contrbuting)
+|---|---|---|---|
+
+<br>
+<br>
+
 **Diamond** is a full-stack cross-platform  **MVC / Template Framework** written in the **D Programming Language**.
 
 It's inspired by **ASP.NET** and uses **[vibe.d](http://vibed.org/)** for its backend, making **Diamond** a very powerful framework.
