@@ -9,7 +9,7 @@ It's inspired by **ASP.NET** and uses **[vibe.d](http://vibed.org/)** for its ba
 ## Feature Overview
 
 |General Features|Data & Storage|Views & Frontend|Controllers|More|Upcoming|
-|---|:---:|:---:|:---:|:---:|---:|
+|:---:|:---:|:---:|:---:|:---:|:---:|
 | [Low Memory & CPU Consumption](#low-memory--cpu-consumption) | [ORM](#orm) | [Compile-time Parsing](#compile-time-parsing) | [Auto-mapping](#auto-mapping) | [Authentication](#authentication) | [Transactions](#transactions) |
 | [MVC & HMVC](#mvc--hmvc) | [MySql ORM](#mysql-orm) | [Partial Views](#partial-views) | [View-integration](#view-integration) | [CSRF Protection](#csrf-protection) | [Unittesting](#unittesting) |
 | [RESTful](#restful) | [Caching](#caching) | [Layouts](#layouts) | [Mandatory Actions](#mandatory-actions) | [Cryptography](#cryptography) | [Logging](#logging) |
