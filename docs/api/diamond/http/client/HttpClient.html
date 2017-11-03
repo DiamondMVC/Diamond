@@ -1,0 +1,776 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8"/>
+		<title>Class HttpClient</title>
+		<link rel="stylesheet" type="text/css" href="../../../styles/ddox.css"/>
+		<link rel="stylesheet" href="../../../prettify/prettify.css" type="text/css"/>
+		<script type="text/javascript" src="../../../scripts/jquery.js">/**/</script><script type="text/javascript" src="../../../scripts/ddox.js">/**/</script>
+	</head>
+	<body onload="setupDdox();">
+		<nav id="main-nav">
+			<noscript>
+				<p style="color: red">The search functionality needs JavaScript enabled</p>
+			</noscript>
+			<div id="symbolSearchPane" style="display: none">
+				<form action="#" method="GET">
+					<input id="symbolSearch" type="text" name="q" placeholder="Search for symbols" autocomplete="off" onchange="performSymbolSearch(40);" onkeypress="this.onchange();" onpaste="this.onchange();" oninput="this.onchange();"/>
+				</form>
+				<ul id="symbolSearchResults" class="symbolList" style="display: none"></ul><script type="application/javascript" src="../../../symbols.js"></script><script type="application/javascript">var symbolSearchRootDir = "../../../";
+$('#symbolSearchPane').show();</script>
+			</div>
+			<ul class="tree-view">
+				<li class="tree-view ">
+					<div class="package ">diamond
+					</div>
+			<ul class="tree-view">
+				<li class="tree-view collapsed">
+					<div class="package ">
+						<a href="../../../diamond/authentication.html">authentication</a>
+					</div>
+			<ul class="tree-view">
+				<li>
+					<div class="module ">
+						<a href="../../../diamond/authentication/auth.html">auth</a>
+					</div>
+				</li>
+				<li>
+					<div class="module ">
+						<a href="../../../diamond/authentication/permissions.html">permissions</a>
+					</div>
+				</li>
+				<li>
+					<div class="module ">
+						<a href="../../../diamond/authentication/roles.html">roles</a>
+					</div>
+				</li>
+			</ul>
+				</li>
+				<li class="tree-view collapsed">
+					<div class="package ">
+						<a href="../../../diamond/controllers.html">controllers</a>
+					</div>
+			<ul class="tree-view">
+				<li class="tree-view collapsed">
+					<div class="package ">
+						<a href="../../../diamond/controllers/rest.html">rest</a>
+					</div>
+			<ul class="tree-view">
+				<li>
+					<div class="module ">
+						<a href="../../../diamond/controllers/rest/parser.html">parser</a>
+					</div>
+				</li>
+				<li>
+					<div class="module ">
+						<a href="../../../diamond/controllers/rest/routedatatype.html">routedatatype</a>
+					</div>
+				</li>
+				<li>
+					<div class="module ">
+						<a href="../../../diamond/controllers/rest/routepart.html">routepart</a>
+					</div>
+				</li>
+				<li>
+					<div class="module ">
+						<a href="../../../diamond/controllers/rest/routetype.html">routetype</a>
+					</div>
+				</li>
+			</ul>
+				</li>
+				<li>
+					<div class="module ">
+						<a href="../../../diamond/controllers/action.html">action</a>
+					</div>
+				</li>
+				<li>
+					<div class="module ">
+						<a href="../../../diamond/controllers/authentication.html">authentication</a>
+					</div>
+				</li>
+				<li>
+					<div class="module ">
+						<a href="../../../diamond/controllers/basecontroller.html">basecontroller</a>
+					</div>
+				</li>
+				<li>
+					<div class="module ">
+						<a href="../../../diamond/controllers/controller.html">controller</a>
+					</div>
+				</li>
+				<li>
+					<div class="module ">
+						<a href="../../../diamond/controllers/mapattributes.html">mapattributes</a>
+					</div>
+				</li>
+				<li>
+					<div class="module ">
+						<a href="../../../diamond/controllers/status.html">status</a>
+					</div>
+				</li>
+			</ul>
+				</li>
+				<li class="tree-view collapsed">
+					<div class="package ">
+						<a href="../../../diamond/core.html">core</a>
+					</div>
+			<ul class="tree-view">
+				<li>
+					<div class="module ">
+						<a href="../../../diamond/core/apptype.html">apptype</a>
+					</div>
+				</li>
+				<li>
+					<div class="module ">
+						<a href="../../../diamond/core/collections.html">collections</a>
+					</div>
+				</li>
+				<li>
+					<div class="module ">
+						<a href="../../../diamond/core/debugging.html">debugging</a>
+					</div>
+				</li>
+				<li>
+					<div class="module ">
+						<a href="../../../diamond/core/io.html">io</a>
+					</div>
+				</li>
+				<li>
+					<div class="module ">
+						<a href="../../../diamond/core/senc.html">senc</a>
+					</div>
+				</li>
+				<li>
+					<div class="module ">
+						<a href="../../../diamond/core/webconfig.html">webconfig</a>
+					</div>
+				</li>
+				<li>
+					<div class="module ">
+						<a href="../../../diamond/core/websettings.html">websettings</a>
+					</div>
+				</li>
+			</ul>
+				</li>
+				<li class="tree-view collapsed">
+					<div class="package ">
+						<a href="../../../diamond/database.html">database</a>
+					</div>
+			<ul class="tree-view">
+				<li class="tree-view collapsed">
+					<div class="package ">
+						<a href="../../../diamond/database/core.html">core</a>
+					</div>
+			<ul class="tree-view">
+				<li class="tree-view collapsed">
+					<div class="package ">
+						<a href="../../../diamond/database/core/generators.html">generators</a>
+					</div>
+			<ul class="tree-view">
+				<li>
+					<div class="module ">
+						<a href="../../../diamond/database/core/generators/deletegenerator.html">deletegenerator</a>
+					</div>
+				</li>
+				<li>
+					<div class="module ">
+						<a href="../../../diamond/database/core/generators/insertgenerator.html">insertgenerator</a>
+					</div>
+				</li>
+				<li>
+					<div class="module ">
+						<a href="../../../diamond/database/core/generators/readgenerator.html">readgenerator</a>
+					</div>
+				</li>
+				<li>
+					<div class="module ">
+						<a href="../../../diamond/database/core/generators/updategenerator.html">updategenerator</a>
+					</div>
+				</li>
+			</ul>
+				</li>
+				<li>
+					<div class="module ">
+						<a href="../../../diamond/database/core/attributes.html">attributes</a>
+					</div>
+				</li>
+				<li>
+					<div class="module ">
+						<a href="../../../diamond/database/core/traits.html">traits</a>
+					</div>
+				</li>
+			</ul>
+				</li>
+				<li class="tree-view collapsed">
+					<div class="package ">
+						<a href="../../../diamond/database/engine.html">engine</a>
+					</div>
+			<ul class="tree-view">
+				<li>
+					<div class="module ">
+						<a href="../../../diamond/database/engine/model.html">model</a>
+					</div>
+				</li>
+				<li>
+					<div class="module ">
+						<a href="../../../diamond/database/engine/mysql.html">mysql</a>
+					</div>
+				</li>
+			</ul>
+				</li>
+			</ul>
+				</li>
+				<li class="tree-view collapsed">
+					<div class="package ">
+						<a href="../../../diamond/errors.html">errors</a>
+					</div>
+			<ul class="tree-view">
+				<li class="tree-view collapsed">
+					<div class="package ">
+						<a href="../../../diamond/errors/exceptions.html">exceptions</a>
+					</div>
+			<ul class="tree-view">
+				<li>
+					<div class="module ">
+						<a href="../../../diamond/errors/exceptions/enforceexception.html">enforceexception</a>
+					</div>
+				</li>
+				<li>
+					<div class="module ">
+						<a href="../../../diamond/errors/exceptions/routeexception.html">routeexception</a>
+					</div>
+				</li>
+				<li>
+					<div class="module ">
+						<a href="../../../diamond/errors/exceptions/viewexception.html">viewexception</a>
+					</div>
+				</li>
+			</ul>
+				</li>
+				<li>
+					<div class="module ">
+						<a href="../../../diamond/errors/checks.html">checks</a>
+					</div>
+				</li>
+				<li>
+					<div class="module ">
+						<a href="../../../diamond/errors/errorhandler.html">errorhandler</a>
+					</div>
+				</li>
+			</ul>
+				</li>
+				<li class="tree-view collapsed">
+					<div class="package ">
+						<a href="../../../diamond/extensions.html">extensions</a>
+					</div>
+			<ul class="tree-view">
+				<li>
+					<div class="module ">
+						<a href="../../../diamond/extensions/extensionemitinfo.html">extensionemitinfo</a>
+					</div>
+				</li>
+				<li>
+					<div class="module ">
+						<a href="../../../diamond/extensions/extensionemitter.html">extensionemitter</a>
+					</div>
+				</li>
+				<li>
+					<div class="module ">
+						<a href="../../../diamond/extensions/extensionmanager.html">extensionmanager</a>
+					</div>
+				</li>
+				<li>
+					<div class="module ">
+						<a href="../../../diamond/extensions/extensiontype.html">extensiontype</a>
+					</div>
+				</li>
+			</ul>
+				</li>
+				<li class="tree-view ">
+					<div class="package ">
+						<a href="../../../diamond/http.html">http</a>
+					</div>
+			<ul class="tree-view">
+				<li>
+					<div class="module selected">
+						<a href="../../../diamond/http/client.html">client</a>
+					</div>
+				</li>
+				<li>
+					<div class="module ">
+						<a href="../../../diamond/http/cookies.html">cookies</a>
+					</div>
+				</li>
+				<li>
+					<div class="module ">
+						<a href="../../../diamond/http/method.html">method</a>
+					</div>
+				</li>
+				<li>
+					<div class="module ">
+						<a href="../../../diamond/http/route.html">route</a>
+					</div>
+				</li>
+				<li>
+					<div class="module ">
+						<a href="../../../diamond/http/sessions.html">sessions</a>
+					</div>
+				</li>
+				<li>
+					<div class="module ">
+						<a href="../../../diamond/http/status.html">status</a>
+					</div>
+				</li>
+			</ul>
+				</li>
+				<li class="tree-view collapsed">
+					<div class="package ">init
+					</div>
+			<ul class="tree-view">
+				<li>
+					<div class="module ">
+						<a href="../../../diamond/init/api.html">api</a>
+					</div>
+				</li>
+				<li>
+					<div class="module ">
+						<a href="../../../diamond/init/files.html">files</a>
+					</div>
+				</li>
+				<li>
+					<div class="module ">
+						<a href="../../../diamond/init/server.html">server</a>
+					</div>
+				</li>
+				<li>
+					<div class="module ">
+						<a href="../../../diamond/init/web.html">web</a>
+					</div>
+				</li>
+			</ul>
+				</li>
+				<li class="tree-view collapsed">
+					<div class="package ">
+						<a href="../../../diamond/security.html">security</a>
+					</div>
+			<ul class="tree-view">
+				<li class="tree-view collapsed">
+					<div class="package ">
+						<a href="../../../diamond/security/tokens.html">tokens</a>
+					</div>
+			<ul class="tree-view">
+				<li>
+					<div class="module ">
+						<a href="../../../diamond/security/tokens/generictoken.html">generictoken</a>
+					</div>
+				</li>
+				<li>
+					<div class="module ">
+						<a href="../../../diamond/security/tokens/sessiontoken.html">sessiontoken</a>
+					</div>
+				</li>
+				<li>
+					<div class="module ">
+						<a href="../../../diamond/security/tokens/tokengenerator.html">tokengenerator</a>
+					</div>
+				</li>
+			</ul>
+				</li>
+				<li>
+					<div class="module ">
+						<a href="../../../diamond/security/csrf.html">csrf</a>
+					</div>
+				</li>
+				<li>
+					<div class="module ">
+						<a href="../../../diamond/security/network.html">network</a>
+					</div>
+				</li>
+			</ul>
+				</li>
+				<li class="tree-view collapsed">
+					<div class="package ">
+						<a href="../../../diamond/templates.html">templates</a>
+					</div>
+			<ul class="tree-view">
+				<li>
+					<div class="module ">
+						<a href="../../../diamond/templates/characterincludemode.html">characterincludemode</a>
+					</div>
+				</li>
+				<li>
+					<div class="module ">
+						<a href="../../../diamond/templates/contentmode.html">contentmode</a>
+					</div>
+				</li>
+				<li>
+					<div class="module ">
+						<a href="../../../diamond/templates/grammar.html">grammar</a>
+					</div>
+				</li>
+				<li>
+					<div class="module ">
+						<a href="../../../diamond/templates/parser.html">parser</a>
+					</div>
+				</li>
+				<li>
+					<div class="module ">
+						<a href="../../../diamond/templates/part.html">part</a>
+					</div>
+				</li>
+			</ul>
+				</li>
+				<li class="tree-view collapsed">
+					<div class="package ">
+						<a href="../../../diamond/views.html">views</a>
+					</div>
+			<ul class="tree-view">
+				<li>
+					<div class="module ">
+						<a href="../../../diamond/views/view.html">view</a>
+					</div>
+				</li>
+				<li>
+					<div class="module ">
+						<a href="../../../diamond/views/viewformats.html">viewformats</a>
+					</div>
+				</li>
+				<li>
+					<div class="module ">
+						<a href="../../../diamond/views/viewgenerator.html">viewgenerator</a>
+					</div>
+				</li>
+				<li>
+					<div class="module ">
+						<a href="../../../diamond/views/viewparser.html">viewparser</a>
+					</div>
+				</li>
+				<li>
+					<div class="module ">
+						<a href="../../../diamond/views/viewroute.html">viewroute</a>
+					</div>
+				</li>
+			</ul>
+				</li>
+			</ul>
+				</li>
+			</ul>
+		</nav>
+		<div id="main-contents">
+			<h1>Class HttpClient</h1><p>Wrapper around the client's request aand response.
+</p>
+			<div class="prototype">
+				<code class="lang-d">
+					<div class="single-prototype">
+			<span class="kwd">class</span> <span class="typ">HttpClient</span>
+			<span class="pun">;</span>
+					</div>
+				</code>
+			</div>
+			
+			<section><h2>Properties</h2>
+				<table>
+					<col class="caption"/>
+					<tr>
+						<th>Name</th><th>Type</th><th>Description</th>
+					</tr>
+					<tr>
+						<td>
+							<a href="../../../diamond/http/client/HttpClient.clientAddress.html" class="[&quot;public&quot;, &quot;property&quot;]"><code>clientAddress</code></a><span class="tableEntryAnnotation">[get]</span>
+						</td>
+						<td class="typecol"><code class="prettyprint lang-d"><span class="pln">vibe<wbr/></span><span class="pun">.</span><span class="pln">core<wbr/></span><span class="pun">.</span><span class="pln">net<wbr/></span><span class="pun">.</span><span class="typ">NetworkAddress</span></code></td><td>Gets the raw client address of the request.
+</td>
+					</tr>
+					<tr>
+						<td>
+							<a href="../../../diamond/http/client/HttpClient.clientCertificate.html" class="[&quot;public&quot;, &quot;property&quot;]"><code>clientCertificate</code></a><span class="tableEntryAnnotation">[get]</span>
+						</td>
+						<td class="typecol"><code class="prettyprint lang-d"><span class="pln">vibe<wbr/></span><span class="pun">.</span><span class="pln">stream<wbr/></span><span class="pun">.</span><span class="pln">tls<wbr/></span><span class="pun">.</span><span class="typ">TLSCertificateInformation</span></code></td><td>Gets the client certificate from the request.
+</td>
+					</tr>
+					<tr>
+						<td>
+							<a href="../../../diamond/http/client/HttpClient.connected.html" class="[&quot;public&quot;, &quot;property&quot;]"><code>connected</code></a><span class="tableEntryAnnotation">[get]</span>
+						</td>
+						<td class="typecol"><code class="prettyprint lang-d"><span class="typ">bool</span></code></td><td>Gets a boolean determnining whether the response is connected or not.
+</td>
+					</tr>
+					<tr>
+						<td>
+							<a href="../../../diamond/http/client/HttpClient.contentType.html" class="[&quot;public&quot;, &quot;property&quot;]"><code>contentType</code></a><span class="tableEntryAnnotation">[get]</span>
+						</td>
+						<td class="typecol"><code class="prettyprint lang-d"><span class="typ">string</span></code></td><td>Gets the content type from the request.
+</td>
+					</tr>
+					<tr>
+						<td>
+							<a href="../../../diamond/http/client/HttpClient.contentTypeParameters.html" class="[&quot;public&quot;, &quot;property&quot;]"><code>contentTypeParameters</code></a><span class="tableEntryAnnotation">[get]</span>
+						</td>
+						<td class="typecol"><code class="prettyprint lang-d"><span class="typ">string</span></code></td><td>Gets the content type parameters from the request.
+</td>
+					</tr>
+					<tr>
+						<td>
+							<a href="../../../diamond/http/client/HttpClient.cookies.html" class="[&quot;public&quot;, &quot;property&quot;]"><code>cookies</code></a><span class="tableEntryAnnotation">[get]</span>
+						</td>
+						<td class="typecol"><code class="prettyprint lang-d"><a href="../../../diamond/http/cookies/HttpCookies.html"><span class="typ">HttpCookies</span></a></code></td><td>Gets the cookies.
+</td>
+					</tr>
+					<tr>
+						<td>
+							<a href="../../../diamond/http/client/HttpClient.files.html" class="[&quot;public&quot;, &quot;property&quot;]"><code>files</code></a><span class="tableEntryAnnotation">[get]</span>
+						</td>
+						<td class="typecol"><code class="prettyprint lang-d"><span class="pln">vibe<wbr/></span><span class="pun">.</span><span class="pln">utils<wbr/></span><span class="pun">.</span><span class="pln">dictionarylist<wbr/></span><span class="pun">.</span><span class="pln">__T14DictionaryListTS4vibe4inet7webform8FilePartVbi1Vki0Vbi0Z<wbr/></span><span class="pun">.</span><span class="typ">DictionaryList</span></code></td><td>Gets the files from the request.
+</td>
+					</tr>
+					<tr>
+						<td>
+							<a href="../../../diamond/http/client/HttpClient.form.html" class="[&quot;public&quot;, &quot;property&quot;]"><code>form</code></a><span class="tableEntryAnnotation">[get]</span>
+						</td>
+						<td class="typecol"><code class="prettyprint lang-d"><span class="pln">vibe<wbr/></span><span class="pun">.</span><span class="pln">utils<wbr/></span><span class="pun">.</span><span class="pln">dictionarylist<wbr/></span><span class="pun">.</span><span class="typ">DictionaryList</span>!(string,true,16,false)</code></td><td>Gets the form from the request.
+</td>
+					</tr>
+					<tr>
+						<td>
+							<a href="../../../diamond/http/client/HttpClient.fullUrl.html" class="[&quot;public&quot;, &quot;property&quot;]"><code>fullUrl</code></a><span class="tableEntryAnnotation">[get]</span>
+						</td>
+						<td class="typecol"><code class="prettyprint lang-d"><span class="pln">vibe<wbr/></span><span class="pun">.</span><span class="pln">inet<wbr/></span><span class="pun">.</span><span class="pln">url<wbr/></span><span class="pun">.</span><span class="pln">URL</span></code></td><td>Gets the full url from the request.
+</td>
+					</tr>
+					<tr>
+						<td>
+							<a href="../../../diamond/http/client/HttpClient.headers.html" class="[&quot;public&quot;, &quot;property&quot;]"><code>headers</code></a><span class="tableEntryAnnotation">[get]</span>
+						</td>
+						<td class="typecol"><code class="prettyprint lang-d"><span class="pln">vibe<wbr/></span><span class="pun">.</span><span class="pln">utils<wbr/></span><span class="pun">.</span><span class="pln">dictionarylist<wbr/></span><span class="pun">.</span><span class="typ">DictionaryList</span>!(string,false,12,false)</code></td><td>Gets the headers from the request.
+</td>
+					</tr>
+					<tr>
+						<td>
+							<a href="../../../diamond/http/client/HttpClient.host.html" class="[&quot;public&quot;, &quot;property&quot;]"><code>host</code></a><span class="tableEntryAnnotation">[get]</span>
+						</td>
+						<td class="typecol"><code class="prettyprint lang-d"><span class="typ">string</span></code></td><td>Gets the host from the request.
+</td>
+					</tr>
+					<tr>
+						<td>
+							<a href="../../../diamond/http/client/HttpClient.httpParams.html" class="[&quot;public&quot;, &quot;property&quot;]"><code>httpParams</code></a><span class="tableEntryAnnotation">[get]</span>
+						</td>
+						<td class="typecol"><code class="prettyprint lang-d"><span class="pln">vibe<wbr/></span><span class="pun">.</span><span class="pln">utils<wbr/></span><span class="pun">.</span><span class="pln">dictionarylist<wbr/></span><span class="pun">.</span><span class="typ">DictionaryList</span>!(string,true,8,false)</code></td><td>Gets the generic http parameters.
+</td>
+					</tr>
+					<tr>
+						<td>
+							<a href="../../../diamond/http/client/HttpClient.ipAddress.html" class="[&quot;public&quot;, &quot;property&quot;]"><code>ipAddress</code></a><span class="tableEntryAnnotation">[get]</span>
+						</td>
+						<td class="typecol"><code class="prettyprint lang-d"><span class="typ">string</span></code></td><td>Gets the ip address.
+</td>
+					</tr>
+					<tr>
+						<td>
+							<a href="../../../diamond/http/client/HttpClient.json.html" class="[&quot;public&quot;, &quot;property&quot;]"><code>json</code></a><span class="tableEntryAnnotation">[get]</span>
+						</td>
+						<td class="typecol"><code class="prettyprint lang-d"><span class="pln">vibe<wbr/></span><span class="pun">.</span><span class="pln">data<wbr/></span><span class="pun">.</span><span class="pln">json<wbr/></span><span class="pun">.</span><span class="typ">Json</span></code></td><td>Gets the json from the request.
+</td>
+					</tr>
+					<tr>
+						<td>
+							<a href="../../../diamond/http/client/HttpClient.method.html" class="[&quot;public&quot;, &quot;property&quot;]"><code>method</code></a><span class="tableEntryAnnotation">[get]</span>
+						</td>
+						<td class="typecol"><code class="prettyprint lang-d"><span class="pln">diamond<wbr/></span><span class="pun">.</span><span class="pln">http<wbr/></span><span class="pun">.</span><span class="pln">method<wbr/></span><span class="pun">.</span><span class="typ">HttpMethod</span></code></td><td>Gets the method.
+</td>
+					</tr>
+					<tr>
+						<td>
+							<a href="../../../diamond/http/client/HttpClient.path.html" class="[&quot;public&quot;, &quot;property&quot;]"><code>path</code></a><span class="tableEntryAnnotation">[get]</span>
+						</td>
+						<td class="typecol"><code class="prettyprint lang-d"><span class="typ">string</span></code></td><td>Gets the raw path. Recommended to use the "route" property instead.
+</td>
+					</tr>
+					<tr>
+						<td>
+							<a href="../../../diamond/http/client/HttpClient.query.html" class="[&quot;public&quot;, &quot;property&quot;]"><code>query</code></a><span class="tableEntryAnnotation">[get]</span>
+						</td>
+						<td class="typecol"><code class="prettyprint lang-d"><span class="pln">vibe<wbr/></span><span class="pun">.</span><span class="pln">utils<wbr/></span><span class="pun">.</span><span class="pln">dictionarylist<wbr/></span><span class="pun">.</span><span class="typ">DictionaryList</span>!(string,true,16,false)</code></td><td>Gets a mapped query of the query string.
+</td>
+					</tr>
+					<tr>
+						<td>
+							<a href="../../../diamond/http/client/HttpClient.queryString.html" class="[&quot;public&quot;, &quot;property&quot;]"><code>queryString</code></a><span class="tableEntryAnnotation">[get]</span>
+						</td>
+						<td class="typecol"><code class="prettyprint lang-d"><span class="typ">string</span></code></td><td>Gets the query string.
+</td>
+					</tr>
+					<tr>
+						<td>
+							<a href="../../../diamond/http/client/HttpClient.rawRequest.html" class="[&quot;public&quot;, &quot;property&quot;]"><code>rawRequest</code></a><span class="tableEntryAnnotation">[get]</span>
+						</td>
+						<td class="typecol"><code class="prettyprint lang-d"><span class="pln">vibe<wbr/></span><span class="pun">.</span><span class="pln">http<wbr/></span><span class="pun">.</span><span class="pln">server<wbr/></span><span class="pun">.</span><span class="typ">HTTPServerRequest</span></code></td><td>Gets the raw vibe.d request.
+</td>
+					</tr>
+					<tr>
+						<td>
+							<a href="../../../diamond/http/client/HttpClient.rawResponse.html" class="[&quot;public&quot;, &quot;property&quot;]"><code>rawResponse</code></a><span class="tableEntryAnnotation">[get]</span>
+						</td>
+						<td class="typecol"><code class="prettyprint lang-d"><span class="pln">vibe<wbr/></span><span class="pun">.</span><span class="pln">http<wbr/></span><span class="pun">.</span><span class="pln">server<wbr/></span><span class="pun">.</span><span class="typ">HTTPServerResponse</span></code></td><td>Gets the raw vibe.d response.
+</td>
+					</tr>
+					<tr>
+						<td>
+							<a href="../../../diamond/http/client/HttpClient.redirected.html" class="[&quot;public&quot;, &quot;property&quot;]"><code>redirected</code></a><span class="tableEntryAnnotation">[get]</span>
+						</td>
+						<td class="typecol"><code class="prettyprint lang-d"><span class="typ">bool</span></code></td><td>Boolean determining whether the client has been redirected or not.
+</td>
+					</tr>
+					<tr>
+						<td>
+							<a href="../../../diamond/http/client/HttpClient.requestStream.html" class="[&quot;public&quot;, &quot;property&quot;]"><code>requestStream</code></a><span class="tableEntryAnnotation">[get]</span>
+						</td>
+						<td class="typecol"><code class="prettyprint lang-d"><span class="pln">vibe<wbr/></span><span class="pun">.</span><span class="pln">core<wbr/></span><span class="pun">.</span><span class="pln">stream<wbr/></span><span class="pun">.</span><span class="typ">InputStream</span></code></td><td>Gets the raw request stream.
+</td>
+					</tr>
+					<tr>
+						<td>
+							<a href="../../../diamond/http/client/HttpClient.responseStream.html" class="[&quot;public&quot;, &quot;property&quot;]"><code>responseStream</code></a><span class="tableEntryAnnotation">[get]</span>
+						</td>
+						<td class="typecol"><code class="prettyprint lang-d"><span class="pln">vibe<wbr/></span><span class="pun">.</span><span class="pln">core<wbr/></span><span class="pun">.</span><span class="pln">stream<wbr/></span><span class="pun">.</span><span class="typ">OutputStream</span></code></td><td>Gets the raw response stream.
+</td>
+					</tr>
+					<tr>
+						<td>
+							<a href="../../../diamond/http/client/HttpClient.role.html" class="[&quot;public&quot;, &quot;property&quot;]"><code>role</code></a><span class="tableEntryAnnotation">[get]</span>
+						</td>
+						<td class="typecol"><code class="prettyprint lang-d"><a href="../../../diamond/authentication/roles/Role.html"><span class="typ">Role</span></a></code></td><td>Gets the role associated with the client.
+</td>
+					</tr>
+					<tr>
+						<td>
+							<a href="../../../diamond/http/client/HttpClient.route.html" class="[&quot;public&quot;, &quot;property&quot;]"><code>route</code></a><span class="tableEntryAnnotation">[get]</span>
+						</td>
+						<td class="typecol"><code class="prettyprint lang-d"><span class="pln">diamond<wbr/></span><span class="pun">.</span><span class="pln">http<wbr/></span><span class="pun">.</span><span class="pln">route<wbr/></span><span class="pun">.</span><span class="typ">Route</span></code></td><td>Gets the route.
+</td>
+					</tr>
+					<tr>
+						<td>
+							<a href="../../../diamond/http/client/HttpClient.session.html" class="[&quot;public&quot;, &quot;property&quot;]"><code>session</code></a><span class="tableEntryAnnotation">[get]</span>
+						</td>
+						<td class="typecol"><code class="prettyprint lang-d"><a href="../../../diamond/http/sessions/HttpSession.html"><span class="typ">HttpSession</span></a></code></td><td>Gets the session.
+</td>
+					</tr>
+					<tr>
+						<td>
+							<a href="../../../diamond/http/client/HttpClient.tls.html" class="[&quot;public&quot;, &quot;property&quot;]"><code>tls</code></a><span class="tableEntryAnnotation">[get]</span>
+						</td>
+						<td class="typecol"><code class="prettyprint lang-d"><span class="typ">bool</span></code></td><td>Gets a boolean determnining whether the request was done over a secure tls protocol.
+</td>
+					</tr>
+				</table>
+			</section>
+			<section><h2>Methods</h2>
+				<table>
+					<col class="caption"/>
+					<tr>
+						<th>Name</th><th>Description</th>
+					</tr>
+					<tr>
+						<td>
+							<a href="../../../diamond/http/client/HttpClient.addContext.html" class="[&quot;public&quot;]">
+								<code>addContext</code>
+							</a>
+						</td>
+						<td>Adds a generic context value to the client.
+</td>
+					</tr>
+					<tr>
+						<td>
+							<a href="../../../diamond/http/client/HttpClient.error.html" class="[&quot;public&quot;]">
+								<code>error</code>
+							</a>
+						</td>
+						<td>Throws a http status exception.
+</td>
+					</tr>
+					<tr>
+						<td>
+							<a href="../../../diamond/http/client/HttpClient.getContext.html" class="[&quot;public&quot;]">
+								<code>getContext</code>
+							</a>
+						</td>
+						<td>Gets a value from the client's context.
+</td>
+					</tr>
+					<tr>
+						<td>
+							<a href="../../../diamond/http/client/HttpClient.hasContext.html" class="[&quot;public&quot;]">
+								<code>hasContext</code>
+							</a>
+						</td>
+						<td>Checks whether a value is present n the client's context or not.
+</td>
+					</tr>
+					<tr>
+						<td>
+							<a href="../../../diamond/http/client/HttpClient.login.html" class="[&quot;public&quot;]">
+								<code>login</code>
+							</a>
+						</td>
+						<td>Logs the client in.
+</td>
+					</tr>
+					<tr>
+						<td>
+							<a href="../../../diamond/http/client/HttpClient.logout.html" class="[&quot;public&quot;]">
+								<code>logout</code>
+							</a>
+						</td>
+						<td>Logs the client out.
+</td>
+					</tr>
+					<tr>
+						<td>
+							<a href="../../../diamond/http/client/HttpClient.notFound.html" class="[&quot;public&quot;]">
+								<code>notFound</code>
+							</a>
+						</td>
+						<td>Sends a 404 status.
+</td>
+					</tr>
+					<tr>
+						<td>
+							<a href="../../../diamond/http/client/HttpClient.redirect.html" class="[&quot;public&quot;]">
+								<code>redirect</code>
+							</a>
+						</td>
+						<td>Redirects the client.
+</td>
+					</tr>
+				</table>
+			</section>
+			
+			<footer>
+				<table class="license-info">
+					<tr>
+						<th>Authors</th>
+						<td>
+							
+						</td>
+					</tr>
+					<tr>
+						<th>Copyright</th>
+						<td>
+							
+						</td>
+					</tr>
+					<tr>
+						<th>License</th>
+						<td>
+							<p>MIT (https://github.com/DiamondMVC/Diamond/blob/master/LICENSE)
+</p>
+
+						</td>
+					</tr>
+				</table>
+				<p class="faint">Generated using the DDOX documentation generator</p>
+			</footer>
+		</div>
+	</body>
+</html>
