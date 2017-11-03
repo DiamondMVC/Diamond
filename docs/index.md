@@ -2,4 +2,4 @@
 
 <br>
 
-[Reference](https://diamondmvc.github.io/Diamond/docs/reference) | [API](https://diamondmvc.github.io/Diamond/docs/api)
+[Reference](https://diamondmvc.github.io/Diamond/docs/reference) | [API](https://diamondmvc.github.io/Diamond/docs/api) | [API (Offline)](https://diamondmvc.github.io/Diamond/docs/api/offline/diamond-apidocs.zip)
