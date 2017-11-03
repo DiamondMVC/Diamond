@@ -17,7 +17,7 @@ It's inspired by **ASP.NET** and uses **[vibe.d](http://vibed.org/)** for its ba
 | [ACL](#acl) | [Redis](#redis) | [Dynamic](#dynamic) | | [Asynchronous](#asynchronous) | [Version-control](#version-control) |
 | [Cross-platform](#cross-platform) | [Request-context](#request-context) | [Any D Code Can Be Executed](#any-d-code-can-be-executed) | | [Fibers/Tasks](#fiberstasks) | [Localization](#localization) |
 | [Website/Webapi Support](#websitewebapi-support) | [Cookies](#cookies) | | | [Sharding](#sharding) |
-| [Sessions](#sessions) | | | [Network Security & Restrictions](#network-security--restrictions) |
+| | [Sessions](#sessions) | | | [Network Security & Restrictions](#network-security--restrictions) | |
 
 ## General Features
 
