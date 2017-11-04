@@ -2,11 +2,10 @@
 
 <br>
 
-* [Creating a website]()
-* [Creating a webapi]()
-* [Using Diamond without Web]()
-* [Security & Authentication]()
-* [Advanced Layouts]()
-* [Advanced Routing]()
-* [Forms]()
-* [AJAX]()
+* [Creating a website](https://diamondmvc.github.io/Diamond/tutorials/website)
+* [Creating a webapi](https://diamondmvc.github.io/Diamond/tutorials/webapi)
+* [Using Diamond without Web](https://diamondmvc.github.io/Diamond/tutorials/stand-alone)
+* [Advanced Layouts](https://diamondmvc.github.io/Diamond/tutorials/advanced-layouts)
+* [Advanced Routing](https://diamondmvc.github.io/Diamond/tutorials/advanced-routing)
+* [Forms](https://diamondmvc.github.io/Diamond/tutorials/forms)
+* [AJAX](https://diamondmvc.github.io/Diamond/tutorials/ajax)
