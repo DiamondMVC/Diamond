@@ -169,7 +169,7 @@ final class HomeController(TView) : Controller!TView
   public:
   final:
   /**
-  * Creates a new instance of the login controller.
+  * Creates a new instance of the home controller.
   * Params:
   *   view =  The view assocaited with the controller.
   */
