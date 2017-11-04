@@ -171,9 +171,9 @@ final class HomeController : Controller
   /// Route: / | /home
   @HttpDefault Status home()
   {
-    return jsonString(q{{
+    return jsonString(`{
       "message": "Hello Diamond!"
-    }});
+    }`);
   }
 }
 ```
