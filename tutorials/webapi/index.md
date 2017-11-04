@@ -120,6 +120,18 @@ Explanations of them are right below.
   * *stticFiles* contains the default headers for static files.
   * *notFound* contains the default headers for actions not found.
   * *error* contains the default headers for errors.
+  
+## config/controllers.config
+
+```
+Home
+```
+
+Controllers should be separated per line with the following format:
+
+```
+{name without "Controller"}
+```
 
 ## controllers\package.d
 
