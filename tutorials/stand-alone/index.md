@@ -2,9 +2,7 @@
 
 <br>
 
-# Creating a website
-
-An empty template for a Diamond website can be found [here](https://github.com/DiamondMVC/Diamond-Template-WebServer).
+# Using Diamond stand-alone
 
 ## Project Structure
 
@@ -38,7 +36,7 @@ Explanations of them are right below.
 		"homepage": "http://mydiamondwebsiteproject.com/",
 		"license": "http://mydiamondwebsiteproject.com/license",
 		"dependencies": {
-			"diamond": "~>2.4.3"
+			"diamond": "~>2.4.5"
 		},
 		"sourcePaths": ["src", "models"],
 		"stringImportPaths": ["views", "config"],
