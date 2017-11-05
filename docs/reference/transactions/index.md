@@ -50,7 +50,7 @@ struct BankAccount
 
 Without transactions, committing something like a transfer of *$100* from *Bob* to *Sally* is not fail-proof ex. if the commit to the database fails then the transfer never happens, but we might already have updated the bank account of *Bob* to reflect he transfered *$100* and thus he lost *$100* and *Sally* never got the *$100*.
 
-With transactions doing a simple roll-back on both *Bob*'s bank account will fix the issue. Attempting to commit the transaction again may done, but isn't necessary as it could have happen due to some critical failure, in which you just want to make sure the commit didn't create any side-effects and in such situation, doing a roll-back only is preferred.
+With transactions doing a simple roll-back on both *Bob*'s and *Sally*'s bank account will fix the issue. Attempting to commit the transaction again may done, but isn't necessary as it could have happen due to some critical failure, in which you just want to make sure the commit didn't create any side-effects and in such situation, doing a roll-back only is preferred.
 
 ### Transaction Example
 
