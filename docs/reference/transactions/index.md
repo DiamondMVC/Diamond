@@ -61,8 +61,8 @@ auto sally = new Snapshot!BankAccount(BankAccount("Sally", 0));
 auto transaction = new Transaction!BankTransfer;
 transaction.commit = (transfer)
 {
-    bob.money -= transfer.money;
-    sally.money += transfer.money;
+    bob = BankAccount(bob.name, bob.money - transfer.money);
+    sally = BankAccount(sally.name, sally.money + transfer.money);
     
     UpdateBankAccount(bob);
     UpdateBankAccount(sally);
