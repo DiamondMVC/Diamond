@@ -27,6 +27,8 @@ static if (isWebApi)
       client.notFound();
     }
 
+    import diamond.controllers.status;
+    
     auto status = controllerAction(client).handle();
 
     if (status == Status.notFound)
