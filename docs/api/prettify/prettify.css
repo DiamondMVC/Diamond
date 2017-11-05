@@ -1,7 +1,7 @@
 /* Pretty printing styles. Used with prettify.js. */
 
 /* SPAN elements with the classes below are added by prettyprint. */
-.pln { color: #222 }  /* plain text */
+.pln { color: #aaa }  /* plain text */
 pre .pln, div.prototype .pln { color: #fff }  /* plain text */
 
 @media screen {
@@ -14,10 +14,10 @@ pre .pln, div.prototype .pln { color: #fff }  /* plain text */
   .str { color: #842 }  /* string content */
   .kwd { color: #ffaa00 }  /* a keyword */
   .com { color: #888 }  /* a comment */
-  .typ { color: #693 }  /* a type name */
+  .typ { color: #ffaa00 }  /* a type name */
   .lit { color: #875 }  /* a literal value */
   /* punctuation, lisp open bracket, lisp close bracket */
-  .pun, .opn, .clo { color: #222 }
+  .pun, .opn, .clo { color: #aaa }
   .tag { color: #ffaa00 }  /* a markup tag name */
   .atn { color: #9ad452 }  /* a markup attribute name */
   .atv { color: #ffe7b6 }  /* a markup attribute value */

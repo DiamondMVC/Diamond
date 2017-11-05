@@ -4,6 +4,7 @@ body {
 	font-family: "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", "Segoe UI", "Roboto Sans", "Open Sans", sans-serif;
 	font-size: 9.5pt;
 	display: flex;
+	min-height: 900px;
 }
 
 h1, h2, h3 { font-weight: lighter; }
@@ -11,8 +12,8 @@ h1 { margin-top: -5pt; }
 h2 { margin-top: 2em; }
 h3 { margin-top: 1.5em; }
 
-a { color: #13e; text-decoration: none; }
-a:hover { color: #48f; text-decoration: underline; }
+a { color: #48f; text-decoration: none; }
+a:hover { color: #4af; text-decoration: underline; }
 
 table { border-collapse: collapse; }
 th, td { padding: 0 10pt; vertical-align: top; }
@@ -35,7 +36,11 @@ span.decoration { color: #888; }
 	font-size: 9.5pt;
 	padding: 2em 1.5em;
 	min-width: 16em;
-	background: linear-gradient(#ddd, #fff), linear-gradient(90deg, rgba(255,255,255,1), rgba(255,255,255,0)), linear-gradient(#eee, #fff);
+	/*background: linear-gradient(#ddd, #fff), linear-gradient(90deg, rgba(255,255,255,1), rgba(255,255,255,0)), linear-gradient(#eee, #fff);*/
+	background:
+	linear-gradient(#000, #777), 
+	linear-gradient(90deg, rgba(60,60,60,1), rgba(60,60,60,0)), 
+	linear-gradient(#111, #666);
 	background-size: 1px 100%, 100% 100%, 100% 100%;
 	background-position: 100% 0, 0 0, 0 0;
 	background-repeat: no-repeat, no-repeat;
@@ -46,6 +51,8 @@ span.decoration { color: #888; }
 	font-size: 9.5pt;
 	padding: 2em;
 	flex-grow: 1;
+	background-color: #333;
+	color: #eee;
 }
 
 #symbolSearchPane form { margin-bottom: 1.5em; }
@@ -108,7 +115,7 @@ ul.tree-view .package:hover {
 
 ul.tree-view .module {
 	padding-left: 18px;
-	background-image: linear-gradient(rgba(255,255,255,0.5), rgba(255,255,255,0.5)), url(../images/ddox/module.png);
+	background-image: url(../images/ddox/module.png);
 	background-repeat: no-repeat, no-repeat;
 	background-position: left 1px, left 1px;
 	background-size: 18px 16px;
