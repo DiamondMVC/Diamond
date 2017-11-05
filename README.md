@@ -1,7 +1,7 @@
 # Diamond
 
 [![OS](https://img.shields.io/badge/os-windows%20%7C%20linux%20%7C%20macos-ff69b4.svg)](http://code.dlang.org/packages/diamond)
-[![LOC](https://img.shields.io/badge/lines--of--code-4000%2B%20%7C%207000%2B-yellow.svg)](http://code.dlang.org/packages/diamond)
+[![LOC](https://img.shields.io/badge/lines--of--code-5000%2B%20%7C%208000%2B-yellow.svg)](http://code.dlang.org/packages/diamond)
 [![Dub version](https://img.shields.io/dub/v/diamond.svg)](http://code.dlang.org/packages/diamond)
 [![Dub downloads](https://img.shields.io/dub/dt/diamond.svg)](http://code.dlang.org/packages/diamond)
 [![License](https://img.shields.io/dub/l/diamond.svg)](http://code.dlang.org/packages/diamond)
@@ -38,12 +38,11 @@ Website (Temporary): https://diamondmvc.github.io/Diamond/
 
 ## Dependencies
 
-|Package|Version|Optional|Description|
-|---|:--:|:--:|---|
-|vibe.d|0.8.1|Yes|Used as the backend for Diamond's web applications.|
-|DMD/Phobos|2.072.2 - 2.076.1|No|The standard library of D and thus a required dependency.|
-|Diamond-db|0.0.2|Yes|An ORM based on Mysql that is compatible with Diamond.|
-|Mysql-native|0.1.6|Yes|A native wrapper for Mysql. It's a dependency to Diamond-db.|
+|Package|Version|Description|
+|---|:--:|---|
+|vibe.d|0.8.1|Used as the backend for Diamond's web applications.|
+|DMD/Phobos|2.072.2 - 2.076.1|The standard library of D and thus a required dependency.|
+|Mysql-native|0.1.6|A native wrapper for Mysql. It's a dependency, because of the MySql ORM.|
 
 ## History
 
