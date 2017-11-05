@@ -38,7 +38,7 @@ private DateTime asDateTime(SysTime sysTime)
 */
 class MySqlModel(string tableName) : Model, IMySqlModel
 {
-  import mysql.db : Row;
+  import mysql.result : Row;
 
   private
   {

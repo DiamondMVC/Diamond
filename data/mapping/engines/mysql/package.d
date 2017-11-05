@@ -14,7 +14,7 @@ import std.string : format;
 import vibe.data.serialization : optional;
 
 import mysql.db;
-import mysql.protocol.commands;
+import mysql.commands;
 
 public
 {
