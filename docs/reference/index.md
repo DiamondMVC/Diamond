@@ -11,3 +11,5 @@
 * [ACL (Access-control-list)](https://diamondmvc.github.io/Diamond/docs/reference/acl)
 * [Cookies & Sessions](https://diamondmvc.github.io/Diamond/docs/reference/cookies-sessions)
 * [REST](https://diamondmvc.github.io/Diamond/docs/reference/rest)
+* [MySql ORM (Object-relational-mapping)](https://diamondmvc.github.io/Diamond/docs/reference/mysql-orm)
+* [Transactions](https://diamondmvc.github.io/Diamond/docs/reference/transactions)
