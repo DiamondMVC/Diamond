@@ -41,7 +41,8 @@ Explanations of them are right below.
     "homepage": "https://github.com/DiamondMVC/Diamond-Template-WebApi",
     "dependencies": {
         "vibe-d": "~>0.8.1",
-        "diamond": "~>2.4.3"
+        "diamond": "~>2.4.5",
+        "mysql-native": "~>1.1.2"
     },
     "versions": ["VibeDefaultMain", "Diamond_Debug", "Diamond_WebApi"],
     "sourcePaths": ["core", "models", "controllers"],
