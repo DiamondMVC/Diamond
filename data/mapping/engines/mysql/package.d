@@ -49,8 +49,13 @@ private class DbConfig
 /// Static shared constructor for the module.
 shared static this()
 {
-  import std.file : readText;
+  import std.file : exists, readText;
   import vibe.d : deserializeJson;
+  
+  if (!exists("config/db.json"))
+  {
+    return;
+  }
 
   auto dbConfig = deserializeJson!DbConfig(readText("config/db.json"));
 
