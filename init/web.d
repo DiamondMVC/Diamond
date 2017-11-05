@@ -79,10 +79,6 @@ static if (isWeb)
     mixin GenerateGetView;
   }
 
-  private:
-  /// The static file handlers.
-  __gshared HTTPServerRequestDelegateS[string] _staticFiles;
-
   static if (isWebApi)
   {
     import diamond.controllers;
@@ -92,6 +88,11 @@ static if (isWeb)
 
     mixin GenerateControllers!(controllerData);
   }
+
+
+  private:
+  /// The static file handlers.
+  __gshared HTTPServerRequestDelegateS[string] _staticFiles;
 
   /// Loads the static file handlers.
   void loadStaticFiles()
