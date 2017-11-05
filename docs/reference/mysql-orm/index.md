@@ -175,3 +175,61 @@ auto modelsToDelete = [model1, model2];
 
 modelsToDelete.deleteMany();
 ```
+
+## Parameters
+
+Diamond's MySql implementation allows for two types of parametized queries.
+
+The first one is the traditional parametized statement using **?** and the second one is one using named parameters like **@name**.
+
+### Traditional
+
+To use traditional parameters you must use the **\*raw()** functions provided by the MySql API such as:
+
+* executeRaw()
+* existsRaw()
+* readManyRaw()
+* readSingleRaw()
+* scalarInsertRaw()
+* scalarRaw()
+
+Example:
+
+```
+import models;
+import diamond.database;
+
+static const sql = "SELECT * FROM `mymodel_table` WHERE id = ?";
+
+auto params = getParams(1);
+params[0] = cast(ulong)1;
+
+auto model = MySql.readSingleRaw!MyModel(sql, params);
+```
+
+### Named Parameters
+
+To use named parameters you must use the **non-\*raw()** functions provided by the MySql API such as:
+
+* execute()
+* exists()
+* readMany()
+* readSingle()
+* scalarInsert()
+* scalar()
+
+When using the named parameter **@table** then it will automatically take the table name from the model. You don't need to add **@table** to the named-parameters collection.
+
+Example:
+
+```
+import models;
+import diamond.database;
+
+static const sql = "SELECT * FROM `@table` WHERE id = @id";
+
+auto params = getParams();
+params["id"] = cast(ulong)1;
+
+auto model = MySql.readSingle!MyModel(sql, params);
+```
