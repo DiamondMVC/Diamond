@@ -50,28 +50,6 @@ Diamond was originally written as a template parsing library only; completely as
 
 The legacy project of Diamond can be found here: https://github.com/bausshf/Diamond/
 
-## Quick-links
-
-Syntax Reference: https://github.com/DiamondMVC/Diamond/wiki/Syntax-Reference
-
-Comparison with ASP.NET Razor: https://github.com/DiamondMVC/Diamond/wiki/Razor-Comparison
-
-Controller Tutorial: https://github.com/DiamondMVC/Diamond/wiki/Controller-Tutorial
-
-Understanding The Core: https://github.com/DiamondMVC/Diamond/wiki/Understanding-The-Core
-
-Using Diamond Stand-alone: https://github.com/DiamondMVC/Diamond/wiki/Using-Diamond-Stand-alone
-
-Using Diamond for Web-api: https://github.com/DiamondMVC/Diamond/wiki/Using-Diamond-For-WebApi
-
-Using Diamond for Web-server: https://github.com/DiamondMVC/Diamond/wiki/Using-Diamond-For-WebServer
-
-Extensions: https://github.com/DiamondMVC/Diamond/wiki/Extensions
-
-Authentication & ACL: https://github.com/DiamondMVC/Diamond/wiki/Authentication-&-ACL
-
-Blog posts: https://github.com/DiamondMVC/Diamond/wiki/Blog-Posts
-
 ## Features - Web
 
 * Full control over requests / responses when wanted.
@@ -166,11 +144,17 @@ Blog posts: https://github.com/DiamondMVC/Diamond/wiki/Blog-Posts
 * Models are optional
 * Models can be passed around in view rendering
 
+## Features - Other
+
+* Cross-platform
+* Transactions & Shapshot-types
+* Object-relational-mapping
+
 ## FAQ
 
 ### What is Diamond?
 
-Diamond is a powerful cross-platform full-fletch MVC / Template Framework written in The D Programming language.
+Diamond is a powerful cross-platform full-stack MVC / Template Framework written in The D Programming language.
 
 ### What does Diamond depend on?
 
@@ -178,11 +162,11 @@ View the dependencies above.
 
 ### What is the dependency to Vibe.d?
 
-Diamond uses vibe.d as the backend for its webapplications. This comes historically fromthat Diamond was originally written as an alternative template engine to vibe.d's diet templates.
+Diamond uses vibe.d as the backend for its web-applications. This comes historically from that Diamond was originally written as an alternative template engine to vibe.d's diet templates.
 
 ### What syntax does Diamond use?
 
-Diamond is heavily inspired by the ASP.NET Razor syntax, but still differs a lot from it. You can read more about that in the wiki under Syntax Reference or the comparison with ASP.NET Razor
+Diamond is heavily inspired by the ASP.NET Razor syntax, but still differs a lot from it. You can read more about that on the website.
 
 ### What advantage does Diamond have over Diet?
 
@@ -212,7 +196,7 @@ Diamond has been made in a way that it's very easy to use and integrate into pro
 
 ### Are there any syntax guide-lines?
 
-The wiki has two syntax guide-lines one for the specific syntax of Diamond and one that compares it with ASP.NET Razor.
+See: https://diamondmvc.github.io/Diamond/docs/reference/views/
 
 ## Installing (Web)
 
@@ -266,6 +250,6 @@ Diamond only supports up to the 3 latest minor versions of itself, including pre
 
 If a version is not supported its working branch is deleted.
 
-Currently supported versions: 2.2.0 - 2.4.3
+Currently supported versions: 2.2.0 - 2.4.4
 
 No longer supported (Only available in release.): 2.0.0 - 2.1.2
