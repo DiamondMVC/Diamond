@@ -12,14 +12,15 @@ This site is only a temporary website until the actual website can be hosted.
 
 |General Features|Data & Storage|Views & Frontend|Controllers|More|Upcoming|
 |:---:|:---:|:---:|:---:|:---:|:---:|
-| [Low Memory & CPU Consumption](#low-memory--cpu-consumption) | [ORM](#orm) | [Compile-time Parsing](#compile-time-parsing) | [Auto-mapping](#auto-mapping) | [Authentication](#authentication) | [Transactions](#transactions) |
-| [MVC & HMVC](#mvc--hmvc) | [MySql ORM](#mysql-orm) | [Partial Views](#partial-views) | [View-integration](#view-integration) | [CSRF Protection](#csrf-protection) | [Unittesting](#unittesting) |
-| [RESTful](#restful) | [Caching](#caching) | [Layouts](#layouts) | [Mandatory Actions](#mandatory-actions) | [Cryptography](#cryptography) | [Logging](#logging) |
-| [Advanced Routing](#advanced-routing) | [Mongo](#mongo) | [Fast & Performant Rendering](#fast--performant-rendering) | | [JSON/BSON](#jsonbson) | [Flash-messages](#flash-messages) |
-| [ACL](#acl) | [Redis](#redis) | [Dynamic](#dynamic) | | [Asynchronous](#asynchronous) | [Version-control](#version-control) |
-| [Cross-platform](#cross-platform) | [Request-context](#request-context) | [Any D Code Can Be Executed](#any-d-code-can-be-executed) | | [Fibers/Tasks](#fiberstasks) | [Localization](#localization) |
-| [Website/Webapi Support](#websitewebapi-support) | [Cookies](#cookies) | | | [Sharding](#sharding) |
+| [Low Memory & CPU Consumption](#low-memory--cpu-consumption) | [ORM](#orm) | [Compile-time Parsing](#compile-time-parsing) | [Auto-mapping](#auto-mapping) | [Authentication](#authentication) | [Unittesting](#unittesting) |
+| [MVC & HMVC](#mvc--hmvc) | [MySql ORM](#mysql-orm) | [Partial Views](#partial-views) | [View-integration](#view-integration) | [CSRF Protection](#csrf-protection) | [Logging](#logging) |
+| [RESTful](#restful) | [Caching](#caching) | [Layouts](#layouts) | [Mandatory Actions](#mandatory-actions) | [Cryptography](#cryptography) | [Flash-messages](#flash-messages) |
+| [Advanced Routing](#advanced-routing) | [Mongo](#mongo) | [Fast & Performant Rendering](#fast--performant-rendering) | | [JSON/BSON](#jsonbson) | [Version-control](#version-control) |
+| [ACL](#acl) | [Redis](#redis) | [Dynamic](#dynamic) | | [Asynchronous](#asynchronous) | [Localization](#localization) |
+| [Cross-platform](#cross-platform) | [Request-context](#request-context) | [Any D Code Can Be Executed](#any-d-code-can-be-executed) | | [Fibers/Tasks](#fiberstasks) | |
+| [Website/Webapi Support](#websitewebapi-support) | [Cookies](#cookies) | | | [Sharding](#sharding) | |
 | | [Sessions](#sessions) | | | [Network Security & Restrictions](#network-security--restrictions) | |
+| | [Transactions](#transactions) | | | | |
 
 ## General Features
 
@@ -84,6 +85,10 @@ Diamond has a very user-friendly cookie API directly bound to the request's http
 ### Sessions
 
 Diamond supports sessions, which can share data and cached views between multiple requests from the same user/browser.
+
+### Transactions
+
+Transactions allows for transactional memory management, as well transactional database integration. It's useful to perform secure data transactions where invalid/incomplete data cannot be afforded.
 
 ## Views & Frontend
 
@@ -160,10 +165,6 @@ Diamond supports multiple database systems such as MySql, Mongo and Redis and in
 Network security and restrictions can easily be done per controller actions/route or globally for the whole application. This allows to restrict certain areas of the application to ex. a local network; very useful for intern administration websites that are hosted on the same server as a public website.
 
 ## Upcoming
-
-### Transactions
-
-Transactions allows for transactional memory management, as well transactional database integration. It's useful to perform secure data transactions where invalid/incomplete data cannot be afforded.
 
 ### Unittesting
 
