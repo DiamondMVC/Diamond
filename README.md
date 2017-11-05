@@ -42,7 +42,7 @@ Website (Temporary): https://diamondmvc.github.io/Diamond/
 |---|:--:|---|
 |vibe.d|0.8.1|Used as the backend for Diamond's web applications.|
 |DMD/Phobos|2.072.2 - 2.076.1|The standard library of D and thus a required dependency.|
-|Mysql-native|0.1.6|A native wrapper for Mysql. It's a dependency, because of the MySql ORM.|
+|Mysql-native|1.1.2|A native wrapper for Mysql. It's a dependency, because of the MySql ORM.|
 
 ## History
 
