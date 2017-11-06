@@ -12,15 +12,15 @@ This site is only a temporary website until the actual website can be hosted.
 
 |General Features|Data & Storage|Views & Frontend|Controllers|More|Upcoming|
 |:---:|:---:|:---:|:---:|:---:|:---:|
-| [Low Memory & CPU Consumption](#low-memory--cpu-consumption) | [ORM](#orm) | [Compile-time Parsing](#compile-time-parsing) | [Auto-mapping](#auto-mapping) | [Authentication](#authentication) | [Unittesting](#unittesting) |
-| [MVC & HMVC](#mvc--hmvc) | [MySql ORM](#mysql-orm) | [Partial Views](#partial-views) | [View-integration](#view-integration) | [CSRF Protection](#csrf-protection) | [Logging](#logging) |
-| [RESTful](#restful) | [Caching](#caching) | [Layouts](#layouts) | [Mandatory Actions](#mandatory-actions) | [Cryptography](#cryptography) | [Flash-messages](#flash-messages) |
-| [Advanced Routing](#advanced-routing) | [Mongo](#mongo) | [Fast & Performant Rendering](#fast--performant-rendering) | | [JSON/BSON](#jsonbson) | [Version-control](#version-control) |
-| [ACL](#acl) | [Redis](#redis) | [Dynamic](#dynamic) | | [Asynchronous](#asynchronous) | [Localization](#localization) |
+| [Low Memory & CPU Consumption](#low-memory--cpu-consumption) | [ORM](#orm) | [Compile-time Parsing](#compile-time-parsing) | [Auto-mapping](#auto-mapping) | [Authentication](#authentication) | [Logging](#logging) |
+| [MVC & HMVC](#mvc--hmvc) | [MySql ORM](#mysql-orm) | [Partial Views](#partial-views) | [View-integration](#view-integration) | [CSRF Protection](#csrf-protection) | [Flash-messages](#flash-messages) |
+| [RESTful](#restful) | [Caching](#caching) | [Layouts](#layouts) | [Mandatory Actions](#mandatory-actions) | [Cryptography](#cryptography) | [Version-control](#version-control) |
+| [Advanced Routing](#advanced-routing) | [Mongo](#mongo) | [Fast & Performant Rendering](#fast--performant-rendering) | | [JSON/BSON](#jsonbson) | [Localization](#localization) |
+| [ACL](#acl) | [Redis](#redis) | [Dynamic](#dynamic) | | [Asynchronous](#asynchronous) | |
 | [Cross-platform](#cross-platform) | [Request-context](#request-context) | [Any D Code Can Be Executed](#any-d-code-can-be-executed) | | [Fibers/Tasks](#fiberstasks) | |
 | [Website/Webapi Support](#websitewebapi-support) | [Cookies](#cookies) | | | [Sharding](#sharding) | |
 | | [Sessions](#sessions) | | | [Network Security & Restrictions](#network-security--restrictions) | |
-| | [Transactions](#transactions) | | | | |
+| | [Transactions](#transactions) | | | [Unittesting](#unittesting) | |
 
 ## General Features
 
@@ -164,11 +164,11 @@ Diamond supports multiple database systems such as MySql, Mongo and Redis and in
 
 Network security and restrictions can easily be done per controller actions/route or globally for the whole application. This allows to restrict certain areas of the application to ex. a local network; very useful for intern administration websites that are hosted on the same server as a public website.
 
-## Upcoming
-
 ### Unittesting
 
-Unittesting is a must for enterprise development and must be implemented for an application to make sure everything works how it's suppsed to be. Unittesting in Diamond will allow for you to create specialized requests that can target certain areas of your application.
+Unittesting is a must for enterprise development and must be implemented for an application to make sure everything works how it's supposed to be. Unittesting in Diamond will allow for you to create specialized requests that can target certain areas of your application.
+
+## Upcoming
 
 ### Logging
 
