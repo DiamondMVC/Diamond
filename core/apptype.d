@@ -31,4 +31,15 @@ public
 
   /// Boolean determining whether the application is web related or not.
   static const bool isWeb = isWebServer || isWebApi;
+
+  version (Diamond_UnitTesting)
+  {
+    /// Boolean determining whether the application is running tests or not.
+    static const bool isTesting = true;
+  }
+  else
+  {
+    /// Boolean determining whether the application is running tests or not.
+    static const bool isTesting = false;
+  }
 }

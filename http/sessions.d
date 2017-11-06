@@ -93,7 +93,7 @@ static if (isWeb)
     * Returns:
     *   Returns the value retrieved or defaultValue if not found.
     */
-    T getValue(T = string)(string name, T defaultValue = T.init)
+    T getValue(T = string)(string name, lazy T defaultValue = T.init)
     {
       Variant value = _session.values.get(name, Variant.init);
 
@@ -357,7 +357,7 @@ static if (isWeb)
     {
       if (retries)
       {
-        runTask((InternalHttpSession s, size_t r) { invalidateSession(s, r, true); }, session, retries--);
+        runTask((InternalHttpSession s, size_t r) { invalidateSession(s, r, true); }, session, retries - 1);
       }
     }
   }

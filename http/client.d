@@ -206,6 +206,33 @@ static if (isWeb)
       }
     }
 
+    /// Gets a model from the request's json.
+    T getModelFromJson(T, CTORARGS...)(CTORARGS args)
+    {
+      import vibe.data.json;
+
+      static if (is(T == struct))
+      {
+        T value;
+
+        value.deserializeJson(_request.json);
+
+        return value;
+      }
+      else static if (is(T == class))
+      {
+        auto value = new T(args);
+
+        value.deserializeJson(_request.json);
+
+        return value;
+      }
+      else
+      {
+        static assert(0);
+      }
+    }
+
     /**
     * Adds a generic context value to the client.
     * Params:
@@ -225,7 +252,7 @@ static if (isWeb)
     * Returns:
     *   The value if found, defaultValue otherwise.
     */
-    T getContext(T)(string name, T defaultValue = T.init)
+    T getContext(T)(string name, lazy T defaultValue = T.init)
     {
       import std.variant : Variant;
       Variant value = _request.context.get(name, Variant.init);
