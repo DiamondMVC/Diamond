@@ -14,6 +14,7 @@ static if (isWeb)
   import diamond.errors;
   import diamond.authentication;
   import diamond.security;
+  import diamond.unittesting;
 
   static if (isWebServer)
   {
@@ -61,6 +62,13 @@ static if (isWeb)
 
       print("The %s %s is now running.",
         isWebServer ? "web-server" : "web-api", webConfig.name);
+
+      static if (isTesting)
+      {
+        import vibe.core.core;
+
+        runTask({ initializeTests(); });
+      }
     }
     catch (Throwable t)
     {
@@ -116,7 +124,7 @@ static if (isWeb)
     settings.bindAddresses = ipAddresses;
     settings.accessLogToConsole = webConfig.accessLogToConsole;
     settings.errorPageHandler = (HTTPServerRequest request, HTTPServerResponse response, HTTPServerErrorInfo error)
-    {
+    {  
       import diamond.extensions;
       mixin ExtensionEmit!(ExtensionType.handleError, q{
         if (!{{extensionEntry}}.handleError(request, response, error))
@@ -163,6 +171,14 @@ static if (isWeb)
     try
     {
       auto client = new HttpClient(request, response, new Route(request));
+
+      static if (isTesting)
+      {
+        if (!testsPassed && client.ipAddress != "127.0.0.1")
+        {
+          client.error(HttpStatus.serviceUnavailable);
+        }
+      }
 
       validateGlobalRestrictedIPs(client);
 

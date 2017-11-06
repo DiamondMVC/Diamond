@@ -269,5 +269,16 @@ static if (isWeb)
 
       return value.hasValue ? value.get!T : defaultValue;
     }
+
+    static if (isTesting)
+    {
+      @property
+      {
+        import diamond.unittesting;
+
+        /// Gets a boolean determnining whether the request is a test or not.
+        bool testing() { return !testsPassed; }
+      }
+    }
   }
 }

@@ -69,7 +69,7 @@ static if (!isWebApi)
       this(HttpClient client, string name)
       {
         import diamond.errors.checks;
-        
+
         _client = enforceInput(client, "Cannot create a view without an associated client.");
         _name = name;
 
@@ -153,6 +153,14 @@ static if (!isWebApi)
           }
 
           return rootPathValue;
+        }
+
+        static if (isTesting)
+        {
+          import diamond.unittesting;
+
+          /// Gets a boolean determnining whether the request is a test or not.
+          bool testing() { return !testsPassed; }
         }
       }
 
