@@ -24,7 +24,7 @@ This site is only a temporary website until the actual website can be hosted.
 | [Advanced Routing](#advanced-routing) | [Mongo](#mongo) | [Fast & Performant Rendering](#fast--performant-rendering) | | [JSON/BSON](#jsonbson) | [Localization](#localization) |
 | [ACL](#acl) | [Redis](#redis) | [Dynamic](#dynamic) | | [Asynchronous](#asynchronous) | |
 | [Cross-platform](#cross-platform) | [Request-context](#request-context) | [Any D Code Can Be Executed](#any-d-code-can-be-executed) | | [Fibers/Tasks](#fiberstasks) | |
-| [Website/Webapi Support](#websitewebapi-support) | [Cookies](#cookies) | | | [Sharding](#sharding) | |
+| [Website/Webapi Support](#websitewebapi-support) | [Cookies](#cookies) | [Sections](#sections) | | [Sharding](#sharding) | |
 | | [Sessions](#sessions) | | | [Network Security & Restrictions](#network-security--restrictions) | |
 | | [Transactions](#transactions) | | | [Unittesting](#unittesting) | |
 
@@ -121,6 +121,10 @@ All views are dynamic and thus can render dynamic data.
 ### Any D Code Can Be Executed
 
 Views allows for any type of D code to be executed with no limits. This includes class generation, templates, functions, and expressions directly in the view. It's very useful to generate powerful and fast dynamic data, since D is natively compiled, so will the code execution for the view be and thus execution times for the code is very fast (On pair with C/C++.)
+
+### Setions
+
+Diamond allows views to be split up in multiple sections, which can allow for views to only be partially rendered. This is a unique feature to Diamond that isn't seen in many other frameworks, and especially not as such a clean and innovative implementation. It's a great help to ex. responsive designs.
 
 ## Controllers
 
