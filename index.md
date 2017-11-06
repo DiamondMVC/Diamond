@@ -122,7 +122,7 @@ All views are dynamic and thus can render dynamic data.
 
 Views allows for any type of D code to be executed with no limits. This includes class generation, templates, functions, and expressions directly in the view. It's very useful to generate powerful and fast dynamic data, since D is natively compiled, so will the code execution for the view be and thus execution times for the code is very fast (On pair with C/C++.)
 
-### Setions
+### Sections
 
 Diamond allows views to be split up in multiple sections, which can allow for views to only be partially rendered. This is a unique feature to Diamond that isn't seen in many other frameworks, and especially not as such a clean and innovative implementation. It's a great help to ex. responsive designs.
 
