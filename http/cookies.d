@@ -143,7 +143,7 @@ static if (isWeb)
     * Returns:
     *   True if the auth cookie is present, false otherwise.
     */
-    bool hasAuthCookie()
+    @property bool hasAuthCookie()
     {
       import diamondauth = diamond.authentication;
 

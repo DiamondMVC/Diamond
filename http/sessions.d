@@ -85,6 +85,13 @@ static if (isWeb)
     }
 
     public:
+    final:
+    @property
+    {
+      /// Gets the session id.
+      string id() { return _session.id; }
+    }
+    
     /**
     * Gets a session value.
     * Params:

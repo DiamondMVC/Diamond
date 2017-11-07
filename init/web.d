@@ -124,7 +124,7 @@ static if (isWeb)
     settings.bindAddresses = ipAddresses;
     settings.accessLogToConsole = webConfig.accessLogToConsole;
     settings.errorPageHandler = (HTTPServerRequest request, HTTPServerResponse response, HTTPServerErrorInfo error)
-    {  
+    {
       import diamond.extensions;
       mixin ExtensionEmit!(ExtensionType.handleError, q{
         if (!{{extensionEntry}}.handleError(request, response, error))
@@ -168,9 +168,15 @@ static if (isWeb)
   */
   void handleHTTPListen(HTTPServerRequest request, HTTPServerResponse response)
   {
+    auto client = new HttpClient(request, response, new Route(request));
+
     try
     {
-      auto client = new HttpClient(request, response, new Route(request));
+      static if (loggingEnabled)
+      {
+        import diamond.core.logging;
+        executeLog(LogType.before, client);
+      }
 
       static if (isTesting)
       {
@@ -224,6 +230,13 @@ static if (isWeb)
       {
         import diamond.init.files;
         handleStaticFiles(client, staticFile);
+
+        static if (loggingEnabled)
+        {
+          import diamond.core.logging;
+
+          executeLog(LogType.staticFile, client);
+        }
         return;
       }
 
@@ -242,9 +255,29 @@ static if (isWeb)
       {
         webSettings.onAfterRequest(client);
       }
+
+      static if (loggingEnabled)
+      {
+        import diamond.core.logging;
+        executeLog(LogType.after, client);
+      }
     }
     catch (Throwable t)
     {
+      static if (loggingEnabled)
+      {
+        import diamond.core.logging;
+
+        if (client.statusCode == HttpStatus.notFound)
+        {
+          executeLog(LogType.notFound, client);
+        }
+        else
+        {
+          executeLog(LogType.error, client, t.toString());
+        }
+      }
+
       auto e = cast(Exception)t;
 
       if (e)

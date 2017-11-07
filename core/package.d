@@ -16,4 +16,5 @@ public
   import diamond.core.senc;
   import diamond.core.string;
   import diamond.core.traits;
+  import diamond.core.logging;
 }

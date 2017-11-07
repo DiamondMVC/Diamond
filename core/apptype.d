@@ -35,11 +35,22 @@ public
   version (Diamond_UnitTesting)
   {
     /// Boolean determining whether the application is running tests or not.
-    static const bool isTesting = true;
+    static const bool isTesting = isWeb; // Testing can only be enabled for web applications.
   }
   else
   {
     /// Boolean determining whether the application is running tests or not.
     static const bool isTesting = false;
+  }
+
+  version (Diamond_Logging)
+  {
+    /// Boolean determining whether the application logs or not.
+    static const bool loggingEnabled = isWeb; // Testing can only be enabled for web applications.
+  }
+  else
+  {
+    /// Boolean determining whether the application logs or not.
+    static const bool loggingEnabled = false;
   }
 }
