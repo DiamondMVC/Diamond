@@ -14,3 +14,4 @@
 * [MySql ORM (Object-relational-mapping)](https://diamondmvc.github.io/Diamond/docs/reference/mysql-orm)
 * [Transactions](https://diamondmvc.github.io/Diamond/docs/reference/transactions)
 * [Unittesting](https://diamondmvc.github.io/Diamond/docs/reference/unittesting/)
+* [Logging](https://diamondmvc.github.io/Diamond/docs/reference/logging/)
