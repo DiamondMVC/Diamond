@@ -20,7 +20,7 @@ static if (isWeb)
   private static __gshared Role[string] _roles;
 
   /// The default role.
-  private static __gshared Role defaultRole;
+  package(diamond) static __gshared Role defaultRole;
 
   /// Gets a boolean determining whether there are roles or not.
   @property bool hasRoles() { return _roles.length > 0 && defaultRole !is null; }
