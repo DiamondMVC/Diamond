@@ -146,3 +146,66 @@ When logging to the database you must have a table structure like below:
 ```
 
 If you want to use another structure you must create a custom logger.
+
+You can use the implementation of **logToDatabase()** as reference:
+
+```
+  void logToDatabase(LogType logType, string table, void delegate(LogResult) callback = null, string connectionString = null)
+  {
+    log(logType,
+    (result)
+    {
+      import std.string : format;
+
+      auto sql = "
+      INSERT INTO `%s`
+      (
+        `logToken`,
+        `logType`,
+        `applicationName`,
+        `authToken`,
+        `requestIPAddress`, `requestMethod`, `requestHeaders`,
+        `requestBody`, `requestUrl`,
+        `responseHeaders`, `responseBody`, `responseStatusCode`,
+        `message`,
+        `timestamp`
+      )
+      VALUES
+      (
+        @logToken,
+        @logType,
+        @applicationName,
+        @authToken,
+        @requestIPAddress, @requestMethod, @requestHeaders,
+        @requestBody, @requestUrl,
+        @responseHeaders, @responseBody, @responseStatusCode,
+        @message,
+        NOW()
+      )".format(table);
+
+      import std.conv : to;
+      import diamond.database;
+
+      auto params = getParams();
+      params["logToken"] = result.logToken;
+      params["logType"] = to!string(result.logType);
+      params["applicationName"] = result.applicationName;
+      params["authToken"] = result.authToken;
+      params["requestIPAddress"] = result.ipAddress;
+      params["requestMethod"] = to!string(result.requestMethod);
+      params["requestHeaders"] = result.requestHeaders;
+      params["requestBody"] = result.requestBody;
+      params["requestUrl"] = result.requestUrl;
+      params["responseHeaders"] = result.responseHeaders;
+      params["responseBody"] = result.responseBody;
+      params["responseStatusCode"] = cast(int)result.responseStatusCode;
+      params["message"] = result.message;
+
+      MySql.execute(sql, params, connectionString);
+
+      if (callback !is null)
+      {
+        callback(result);
+      }
+    });
+```
