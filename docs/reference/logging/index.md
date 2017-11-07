@@ -208,4 +208,5 @@ You can use the implementation of **logToDatabase()** as reference:
         callback(result);
       }
     });
+  }
 ```
