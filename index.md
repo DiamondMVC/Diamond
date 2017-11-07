@@ -179,11 +179,11 @@ Network security and restrictions can easily be done per controller actions/rout
 
 Unittesting is a must for enterprise development and must be implemented for an application to make sure everything works how it's supposed to be. Unittesting in Diamond will allow for you to create specialized requests that can target certain areas of your application.
 
-## Upcoming
-
 ### Logging
 
-Logging is useful to have information available about ex. requests processed with errors, application crash logs etc.
+Logging is useful to log information about requests, responses, errors etc. It's an essential tool for debugging enterprise applications.
+
+## Upcoming
 
 ### Flash-messages
 
