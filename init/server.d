@@ -60,11 +60,11 @@ static if (isWebServer)
 
     if (pageResult && pageResult.length)
     {
-      client.responseStream.write(pageResult);
+      client.write(pageResult);
     }
     else
     {
-      client.responseStream.write("\n");
+      client.write("\n");
     }
   }
 }

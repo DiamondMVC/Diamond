@@ -247,7 +247,7 @@ static if (isWebServer)
       }
 
       _view.client.rawResponse.headers["Content-Type"] = "text/json; charset=UTF-8";
-      _view.client.rawResponse.bodyWriter.write(s);
+      _view.client.write(s);
 
       return Status.end;
     }
@@ -496,7 +496,7 @@ else static if (isWebApi)
       }
 
       _client.rawResponse.headers["Content-Type"] = "text/json; charset=UTF-8";
-      _client.rawResponse.bodyWriter.write(s);
+      _client.write(s);
 
       return Status.end;
     }

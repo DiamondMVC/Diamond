@@ -50,6 +50,12 @@ static if (isWeb)
     /// Boolean determnining whether the client has been redirected or not.
     bool _redirected;
 
+    /// The data written to the response.
+    ubyte[] _data;
+
+    /// the status code for the response.
+    HttpStatus _statusCode;
+
     final:
     package(diamond)
     {
@@ -204,6 +210,9 @@ static if (isWeb)
 
         return _role;
       }
+
+      /// Gets the status code of the response.
+      HttpStatus statusCode() { return _statusCode; }
     }
 
     /// Gets a model from the request's json.
@@ -307,6 +316,9 @@ static if (isWeb)
     */
     void error(HttpStatus status)
     {
+      _statusCode = status;
+      _response.statusCode = _statusCode;
+
       throw new HTTPStatusException(status);
     }
 
@@ -333,6 +345,45 @@ static if (isWeb)
     {
       import diamondauth = diamond.authentication;
       diamondauth.logout(this);
+    }
+
+    /**
+    * Writes data to the response stream.
+    * Params:
+    *   data = The data to write.
+    */
+    void write(string data)
+    {
+      static if (loggingEnabled)
+      {
+        _data ~= cast(ubyte[])data;
+      }
+
+      _response.bodyWriter.write(data);
+    }
+
+    /**
+    * Writes data to the response stream.
+    * Params:
+    *   data = The data to write.
+    */
+    void write(ubyte[] data)
+    {
+      static if (loggingEnabled)
+      {
+        _data ~= data;
+      }
+
+      _response.bodyWriter.write(data);
+    }
+
+    static if (loggingEnabled)
+    {
+      /// Gets the body data from the response stream.
+      package(diamond) ubyte[] getBody()
+      {
+        return _data;
+      }
     }
   }
 }
