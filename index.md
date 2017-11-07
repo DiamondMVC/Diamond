@@ -525,15 +525,17 @@ auto model = client.getModelFromJson!MyModel;
 
 Diamond requests are processed asynchrnously through vibe.d, making request processing fast and powerful. Actions etc. can also be executed asynchronously using the API provided by vibe.d.
 
-Source: http://vibed.org/features
-
 [![Async](http://vibed.org/images/feature_event.png)](http://vibed.org/features)
+
+Source: http://vibed.org/features
 
 ### Fibers/Tasks
 
 Fibers and tasks are supported through vibe.d allowing for very powerful and performant multi-threading.
 
 [![Fibers](http://vibed.org/images/feature_fibers.png)](http://vibed.org/features)
+
+Source: http://vibed.org/features
 
 ### Sharding
 
