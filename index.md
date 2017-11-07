@@ -39,21 +39,94 @@ Diamond uses vibe.d as backend for processing requests, which currently processe
 
 Diamond has a full integrated Model-view-controller implementation which is based on a similar design to ASP.NET. Implementing views, controllers and models is a striaghtforward concept in Diamond and made to feel as natural as possible.
 
+[![MVC](https://diamondmvc.github.io/Diamond/images/mvc.jpg)](https://diamondmvc.github.io/Diamond/images/mvc.jpg)
+
 ### RESTful
 
 Diamond can be RESTful if necessary. REST integration becomes very powerful & secure with the combination of ACL.
+
+```
+@HttpAction(HttpGet, "/product/{uint:productId}/") Status getProduct()
+{
+    auto productId = get!uint("productId");
+    auto product = getProductFromDatabase(productId);
+
+    return json(product);
+}
+```
+
+```
+@HttpAction(HttpPut, "/product/{uint:productId}/") Status insertOrUpdateProduct()
+{
+    auto productId = get!uint("productId"); // If the id is 0 then we'll insert, else we'll update.
+
+    insertProductToDatabase(productId, view.client.json); // Normally you'll want to deserialize the json
+
+    return jsonString(`{
+        "success": true
+    }`);
+}
+```
+
+```
+@HttpAction(HttpDelete, "/product/{uint:productId}/") Status deleteProduct()
+{
+    auto productId = get!uint("productId");
+
+    deleteProductFromDatabase(productId);
+
+    return jsonString(`{
+        "success": true
+    }`);
+}
+```
 
 ### Advanced Routing
 
 Diamond allows for advanced routing with controller actions, which can be type-secure.
 
+```
+@HttpAction(HttpGet, "/<>/{uint:userId}/groups/{string:groupName}/") getUserGroup()
+{
+    auto userId = get!uint("userId");
+    auto groupName = get!string("groupName");
+    
+    auto userGroup = getUserGroupFromDatabase(userId, groupName);
+    
+    return json(userGroup);
+}
+```
+
 ### ACL (Access Control List)
 
 Diamond has a full-fletched build-in ACL implementation. It allows for custom creation of roles and permission control of resources. ACL can be combined with the build-in authentication too.
 
+```
+auto administrators = addRole("administrators");
+
+auto owner = addRole("owner", administrators);
+auto superUser = addRole("super-user", administrators);
+```
+
+```
+auto guest = addRole("guest")
+  .addPermission("/", true, false, false, false) // Guests can view home page
+  .addPermission("/user", true, true, false, false) // Guests can view user pages, as well register (POST)
+  .addPermission("/login", true, true, false, false) // Guests can view login page, as well login (POST)
+  .addPermission("/logout", false, false, false, false); // Guests cannot logout, because they're not logged in
+
+auto user = addRole("user")
+  .addPermission("/", true, false, false, false) // Users can view home page
+  .addPermission("/user", true, false, true, false) // Users can view user pages, as well update user information (PUT)
+  .addPermission("/login", false, false, false, false) // Users cannot view login page or login
+  .addPermission("/logout", false, true, false, false); // Users can logout (POST)
+```
+
 ### Cross-platform
 
 Diamond supports all platforms that both vibe.d & D supports, which includes Windows, Linux, macOS/OSX and more.
+
+[![OS](https://img.shields.io/badge/os-windows%20%7C%20linux%20%7C%20macos-ff69b4.svg)](http://code.dlang.org/packages/diamond)
 
 ### Website/Webapi Support
 
@@ -69,9 +142,26 @@ Diamond has a build-in ORM (Diamond-db) which can be used to map customized data
 
 By default Diamond has a build-in ORM for Mysql. It's very powerful since it's based on the native mysql library.
 
+```
+module models.mymodel;
+
+import diamond.database;
+
+class MyModel : MySql.MySqlModel!"mymodel_table"
+{
+  public:
+  @DbId ulong id;
+  string name;
+
+  this() { super(); }
+}
+```
+
 ### Caching
 
 Diamond implements a lot of caching techniques behind the scenes. It also allows for custom caching of ex. expensive views.
+
+[![Cache](https://diamondmvc.github.io/Diamond/images/cache.jpg)](https://diamondmvc.github.io/Diamond/images/cache.jpg)
 
 ### Mongo
 
@@ -162,6 +252,11 @@ JSON & BSON is supported through the vibe.d integration, but some high-level jso
 ### Asynchronous
 
 Diamond requests are processed asynchrnously through vibe.d, making request processing fast and powerful. Actions etc. can also be executed asynchronously using the API provided by vibe.d.
+
+Source: http://vibed.org/features
+
+[![Fibers](http://vibed.org/images/feature_fibers.png)](http://vibed.org/features)
+[![Async](http://vibed.org/images/feature_event.png)](http://vibed.org/features)
 
 ### Fibers/Tasks
 
