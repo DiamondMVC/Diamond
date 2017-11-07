@@ -167,25 +167,104 @@ Diamond implements a lot of caching techniques behind the scenes. It also allows
 
 Diamond has a full integration to Mongo through vibe.d
 
+Source: http://vibed.org/docs#mongo
+
+```
+import vibe.d;
+
+MongoClient client;
+
+void test()
+{
+	auto coll = client.getCollection("test.collection");
+	foreach (doc; coll.find(["name": "Peter"]))
+		logInfo("Found entry: %s", doc.toJson());
+}
+
+shared static this()
+{
+	client = connectMongoDB("127.0.0.1");
+}
+```
+
 ### Redis
 
 Diamond has a full integration to Redis through vibe.d
+
+See: http://vibed.org/docs#redis
 
 ### Request-contexts
 
 Diamond supports request contexts which allows for each request to have any type of data carried with them anywhere in the application.
 
+```
+client.addContext("someString", "Hello World!");
+
+...
+
+auto someString = client.getContext!string("someString", "someString wasn't found!");
+```
+
 ### Cookies
 
 Diamond has a very user-friendly cookie API directly bound to the request's http client.
+
+```
+client.cookies.create("myCookie", "Hello Cookie!", 60);
+
+...
+
+auto myCookie = client.cookies.get("myCookie");
+```
 
 ### Sessions
 
 Diamond supports sessions, which can share data and cached views between multiple requests from the same user/browser.
 
+```
+client.session.setValue("mySesionValue", "Hello Session!");
+
+...
+
+auto mySessionValue = client.session.getValue("mySessionValue");
+```
+
 ### Transactions
 
 Transactions allows for transactional memory management, as well transactional database integration. It's useful to perform secure data transactions where invalid/incomplete data cannot be afforded.
+
+```
+auto bob = new Snapshot!BankAccount(BankAccount("Bob", 200));
+auto sally = new Snapshot!BankAccount(BankAccount("Sally", 0));
+
+auto transaction = new Transaction!BankTransfer;
+transaction.commit = (transfer)
+{
+    bob = BankAccount(bob.name, bob.money - transfer.money);
+    sally = BankAccount(sally.name, sally.money + transfer.money);
+    
+    UpdateBankAccount(bob);
+    UpdateBankAccount(sally);
+};
+transaction.success = (transfer)
+{
+    import diamond.core.io;
+    
+    print("Successfully transferred $%d from %s to %s", transfer.money, transfer.from, transfer.to);
+    print("Bob's money: %d", bob.money);
+    print("Sally's money: %d", sally.money);
+};
+transaction.failure = (transfer, error, retries)
+{
+    bob.prev(); // Goes back to the previous state of Bob's bank account
+    sally.prev(); // Goes back to the previous state of Sally's bank account
+    
+    return false; // We don't want to retry ...
+};
+
+auto transfer = new Snapshot!BankTransfer(BankTransfer("Bob", "Sally", 100));
+transaction(transfer);
+```
 
 ## Views & Frontend
 
@@ -197,9 +276,56 @@ Views are parsed at compile-time and gets compiled into D classes that are execu
 
 Partial views can easily be implemented by creating normal views and simply calling he render functions from a view to render other vies.
 
+```
+@* In a view *
+
+@:render("myPartialView");
+
+...
+
+@:render("myPartialView", "someSection");
+
+...
+
+@render!"myPartialView"(new MyPartialViewModel("something something"));
+```
+
 ### Layouts
 
 Views can use layout views, which allows for advanced layout techniques and view mixins.
+
+layout.dd
+
+```
+@<doctype>
+<html>
+<head>
+  <title>@<title></title>
+</head>
+<body>
+  @<view>
+</body>
+</html>
+```
+
+home.dd
+
+```
+@[
+  layout:
+    layout
+---
+  route:
+    home
+---
+  placeHolders:
+    [
+      "title": "Home"
+    ]
+]
+
+The time is: <b>@=Clock.currTime();</b>
+```
 
 ### Fast & Performant Rendering
 
@@ -209,13 +335,51 @@ Views are rendered fast, because most of their rendering is done at compile-time
 
 All views are dynamic and thus can render dynamic data.
 
+```
+<ul>
+@:foreach (item; model.items) {
+    <li>
+        <b>@=item.name;</b>
+    </li>
+}
+</ul>
+```
+
 ### Any D Code Can Be Executed
 
 Views allows for any type of D code to be executed with no limits. This includes class generation, templates, functions, and expressions directly in the view. It's very useful to generate powerful and fast dynamic data, since D is natively compiled, so will the code execution for the view be and thus execution times for the code is very fast (On pair with C/C++.)
 
+```
+    @:void b(T)(T item) {
+        <strong>@=item;</strong>
+    }
+    @:b("Bold this");
+```
+
 ### Sections
 
 Diamond allows views to be split up in multiple sections, which can allow for views to only be partially rendered. This is a unique feature to Diamond that isn't seen in many other frameworks, and especially not as such a clean and innovative implementation. It's a great help to ex. responsive designs.
+
+view1:
+
+```
+@!phone:
+<div class="phone">
+    <p>Hello Phone!</p>
+</div>
+
+@!desktop:
+<div class="desktop">
+    <p>Hello Desktop!</p>
+</div>
+```
+
+view2:
+
+```
+@:render("view1", "phone"); // Will render view1 with the phone section
+@:render("view1", "desktop"); // Will render view1 with the desktop section
+```
 
 ## Controllers
 
@@ -223,13 +387,47 @@ Diamond allows views to be split up in multiple sections, which can allow for vi
 
 Controller actions are auto-mapped by their function definitions that are declared with special attributes.
 
+```
+/// Route: /controller_or_view_route/GetSomething
+@HttpAction(HttpGet) Status getSomething()
+{
+    auto someModel = getSomeModel();
+    
+    return json(someModel);
+}
+```
+
 ### View-integration
 
 Controllers have access directly to the view that's calling them. They can be shared between multiple views too.
 
+```
+@HttpDefault defaultAction()
+{
+    view.model = getViewModel();
+    
+    return Status.success;
+}
+```
+
 ### Mandatory Actions
 
 Controllers allows for mandatory actions, which are actions that are executed and must succeed on every request done to a controller.
+
+```
+/// Called for all requests done to the controller.
+@HttpMandatory Status isValidRequest()
+{
+    auto isValid = validateRequest(view.client);
+    
+    if (!isValid)
+    {
+        view.client.error(HttpStatus.badRequest);
+    }
+    
+    return Status.success;
+}
+```
 
 ## More
 
@@ -237,17 +435,91 @@ Controllers allows for mandatory actions, which are actions that are executed an
 
 Diamond has a full integrated authentication API that can be combined with the ACL to create a strong and secure authentication implementation.
 
+Login:
+
+```
+long loginTimeInMinutes = 99999;
+auto userRole = getRole("user");
+
+client.login(loginTimeinMinutes, userRole);
+```
+
+Logout:
+
+```
+client.logout();
+```
+
+```
+if (client.role.name == "user")
+{
+    // Logged in as a user ...
+}
+else
+{
+    // Not logged in as a user ...
+}
+```
+
 ### CSRF Protection
 
 CSRF Protection is build-in to Diamond and cann easily be integrated to forms, as well validated in an application's backend.
 
+View:
+
+```
+@:clearCSRFToken();
+
+<form>
+@:appendCSRFTokenField("formToken");
+
+@* other fields here *
+</form>
+```
+
+Controller:
+
+```
+auto bankTransferModel = view.client.getModelFromJson!BankTransferModel;
+
+import diamond.security;
+
+if (!isValidCSRFToken(view.client, bankTransferModel.formToken, true))
+{
+    view.client.error(HttpStatus.badRequest);
+}
+```
+
 ### Cryptography
 
-Cryptography is supported through the vibe.d integration.
+Cryptography is supported through the vibe.d's dependency to Botan.
+
+See: https://code.dlang.org/packages/botan/
 
 ### JSON/BSON
 
 JSON & BSON is supported through the vibe.d integration, but some high-level json support is done to integrate better with it.
+
+```
+auto model = client.getModelFromJson!MyModel;
+```
+
+```
+@HttpAction(HttpGet) Status getModel()
+{
+     return json(getMyModel());
+}
+```
+
+```
+@HttpAction(HttpGet) Status getRawJsonString()
+{
+    return jsonString(`{
+        "message": "Hello World!",
+        success: true
+    }`);
+}
+```
 
 ### Asynchronous
 
@@ -255,12 +527,13 @@ Diamond requests are processed asynchrnously through vibe.d, making request proc
 
 Source: http://vibed.org/features
 
-[![Fibers](http://vibed.org/images/feature_fibers.png)](http://vibed.org/features)
 [![Async](http://vibed.org/images/feature_event.png)](http://vibed.org/features)
 
 ### Fibers/Tasks
 
 Fibers and tasks are supported through vibe.d allowing for very powerful and performant multi-threading.
+
+[![Fibers](http://vibed.org/images/feature_fibers.png)](http://vibed.org/features)
 
 ### Sharding
 
@@ -274,9 +547,80 @@ Network security and restrictions can easily be done per controller actions/rout
 
 Unittesting is a must for enterprise development and must be implemented for an application to make sure everything works how it's supposed to be. Unittesting in Diamond will allow for you to create specialized requests that can target certain areas of your application.
 
+```
+module unittests.test;
+
+import diamond.unittesting;
+
+static if (isTesting)
+{
+  class JsonResponse
+  {
+    string message;
+    bool success;
+  }
+
+  @HttpTest("My first unittest") test()
+  {
+    testRequest("/home/test/100", HttpMethod.GET, (scope result)
+    {
+      assert(result.statusCode == HttpStatus.ok);
+
+      auto foo = result.getModelFromJson!JsonResponse;
+
+      assert(foo.success);
+    });
+
+    testRequest("/home/test/500", HttpMethod.GET, (scope result)
+    {
+      assert(result.statusCode == HttpStatus.ok);
+
+      auto foo = result.getModelFromJson!JsonResponse;
+
+      assert(!foo.success);
+    });
+  }
+}
+```
+
+
 ### Logging
 
 Logging is useful to log information about requests, responses, errors etc. It's an essential tool for debugging enterprise applications.
+
+```
+log(LogType.error, (result)
+{
+    logToMSSQLDatabase(result); // Custom implementation to log to a MSSQL database.
+});
+```
+
+```
+logToFile(LogType.error, "errors.log");
+
+...
+
+logToFile(LogType.error, "errors.log",
+(result)
+{
+    import diamond.core.io;
+    print(result.toString()); // Prints the log out to the console as well ...
+});
+```
+
+```
+logToDatabase(LogType.error, "logs");
+
+...
+
+logToDatabase(LogType.error, "logs",
+(result)
+{
+     import diamond.core.io;
+     
+     print("Logged '%s' to the database.", result.logToken);
+});
+```
 
 ## Upcoming
 
