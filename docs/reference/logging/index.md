@@ -43,8 +43,11 @@ All logging facility can be found in the module **diamond.core.logging**.
 To register a logging facility you simply call one of the following functions:
 
 * **log(LogType logType, void delegate(LogResult) logger,lazy string messsage = null);**
+  * Used for custom loggers
 * **logToFile(LogType logType, string file, void delegate(LogResult) callback = null);**
+  * Used for file logging
 * **logToDatabase(LogType logType, string table, void delegate(LogResult) callback = null, string connectionString = null);**
+  * Used for database logging
 
 **LogResult** is a class and from that you can get all the information about the log.
 
@@ -70,4 +73,76 @@ string authToken();
 
 You can also call **.toString()** for a log-result which will yield a string equivalent to all its information, which is suited for file logging etc.
 
--- MORE COMING SOON -- GOTTA EAT SO I WILL FINISH IT AFTER LOL :)
+
+## Custom Loggers
+
+Custom loggers are useful if you want to log in other ways than the default ways given. Ex. if you want to log to another type of database, rather than MySql.
+
+Example:
+
+```
+log(LogType.error, (result)
+{
+    logToMSSQLDatabase(result); // Custom implementation to log to a MSSQL database.
+});
+```
+
+## File Loggers
+
+File loggers are useful to create quick local logs. They shouldn't be used in production. For production it's recommended to use database logging.
+
+Example:
+
+```
+logToFile(LogType.error, "errors.log");
+
+...
+
+logToFile(LogType.error, "errors.log",
+(result)
+{
+    import diamond.core.io;
+    print(result.toString()); // Prints the log out to the console as well ...
+});
+```
+
+## Database Loggers
+
+Database logging is the recommended way of logging in Diamond, because it's the safest way to store logs and searching the log's data is much easier when you can query it by sql quries etc.
+
+Example:
+
+```
+logToDatabase(LogType.error, "logs");
+
+...
+
+logToDatabase(LogType.error, "logs",
+(result)
+{
+     import diamond.core.io;
+     
+     print("Logged '%s' to the database.", result.logToken);
+});
+```
+
+When logging to the database you must have a table structure like below:
+
+```
+  logToken (VARCHAR)
+  logType (ENUM ("error", "notFound", "after", "before", "staticFile"))
+  applicationName (VARCHAR)
+  authToken (VARCHAR)
+  requestIPAddress (VARCHAR)
+  requestMethod (VARCHAR)
+  requestHeaders (TEXT)
+  requestBody (TEXT)
+  requestUrl (VARCHAR)
+  responseHeaders (TEXT)
+  responseBody (TEXT)
+  responseStatusCode (INT)
+  message (TEXT)
+  timestamp (DATETIME)
+```
+
+If you want to use another structure you must create a custom logger.
