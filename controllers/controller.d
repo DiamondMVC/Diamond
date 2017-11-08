@@ -20,7 +20,7 @@ static if (isWeb)
   import diamond.controllers.action;
   import diamond.controllers.status;
   import diamond.controllers.basecontroller;
-  import diamond.controllers.mapattributes;
+  import diamond.controllers.attributes;
   import diamond.core.collections;
   import diamond.core.string : firstToLower;
   import diamond.errors;
@@ -158,6 +158,12 @@ static if (isWebServer)
     /// Hash set of actions with restrictions.
     HashSet!string _restrictedActions;
 
+    /// The successor to this controller.
+    BaseController _successorController;
+
+    /// The version in which the successor controller can be used.
+    string _successorVersion;
+
     protected:
     /**
     * Creates a new controller.
@@ -181,6 +187,21 @@ static if (isWebServer)
 
         mixin("_auth = new " ~ authenticationUDA.authenticationClass ~ ";");
         _disabledAuth = new HashSet!string;
+      }
+
+      static if (hasUDA!(TController, HttpVersion))
+      {
+        import std.string : indexOf;
+        
+        enum versionUDA = getUDAs!(TController, HttpVersion)[0];
+
+        mixin
+        (
+          "_successorController = new " ~
+          versionUDA.versionControllerClass[0 .. versionUDA.versionControllerClass.indexOf('(')] ~
+          "!" ~ TView.stringof ~ "(_view);"
+        );
+        _successorVersion = versionUDA.versionName;
       }
 
       _restrictedActions = new HashSet!string;
@@ -290,8 +311,20 @@ static if (isWebServer)
     * Returns:
     *     The status of the controller action.
     */
-    Status handle()
+    final override Status handle()
     {
+      if (_successorController && _view.client.route.action == _successorVersion)
+      {
+        _view.client.route.passDataToAction();
+
+        auto status = _successorController.handle();
+
+        if (status != Status.notFound)
+        {
+          return status;
+        }
+      }
+
       if (_view.isDefaultRoute)
       {
         if (_restrictedActions["/"])
@@ -403,6 +436,12 @@ else static if (isWebApi)
     /// Hash set of actions with restrictions.
     HashSet!string _restrictedActions;
 
+    /// The successor to this controller.
+    BaseController _successorController;
+
+    /// The version in which the successor controller can be used.
+    string _successorVersion;
+
     protected:
     /**
     * Creates a new controller.
@@ -425,6 +464,14 @@ else static if (isWebApi)
 
         mixin("_auth = new " ~ authenticationUDA.authenticationClass ~ ";");
         _disabledAuth = new HashSet!string;
+      }
+
+      static if (hasUDA!(TController, HttpVersion))
+      {
+        enum versionUDA = getUDAs!(TController, HttpVersion)[0];
+
+        mixin("_successorController = new " ~ versionUDA.versionControllerClass ~ "(_client);");
+        _successorVersion = versionUDA.versionName;
       }
 
       _restrictedActions = new HashSet!string;
@@ -541,6 +588,18 @@ else static if (isWebApi)
     */
     final override Status handle()
     {
+      if (_successorController && route.action == _successorVersion)
+      {
+        route.passDataToAction();
+
+        auto status = _successorController.handle();
+
+        if (status != Status.notFound)
+        {
+          return status;
+        }
+      }
+
       if (!route.action)
       {
         if (_restrictedActions["/"])

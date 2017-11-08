@@ -151,11 +151,8 @@ static if (isWeb)
     /// Creates a new base controller.
     this() { }
 
-    static if (isWebApi)
-    {
-      /// For web-api's we need to have the handle() function within here for template simplicity at compile-time.
-      public abstract Status handle();
-    }
+    /// Will handle the controller.
+    public abstract Status handle();
 
     final:
     /**

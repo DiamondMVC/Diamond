@@ -62,6 +62,9 @@ static if (isWeb)
     /// The language of the client.
     string _language;
 
+    /// Boolean determining whether the client's route is the last route to handle.
+    bool _isLastRoute;
+
     final:
     package(diamond)
     {
@@ -96,6 +99,15 @@ static if (isWeb)
       package(diamond) void route(Route newRoute)
       {
         _route = newRoute;
+      }
+
+      /// Gets a boolean determining whether it's the client's last route to handle.
+      package(diamond) bool isLastRoute() { return _isLastRoute; }
+
+      /// Sets a boolean determining whether it's the client's last route to handle.
+      package(diamond) void isLastRoute(bool isLastRouteState)
+      {
+        _isLastRoute = isLastRouteState;
       }
 
       /// Gets the method.

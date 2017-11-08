@@ -286,6 +286,26 @@ static if (isWeb)
       bool hasParams() { return _params && _params.length; }
     }
 
+    package(diamond) void passDataToAction()
+    {
+      if (!hasParams)
+      {
+        _action = null;
+        return;
+      }
+
+      _action = _params[0];
+      
+      if (_params.length > 1)
+      {
+        _params = _params[1 .. $];
+      }
+      else
+      {
+        _params = null;
+      }
+    }
+
     /**
     * Gets data from a specific parameter.
     * Params:

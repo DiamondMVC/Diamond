@@ -47,7 +47,7 @@ static if (isWebServer)
     {
       pageResult = page.generate();
 
-      if (client.redirected)
+      if (client.redirected || !client.isLastRoute)
       {
         return;
       }
