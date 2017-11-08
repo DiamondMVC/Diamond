@@ -18,16 +18,17 @@ This site is only a temporary website until the actual website can be hosted.
 
 |General Features|Data & Storage|Views & Frontend|Controllers|More|Upcoming|
 |:---:|:---:|:---:|:---:|:---:|:---:|
-| [Low Memory & CPU Consumption](#low-memory--cpu-consumption) | [ORM](#orm) | [Compile-time Parsing](#compile-time-parsing) | [Auto-mapping](#auto-mapping) | [Authentication](#authentication) | [Flash-messages](#flash-messages) |
-| [MVC & HMVC](#mvc--hmvc) | [MySql ORM](#mysql-orm) | [Partial Views](#partial-views) | [View-integration](#view-integration) | [CSRF Protection](#csrf-protection) | [Version-control](#version-control) |
-| [RESTful](#restful) | [Caching](#caching) | [Layouts](#layouts) | [Mandatory Actions](#mandatory-actions) | [Cryptography](#cryptography) | [i18n](#i18n) |
+| [Low Memory & CPU Consumption](#low-memory--cpu-consumption) | [ORM](#orm) | [Compile-time Parsing](#compile-time-parsing) | [Auto-mapping](#auto-mapping) | [Authentication](#authentication) | [Version-control](#version-control) |
+| [MVC & HMVC](#mvc--hmvc) | [MySql ORM](#mysql-orm) | [Partial Views](#partial-views) | [View-integration](#view-integration) | [CSRF Protection](#csrf-protection) | |
+| [RESTful](#restful) | [Caching](#caching) | [Layouts](#layouts) | [Mandatory Actions](#mandatory-actions) | [Cryptography](#cryptography) | |
 | [Advanced Routing](#advanced-routing) | [Mongo](#mongo) | [Fast & Performant Rendering](#fast--performant-rendering) | | [JSON/BSON](#jsonbson) | |
 | [ACL](#acl) | [Redis](#redis) | [Dynamic](#dynamic) | | [Asynchronous](#asynchronous) | |
 | [Cross-platform](#cross-platform) | [Request-context](#request-context) | [Any D Code Can Be Executed](#any-d-code-can-be-executed) | | [Fibers/Tasks](#fiberstasks) | |
 | [Website/Webapi Support](#websitewebapi-support) | [Cookies](#cookies) | [Sections](#sections) | | [Sharding](#sharding) | |
-| | [Sessions](#sessions) | | | [Network Security & Restrictions](#network-security--restrictions) | |
+| [i18n](#i18n) | [Sessions](#sessions) | [Flash-messages](#flash-messages) | | [Network Security & Restrictions](#network-security--restrictions) | |
 | | [Transactions](#transactions) | | | [Unittesting](#unittesting) | |
 | |  | | | [Logging](#logging) | |
+
 
 ## General Features
 
