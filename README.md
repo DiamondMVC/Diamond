@@ -1,7 +1,7 @@
 # Diamond
 
 [![OS](https://img.shields.io/badge/os-windows%20%7C%20linux%20%7C%20macos-ff69b4.svg)](http://code.dlang.org/packages/diamond)
-[![LOC](https://img.shields.io/badge/lines--of--code-5000%2B%20%7C%209000%2B-yellow.svg)](http://code.dlang.org/packages/diamond)
+[![LOC](https://img.shields.io/badge/lines--of--code-6000%2B%20%7C%2010000%2B-yellow.svg)](http://code.dlang.org/packages/diamond)
 [![Dub version](https://img.shields.io/dub/v/diamond.svg)](http://code.dlang.org/packages/diamond)
 [![Dub downloads](https://img.shields.io/dub/dt/diamond.svg)](http://code.dlang.org/packages/diamond)
 [![License](https://img.shields.io/dub/l/diamond.svg)](http://code.dlang.org/packages/diamond)
@@ -77,6 +77,8 @@ The legacy project of Diamond can be found here: https://github.com/bausshf/Diam
  * Unittesting
  * Logging
  * i18n
+ * Version-control
+ * Route rewriting
 
 ### Views (WebServer)
 
@@ -254,6 +256,6 @@ Diamond only supports up to the 3 latest minor versions of itself, including pre
 
 If a version is not supported its working branch is deleted.
 
-Currently supported versions: 2.2.0 - 2.4.8
+Currently supported versions: 2.3.0 - 2.5.0
 
-No longer supported (Only available in release.): 2.0.0 - 2.1.2
+No longer supported (Only available in release.): 2.0.0 - 2.2.5
