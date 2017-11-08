@@ -3,7 +3,7 @@
 <br>
 
 [![OS](https://img.shields.io/badge/os-windows%20%7C%20linux%20%7C%20macos-ff69b4.svg)](http://code.dlang.org/packages/diamond)
-[![LOC](https://img.shields.io/badge/lines--of--code-5000%2B%20%7C%209000%2B-yellow.svg)](http://code.dlang.org/packages/diamond)
+[![LOC](https://img.shields.io/badge/lines--of--code-6000%2B%20%7C%2010000%2B-yellow.svg)](http://code.dlang.org/packages/diamond)
 [![Dub version](https://img.shields.io/dub/v/diamond.svg)](http://code.dlang.org/packages/diamond)
 [![Dub downloads](https://img.shields.io/dub/dt/diamond.svg)](http://code.dlang.org/packages/diamond)
 [![License](https://img.shields.io/dub/l/diamond.svg)](http://code.dlang.org/packages/diamond)
