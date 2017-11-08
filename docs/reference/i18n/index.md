@@ -95,7 +95,7 @@ Certain resources of your application such as images etc. may be different per c
 You can easily control this using the client's language property, which also can be used to set the language of a client and its session.
 
 ```
-@* Will show the flag depending on the clent's language. *
+@* Will show the flag depending on the client's language. *
 <img src="@../public/images/flags/@=client.language;.png">
 ```
 
