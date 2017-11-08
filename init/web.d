@@ -181,8 +181,12 @@ static if (isWeb)
         client.error(HttpStatus.unauthorized);
       }
 
-      foreach (route; routes)
+      foreach (i; 0 .. routes.length)
       {
+        auto route = routes[i];
+
+        client.isLastRoute = i == (routes.length - 1);
+
         client.rawRequest.path = route[0] == '/' ? route : "/" ~ route;
 
         client.route = new Route(route);

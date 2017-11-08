@@ -3,7 +3,7 @@
 * License: MIT (https://github.com/DiamondMVC/Diamond/blob/master/LICENSE)
 * Author: Jacob Jensen (bausshf)
 */
-module diamond.controllers.mapattributes;
+module diamond.controllers.attributes;
 
 import diamond.core.apptype;
 
@@ -39,6 +39,16 @@ static if (isWeb)
 
   /// Attribute for disabling authentication.
   struct HttpDisableAuth { }
+
+  /// Attribute for version-control.
+  struct HttpVersion
+  {
+    /// The version name.
+    string versionName;
+
+    /// The controller to use for the version.
+    string versionControllerClass;
+  }
 
   static if (isWebApi)
   {
