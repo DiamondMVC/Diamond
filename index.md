@@ -133,6 +133,27 @@ Diamond supports all platforms that both vibe.d & D supports, which includes Win
 
 Diamond has support for both writing websites and/or webapis.
 
+### i18n
+
+i18n (Internationalization) can be used to localize Diamond application for different languages and cultures.
+
+```
+import diamond.data.i18n; // Or just diamond.data
+
+auto message = getMessage(client, "someMessage"); // Gets message from client ...
+auto specificMessage = getMessage("en_us", "someMessage"); // Gets message from a specific language ...
+```
+
+```
+<p>@=i18n.getMessage(client, "someMessage");</p>
+<p>@=i18n.getMessage("en_us", "someMessage");</p>
+```
+
+```
+@* Will show the flag depending on the client's language. *
+<img src="@../public/images/flags/@=client.language;.png">
+```
+
 ## Data & Storage
 
 ### ORM
@@ -381,6 +402,16 @@ view2:
 @:render("view1", "phone"); // Will render view1 with the phone section
 @:render("view1", "desktop"); // Will render view1 with the desktop section
 ```
+### Flash-messages
+
+Flash-messages are useful to create notification messages in a website.
+
+```
+@:flashMessage("message1", "This message stays forever.", FlashMessageType.always);
+@:flashMessage("message2", "This message dissappers after 10 seconds.", FlashMessageType.always, 10000);
+@:flashMessage("message3", "This message is gone after your next refresh.", FlashMessageType.showOnce);
+@:flashMessage("message4", "This message is gone after your next refresh and shows for 20 seconds.", FlashMessageType.showOnce, 20000);
+```
 
 ## Controllers
 
@@ -627,17 +658,9 @@ logToDatabase(LogType.error, "logs",
 
 ## Upcoming
 
-### Flash-messages
-
-Flash-messages are useful to create notification messages in a website.
-
 ### Version-control
 
 When building webapis and building a new version you might want to versionate the project, allowing for both an old and a new api to be used. This is useful when you're trying to migrate an application from an old api to a new api, when the new api hasn't yet implemented all the features the old api has.
-
-### i18n
-
-i18n (Internationalization) can be used to localize Diamond application for different languages and cultures.
 
 ## Join Diamond
 
