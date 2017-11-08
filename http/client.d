@@ -9,6 +9,9 @@ import diamond.core.apptype;
 
 static if (isWeb)
 {
+  /// The name of the language session key.
+  private static const languageSessionKey = "__D_LANGUAGE";
+
   /// Wrapper around the client's request aand response.
   final class HttpClient
   {
@@ -55,6 +58,9 @@ static if (isWeb)
 
     /// the status code for the response.
     HttpStatus _statusCode;
+
+    /// The language of the client.
+    string _language;
 
     final:
     package(diamond)
@@ -213,6 +219,24 @@ static if (isWeb)
 
       /// Gets the status code of the response.
       HttpStatus statusCode() { return _statusCode; }
+
+      /// Gets the language of the client.
+      string language()
+      {
+        if (_language is null)
+        {
+          _language = _session.getValue(languageSessionKey, "");
+        }
+
+        return _language;
+      }
+
+      /// Sets the language of the client.
+      void language(string newLanguage)
+      {
+        _language = newLanguage;
+        _session.setValue(languageSessionKey, _language);
+      }
     }
 
     /// Gets a model from the request's json.

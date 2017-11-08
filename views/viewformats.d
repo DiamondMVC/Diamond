@@ -16,7 +16,7 @@ static if (!isWebApi)
       final class view_%s : View
       {
         import std.array : replace, split, array;
-        import std.algorithm : filter, countUntil, count, canFind;
+        import std.algorithm : map, filter, countUntil, count, canFind;
         import std.string : strip, indexOf, lastIndexOf, isNumeric;
         import std.datetime : Date, DateTime, SysTime, Clock, Month, DayOfWeek;
         import std.conv : to;
@@ -26,6 +26,7 @@ static if (!isWebApi)
         import diamond.http;
         import diamond.errors.exceptions;
         import diamond.controllers;
+        import i18n = diamond.data.i18n;
 
         import controllers;
         import models;
