@@ -73,6 +73,10 @@ The legacy project of Diamond can be found here: https://github.com/bausshf/Diam
  * CSRF Protection
  * Easy integrated cookie/session API.
  * The network can be restricted to specific ips.
+ * Transactions
+ * Unittesting
+ * Logging
+ * i18n
 
 ### Views (WebServer)
 
@@ -250,6 +254,6 @@ Diamond only supports up to the 3 latest minor versions of itself, including pre
 
 If a version is not supported its working branch is deleted.
 
-Currently supported versions: 2.2.0 - 2.4.7
+Currently supported versions: 2.2.0 - 2.4.8
 
 No longer supported (Only available in release.): 2.0.0 - 2.1.2
