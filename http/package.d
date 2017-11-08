@@ -7,7 +7,7 @@ module diamond.http;
 
 public
 {
-  import diamond.http.route;
+  import diamond.http.routing;
   import diamond.http.method;
   import diamond.http.status;
   import diamond.http.client;
