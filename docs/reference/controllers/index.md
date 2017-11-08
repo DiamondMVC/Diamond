@@ -107,9 +107,9 @@ In this case *defaultAction* will be used to tell the user he needs to specify a
     Database.saveData(id, view.client.json); // Saves the json data to the specified id.
 		
     // Returns a json response with a boolean set as true for success
-    return jsonString(q{{
+    return jsonString(`{
         "success": true
-    }});
+    }`);
 } 
 ```
 
