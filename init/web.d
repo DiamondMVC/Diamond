@@ -168,98 +168,26 @@ static if (isWeb)
   */
   void handleHTTPListen(HTTPServerRequest request, HTTPServerResponse response)
   {
-    auto client = new HttpClient(request, response, new Route(request));
+    auto client = new HttpClient(request, response);
 
     try
     {
-      static if (loggingEnabled)
+      auto routes = hasRoutes ?
+        handleRoute(client.ipAddress == "127.0.0.1", request.path) :
+        [request.path];
+
+      if (!routes)
       {
-        import diamond.core.logging;
-        executeLog(LogType.before, client);
+        client.error(HttpStatus.unauthorized);
       }
 
-      static if (isTesting)
+      foreach (route; routes)
       {
-        if (!testsPassed && client.ipAddress != "127.0.0.1")
-        {
-          client.error(HttpStatus.serviceUnavailable);
-        }
-      }
+        client.rawRequest.path = route[0] == '/' ? route : "/" ~ route;
 
-      validateGlobalRestrictedIPs(client);
+        client.route = new Route(route);
 
-      import diamond.extensions;
-      mixin ExtensionEmit!(ExtensionType.httpRequest, q{
-        if (!{{extensionEntry}}.handleRequest(client))
-        {
-          return;
-        }
-      });
-      emitExtension();
-
-      if (webSettings && !webSettings.onBeforeRequest(client))
-      {
-        client.error(HttpStatus.badRequest);
-      }
-
-      if (hasRoles)
-      {
-        import std.array : split;
-
-        auto hasRootAccess = hasAccess(
-          client.role, client.method,
-          client.route.name.split(webConfig.specialRouteSplitter)[0]
-        );
-
-        if
-        (
-          !hasRootAccess ||
-          (
-            client.route.action &&
-            !hasAccess(client.role, client.method, client.route.name ~ "/" ~ client.route.action)
-          )
-        )
-        {
-          client.error(HttpStatus.unauthorized);
-        }
-      }
-
-      auto staticFile = _staticFiles.get(client.route.name, null);
-
-      if (staticFile)
-      {
-        import diamond.init.files;
-        handleStaticFiles(client, staticFile);
-
-        static if (loggingEnabled)
-        {
-          import diamond.core.logging;
-
-          executeLog(LogType.staticFile, client);
-        }
-        return;
-      }
-
-      static if (isWebServer)
-      {
-        import diamond.init.server;
-        handleWebServer(client);
-      }
-      else
-      {
-        import diamond.init.api;
-        handleWebApi(client);
-      }
-
-      if (webSettings)
-      {
-        webSettings.onAfterRequest(client);
-      }
-
-      static if (loggingEnabled)
-      {
-        import diamond.core.logging;
-        executeLog(LogType.after, client);
+        handleHTTPListenInternal(client);
       }
     }
     catch (Throwable t)
@@ -289,6 +217,104 @@ static if (isWeb)
         handleUserError(t,request,response,null);
         throw t;
       }
+    }
+  }
+
+  /**
+  * Internal handler for http clients.
+  * Params:
+  *   client = The client to handle.
+  */
+  private void handleHTTPListenInternal(HttpClient client)
+  {
+    static if (loggingEnabled)
+    {
+      import diamond.core.logging;
+      executeLog(LogType.before, client);
+    }
+
+    static if (isTesting)
+    {
+      if (!testsPassed && client.ipAddress != "127.0.0.1")
+      {
+        client.error(HttpStatus.serviceUnavailable);
+      }
+    }
+
+    validateGlobalRestrictedIPs(client);
+
+    import diamond.extensions;
+    mixin ExtensionEmit!(ExtensionType.httpRequest, q{
+      if (!{{extensionEntry}}.handleRequest(client))
+      {
+        return;
+      }
+    });
+    emitExtension();
+
+    if (webSettings && !webSettings.onBeforeRequest(client))
+    {
+      client.error(HttpStatus.badRequest);
+    }
+
+    if (hasRoles)
+    {
+      import std.array : split;
+
+      auto hasRootAccess = hasAccess(
+        client.role, client.method,
+        client.route.name.split(webConfig.specialRouteSplitter)[0]
+      );
+
+      if
+      (
+        !hasRootAccess ||
+        (
+          client.route.action &&
+          !hasAccess(client.role, client.method, client.route.name ~ "/" ~ client.route.action)
+        )
+      )
+      {
+        client.error(HttpStatus.unauthorized);
+      }
+    }
+
+    auto staticFile = _staticFiles.get(client.route.name, null);
+
+    if (staticFile)
+    {
+      import diamond.init.files;
+      handleStaticFiles(client, staticFile);
+
+      static if (loggingEnabled)
+      {
+        import diamond.core.logging;
+
+        executeLog(LogType.staticFile, client);
+      }
+      return;
+    }
+
+    static if (isWebServer)
+    {
+      import diamond.init.server;
+      handleWebServer(client);
+    }
+    else
+    {
+      import diamond.init.api;
+      handleWebApi(client);
+    }
+
+    if (webSettings)
+    {
+      webSettings.onAfterRequest(client);
+    }
+
+    static if (loggingEnabled)
+    {
+      import diamond.core.logging;
+      executeLog(LogType.after, client);
     }
   }
 }

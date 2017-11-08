@@ -25,7 +25,7 @@ static if (isWeb)
     import diamond.http.cookies;
     import diamond.http.method;
     import diamond.http.status;
-    import diamond.http.route;
+    import diamond.http.routing;
     import diamond.errors.checks;
 
     private:
@@ -70,13 +70,11 @@ static if (isWeb)
       * Params:
       *   request =   The request.
       *   response =  The response.
-      *   route =     The route.
       */
-      this(HTTPServerRequest request, HTTPServerResponse response, Route route)
+      this(HTTPServerRequest request, HTTPServerResponse response)
       {
         _request = enforceInput(request, "Cannot create a client without a request.");
         _response = enforceInput(response, "Cannot create a client without a response.");
-        _route = enforceInput(route, "Cannot create a client without a route.");
 
         addContext("__D_RAW_HTTP_CLIENT", this);
       }
