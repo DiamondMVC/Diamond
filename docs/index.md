@@ -3,3 +3,7 @@
 <br>
 
 [Reference](https://diamondmvc.github.io/Diamond/docs/reference) | [API](https://diamondmvc.github.io/Diamond/docs/api) | [API (Offline)](https://diamondmvc.github.io/Diamond/docs/api/offline/diamond-apidocs.zip)
+
+**Note: API Docs hasn't been updated due to an issue with DDOX.**
+
+See: [https://github.com/rejectedsoftware/ddox/issues/185](https://github.com/rejectedsoftware/ddox/issues/185)
