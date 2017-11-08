@@ -498,6 +498,78 @@ static if (!isWebApi)
             .format(csrfToken, name, name)
           );
         }
+
+        enum FlashMessageType
+        {
+          always,
+          showOnce,
+          showOnceGuest,
+          custom
+        }
+
+        void flashMessage(string identifier, string message, FlashMessageType type, size_t displayTime = 0)
+        {
+          enforce(identifier && identifier.length, "No identifier specified.");
+
+          auto sessionValueName = "__D_FLASHMSG_" ~ _name ~ identifier;
+
+          switch (type)
+          {
+            case FlashMessageType.showOnce:
+            {
+              if (_client.session.hasValue(sessionValueName))
+              {
+                return;
+              }
+
+              _client.session.setValue(sessionValueName, true);
+              break;
+            }
+
+            case FlashMessageType.showOnceGuest:
+            {
+              import diamond.authentication.roles : defaultRole;
+
+              if (_client.role && _client.role != defaultRole)
+              {
+                return;
+              }
+
+              if (_client.session.hasValue(sessionValueName))
+              {
+                return;
+              }
+
+              _client.session.setValue(sessionValueName, true);
+              break;
+            }
+
+            default: break;
+          }
+
+          append(`
+            <div id="%s">
+              %s
+            </div>
+          `.format(identifier, message));
+
+          if (displayTime > 0 && type != FlashMessageType.custom)
+          {
+            append(`
+              <script type="text/javascript">
+                window.addEventListener('load', function() {
+                  var flashMessage = document.getElementById('%s');
+
+                  if (flashMessage && flashMessage.parentNode) {
+                    setTimeout(function() {
+                      flashMessage.parentNode.removeChild(flashMessage);
+                    }, %d);
+                  }
+                }, false);
+              </script>
+            `.format(identifier, displayTime));
+          }
+        }
       }
     }
 
