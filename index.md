@@ -20,7 +20,7 @@ This site is only a temporary website until the actual website can be hosted.
 |:---:|:---:|:---:|:---:|:---:|:---:|
 | [Low Memory & CPU Consumption](#low-memory--cpu-consumption) | [ORM](#orm) | [Compile-time Parsing](#compile-time-parsing) | [Auto-mapping](#auto-mapping) | [Authentication](#authentication) | [Flash-messages](#flash-messages) |
 | [MVC & HMVC](#mvc--hmvc) | [MySql ORM](#mysql-orm) | [Partial Views](#partial-views) | [View-integration](#view-integration) | [CSRF Protection](#csrf-protection) | [Version-control](#version-control) |
-| [RESTful](#restful) | [Caching](#caching) | [Layouts](#layouts) | [Mandatory Actions](#mandatory-actions) | [Cryptography](#cryptography) | [Localization](#localization) |
+| [RESTful](#restful) | [Caching](#caching) | [Layouts](#layouts) | [Mandatory Actions](#mandatory-actions) | [Cryptography](#cryptography) | [i18n](#i18n) |
 | [Advanced Routing](#advanced-routing) | [Mongo](#mongo) | [Fast & Performant Rendering](#fast--performant-rendering) | | [JSON/BSON](#jsonbson) | |
 | [ACL](#acl) | [Redis](#redis) | [Dynamic](#dynamic) | | [Asynchronous](#asynchronous) | |
 | [Cross-platform](#cross-platform) | [Request-context](#request-context) | [Any D Code Can Be Executed](#any-d-code-can-be-executed) | | [Fibers/Tasks](#fiberstasks) | |
@@ -634,10 +634,9 @@ Flash-messages are useful to create notification messages in a website.
 
 When building webapis and building a new version you might want to versionate the project, allowing for both an old and a new api to be used. This is useful when you're trying to migrate an application from an old api to a new api, when the new api hasn't yet implemented all the features the old api has.
 
-### Localization
+### i18n
 
-Localization is useful for applications that must be availble in multiple languages. It's a must for international applications.
-
+i18n (Internationalization) can be used to localize Diamond application for different languages and cultures.
 
 ## Join Diamond
 
