@@ -17,3 +17,4 @@
 * [Logging](https://diamondmvc.github.io/Diamond/docs/reference/logging/)
 * [Flash messages](https://diamondmvc.github.io/Diamond/docs/reference/flashmessages/)
 * [i18n](https://diamondmvc.github.io/Diamond/docs/reference/i18n/)
+* [Version-control](https://diamondmvc.github.io/Diamond/docs/reference/version-control/)
