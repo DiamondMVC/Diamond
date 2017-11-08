@@ -16,18 +16,18 @@ This site is only a temporary website until the actual website can be hosted.
 
 ## Feature Overview
 
-|General Features|Data & Storage|Views & Frontend|Controllers|More|Upcoming|
+|General Features|Data & Storage|Views & Frontend|Controllers|More|
 |:---:|:---:|:---:|:---:|:---:|:---:|
-| [Low Memory & CPU Consumption](#low-memory--cpu-consumption) | [ORM](#orm) | [Compile-time Parsing](#compile-time-parsing) | [Auto-mapping](#auto-mapping) | [Authentication](#authentication) | [Version-control](#version-control) |
-| [MVC & HMVC](#mvc--hmvc) | [MySql ORM](#mysql-orm) | [Partial Views](#partial-views) | [View-integration](#view-integration) | [CSRF Protection](#csrf-protection) | |
-| [RESTful](#restful) | [Caching](#caching) | [Layouts](#layouts) | [Mandatory Actions](#mandatory-actions) | [Cryptography](#cryptography) | |
-| [Advanced Routing](#advanced-routing) | [Mongo](#mongo) | [Fast & Performant Rendering](#fast--performant-rendering) | | [JSON/BSON](#jsonbson) | |
-| [ACL](#acl) | [Redis](#redis) | [Dynamic](#dynamic) | | [Asynchronous](#asynchronous) | |
-| [Cross-platform](#cross-platform) | [Request-context](#request-context) | [Any D Code Can Be Executed](#any-d-code-can-be-executed) | | [Fibers/Tasks](#fiberstasks) | |
-| [Website/Webapi Support](#websitewebapi-support) | [Cookies](#cookies) | [Sections](#sections) | | [Sharding](#sharding) | |
-| [i18n](#i18n) | [Sessions](#sessions) | [Flash-messages](#flash-messages) | | [Network Security & Restrictions](#network-security--restrictions) | |
-| | [Transactions](#transactions) | | | [Unittesting](#unittesting) | |
-| |  | | | [Logging](#logging) | |
+| [Low Memory & CPU Consumption](#low-memory--cpu-consumption) | [ORM](#orm) | [Compile-time Parsing](#compile-time-parsing) | [Auto-mapping](#auto-mapping) | [Authentication](#authentication) |
+| [MVC & HMVC](#mvc--hmvc) | [MySql ORM](#mysql-orm) | [Partial Views](#partial-views) | [View-integration](#view-integration) | [CSRF Protection](#csrf-protection) |
+| [RESTful](#restful) | [Caching](#caching) | [Layouts](#layouts) | [Mandatory Actions](#mandatory-actions) | [Cryptography](#cryptography) |
+| [Advanced Routing](#advanced-routing) | [Mongo](#mongo) | [Fast & Performant Rendering](#fast--performant-rendering) | [Version-control](#version-control) | [JSON/BSON](#jsonbson) |
+| [ACL](#acl) | [Redis](#redis) | [Dynamic](#dynamic) | | [Asynchronous](#asynchronous) |
+| [Cross-platform](#cross-platform) | [Request-context](#request-context) | [Any D Code Can Be Executed](#any-d-code-can-be-executed) | | [Fibers/Tasks](#fiberstasks) |
+| [Website/Webapi Support](#websitewebapi-support) | [Cookies](#cookies) | [Sections](#sections) | | [Sharding](#sharding) |
+| [i18n](#i18n) | [Sessions](#sessions) | [Flash-messages](#flash-messages) | | [Network Security & Restrictions](#network-security--restrictions) |
+| | [Transactions](#transactions) | | | [Unittesting](#unittesting) |
+| |  | | | [Logging](#logging) |
 
 
 ## General Features
@@ -460,6 +460,9 @@ Controllers allows for mandatory actions, which are actions that are executed an
     return Status.success;
 }
 ```
+### Version-control
+
+When building web-applications and building a new version you might want to versionate the project, allowing for both an old and a new api to be used. This is useful when you're trying to migrate an application from an old api to a new api, when the new api hasn't yet implemented all the features the old api has.
 
 ## More
 
@@ -655,12 +658,6 @@ logToDatabase(LogType.error, "logs",
      print("Logged '%s' to the database.", result.logToken);
 });
 ```
-
-## Upcoming
-
-### Version-control
-
-When building webapis and building a new version you might want to versionate the project, allowing for both an old and a new api to be used. This is useful when you're trying to migrate an application from an old api to a new api, when the new api hasn't yet implemented all the features the old api has.
 
 ## Join Diamond
 
