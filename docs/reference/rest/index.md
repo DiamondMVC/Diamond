@@ -41,7 +41,7 @@ The route also supports wildcards which will accept anything. Wildcards are spec
 
     insertProductToDatabase(productId, view.client.json); // Normally you'll want to deserialize the json
 
-    return jsonString(q{{ "success": true }});
+    return jsonString(`{ "success": true }`);
 }
 ```
 
@@ -52,7 +52,7 @@ The route also supports wildcards which will accept anything. Wildcards are spec
 
     deleteProductFromDatabase(productId);
 
-    return jsonString(q{{ "success": true }});
+    return jsonString(`{ "success": true }`);
 }
 ```
 
