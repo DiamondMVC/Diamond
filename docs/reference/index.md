@@ -15,4 +15,5 @@
 * [Transactions](https://diamondmvc.github.io/Diamond/docs/reference/transactions)
 * [Unittesting](https://diamondmvc.github.io/Diamond/docs/reference/unittesting/)
 * [Logging](https://diamondmvc.github.io/Diamond/docs/reference/logging/)
+* [Flash messages](https://diamondmvc.github.io/Diamond/docs/reference/flashmessages/)
 * [i18n](https://diamondmvc.github.io/Diamond/docs/reference/i18n/)
