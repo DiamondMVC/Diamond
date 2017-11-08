@@ -509,6 +509,8 @@ static if (!isWebApi)
 
         void flashMessage(string identifier, string message, FlashMessageType type, size_t displayTime = 0)
         {
+          import diamond.errors.checks;
+          
           enforce(identifier && identifier.length, "No identifier specified.");
 
           auto sessionValueName = "__D_FLASHMSG_" ~ _name ~ identifier;
