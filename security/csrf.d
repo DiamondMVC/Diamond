@@ -24,7 +24,7 @@ static if (isWeb)
   */
   string generateCSRFToken(HttpClient client)
   {
-    auto token = client.session.getValue(CSRFTokenKey);
+    auto token = client.session.getValue!string(CSRFTokenKey);
 
     if (token)
     {
@@ -67,7 +67,7 @@ static if (isWeb)
   {
     enforce(token && token.length == 64, "Invalid csrf token.");
 
-    auto csrfToken = client.session.getValue(CSRFTokenKey);
+    auto csrfToken = client.session.getValue!string(CSRFTokenKey);
 
     if (csrfToken && removeToken)
     {
