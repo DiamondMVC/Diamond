@@ -10,7 +10,7 @@ import diamond.core.apptype;
 static if (isWeb)
 {
   /// The name of the language session key.
-  private static const languageSessionKey = "__D_LANGUAGE";
+  private static __gshared const languageSessionKey = "__D_LANGUAGE";
 
   /// Wrapper around the client's request aand response.
   final class HttpClient
@@ -235,7 +235,7 @@ static if (isWeb)
       {
         if (_language is null)
         {
-          _language = _session.getValue(languageSessionKey, "");
+          _language = session.getValue!string(languageSessionKey, "");
         }
 
         return _language;
@@ -245,7 +245,7 @@ static if (isWeb)
       void language(string newLanguage)
       {
         _language = newLanguage;
-        _session.setValue(languageSessionKey, _language);
+        session.setValue(languageSessionKey, _language);
       }
     }
 
