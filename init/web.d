@@ -24,7 +24,7 @@ static if (isWeb)
   import vibe.d : HTTPServerRequestDelegateS, HTTPServerSettings, HTTPServerRequest,
                   HTTPServerResponse, HTTPServerErrorInfo, listenHTTP,
                   HTTPMethod, HTTPStatus, HTTPStatusException,
-                  serveStaticFiles;
+                  serveStaticFiles, URLRouter;
 
   /// Entry point for the web application.
   shared static this()
@@ -157,7 +157,13 @@ static if (isWeb)
     });
     emitExtension();
 
-    listenHTTP(settings, &handleHTTPListen);
+    auto router = new URLRouter;
+    
+    handleWebSockets(router);
+
+    router.any("*", &handleHTTPListen);
+
+    listenHTTP(settings, router);
   }
 
   /**
