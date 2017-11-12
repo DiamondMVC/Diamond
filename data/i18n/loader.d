@@ -31,7 +31,7 @@ static if (isWeb)
   {
     import std.file : exists, readText;
     import std.array : replace, split;
-    import std.string : strip, indexOf;
+    import std.string : strip, stripLeft, stripRight, indexOf;
     import std.algorithm : map;
 
     import diamond.errors.checks;
@@ -45,13 +45,8 @@ static if (isWeb)
     string key = "";
     string message = "";
 
-    foreach (line; lines.map!(l => l.strip()))
+    foreach (line; lines.map!(l => l.stripRight()))
     {
-      if (!line.length)
-      {
-        continue;
-      }
-
       if (multiLine)
       {
         if (line == ";" && message[$-1] != 0x5c/*0x5c = '\'*/)
@@ -62,9 +57,14 @@ static if (isWeb)
         }
         else
         {
-          message ~= line ~ "\r\n";
+          message ~= (line.stripLeft().length ? line : "") ~ "\r\n";
           continue;
         }
+      }
+
+      if (!line.strip().length)
+      {
+        continue;
       }
 
       auto keyEndIndex = line.indexOf('=');
@@ -80,7 +80,7 @@ static if (isWeb)
       enforce(keyEndIndex > 0, "Found no message key");
       enforce(keyEndIndex < line.length, "Found no message value.");
 
-      key = line[0 .. keyEndIndex].strip();
+      key = line[0 .. keyEndIndex].stripLeft();
       message = line[keyEndIndex + 1 .. $].strip();
 
       addMessage(languageName, key, message);
