@@ -36,6 +36,7 @@ static if (!isWebApi)
     string viewPlaceHolderGeneration = "";
     bool hasController;
     bool useBaseView;
+    bool hasDefaultSection;
 
     foreach (sectionName,parts; allParts)
     {
@@ -47,6 +48,7 @@ static if (!isWebApi)
       }
       else
       {
+        hasDefaultSection = true;
         viewCodeGeneration ~= "default:
         {
 ";
@@ -106,6 +108,10 @@ static if (!isWebApi)
       viewCodeGeneration ~= "break;
 }
 ";
+    }
+
+    if (!hasDefaultSection) {
+      viewCodeGeneration ~= "default: break;";
     }
 
     static if (isWebServer)
