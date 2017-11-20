@@ -34,11 +34,11 @@ This site is only a temporary website until the actual website can be hosted.
 
 ### Low Memory & CPU Consumption
 
-Diamond uses vibe.d as backend for processing requests, which currently processes more requests than any other frameworks. At the same time Diamond is written in D and utilizes D's compile-time facilities and thus keeps as little overhead at run-time as possible. The memory consumption is low, because Diamond doesn't store much more data in memory than requested, except for minimal session/cookie/request data. The CPU consumption is kept to a minimum, because of how vibe.d works with its asynchronous fiber model.
+Diamond uses vibe.d, which currently processes more requests than any other framework, as its backend. At the same time, Diamond is written in D and utilizes D's compile-time facilities, enabling it to keep as little overhead at run time as possible. Memory consumption is low, because Diamond doesn't store much more data in memory than requested, except for minimal session/cookie/request data. CPU consumption is kept to a minimum due to vibe.d's asynchronous fiber model.
 
 ### MVC & HMVC
 
-Diamond has a full integrated Model-view-controller implementation which is based on a similar design to ASP.NET. Implementing views, controllers and models is a striaghtforward concept in Diamond and made to feel as natural as possible.
+Diamond has a full, integrated Model-view-controller implementation which is based on a similar design to ASP.NET. Implementing views, controllers and models is a striaghtforward concept in Diamond and made to feel as natural as possible.
 
 [![MVC](https://diamondmvc.github.io/Diamond/images/mvc.jpg)](https://diamondmvc.github.io/Diamond/images/mvc.jpg)
 
@@ -100,7 +100,7 @@ Diamond allows for advanced routing with controller actions, which can be type-s
 
 ### ACL (Access Control List)
 
-Diamond has a full-fletched build-in ACL implementation. It allows for custom creation of roles and permission control of resources. ACL can be combined with the build-in authentication too.
+Diamond has a full-fledged, built-in ACL implementation. It allows for custom creation of roles and permissions-based control of resources. ACL can be combined with the built-in authentication, too.
 
 ```
 auto administrators = addRole("administrators");
@@ -125,17 +125,17 @@ auto user = addRole("user")
 
 ### Cross-platform
 
-Diamond supports all platforms that both vibe.d & D supports, which includes Windows, Linux, macOS/OSX and more.
+Diamond supports all platforms supported by both vibe.d & D, including Windows, Linux, macOS/OSX, and more.
 
 [![OS](https://img.shields.io/badge/os-windows%20%7C%20linux%20%7C%20macos-ff69b4.svg)](http://code.dlang.org/packages/diamond)
 
 ### Website/Webapi Support
 
-Diamond has support for both writing websites and/or webapis.
+Diamond has support for both writing websites and/or web APIs.
 
 ### i18n
 
-i18n (Internationalization) can be used to localize Diamond application for different languages and cultures.
+i18n (Internationalization) can be used to localize Diamond applications for different languages and cultures.
 
 ```
 import diamond.data.i18n; // Or just diamond.data
@@ -158,11 +158,11 @@ auto specificMessage = getMessage("en_us", "someMessage"); // Gets message from 
 
 ### ORM
 
-Diamond has a build-in ORM (Diamond-db) which can be used to map customized data ex. other database-engines.
+Diamond has a built-in ORM (Diamond-db) which can be used to map customized data, e.g. other database-engines.
 
 ### MySql ORM
 
-By default Diamond has a build-in ORM for Mysql. It's very powerful since it's based on the native mysql library.
+By default, Diamond has a built-in ORM for MySQL. It's very powerful since it's based on the native MySQL library.
 
 ```
 module models.mymodel;
@@ -181,13 +181,13 @@ class MyModel : MySql.MySqlModel!"mymodel_table"
 
 ### Caching
 
-Diamond implements a lot of caching techniques behind the scenes. It also allows for custom caching of ex. expensive views.
+Diamond implements a lot of caching techniques behind the scenes. It also allows for custom caching of, e.g. expensive views.
 
 [![Cache](https://diamondmvc.github.io/Diamond/images/cache.jpg)](https://diamondmvc.github.io/Diamond/images/cache.jpg)
 
 ### Mongo
 
-Diamond has a full integration to Mongo through vibe.d
+Diamond has full integration with Mongo through vibe.d.
 
 Source: http://vibed.org/docs#mongo
 
@@ -211,13 +211,13 @@ shared static this()
 
 ### Redis
 
-Diamond has a full integration to Redis through vibe.d
+Diamond has full integration with Redis through vibe.d.
 
 See: http://vibed.org/docs#redis
 
 ### Request-contexts
 
-Diamond supports request contexts which allows for each request to have any type of data carried with them anywhere in the application.
+Diamond supports request contexts, which allow for each request to have any type of data carried with them anywhere in the application.
 
 ```
 client.addContext("someString", "Hello World!");
@@ -229,7 +229,7 @@ auto someString = client.getContext!string("someString", "someString wasn't foun
 
 ### Cookies
 
-Diamond has a very user-friendly cookie API directly bound to the request's http client.
+Diamond has a very user-friendly cookie API directly bound to the request's HTTP client.
 
 ```
 client.cookies.create("myCookie", "Hello Cookie!", 60);
@@ -253,7 +253,7 @@ auto mySessionValue = client.session.getValue("mySessionValue");
 
 ### Transactions
 
-Transactions allows for transactional memory management, as well transactional database integration. It's useful to perform secure data transactions where invalid/incomplete data cannot be afforded.
+Transactions allow for transactional memory management, as well as transactional database integration. They're useful for performing secure data transactions where invalid/incomplete data are unaffordable.
 
 ```
 auto bob = new Snapshot!BankAccount(BankAccount("Bob", 200));
@@ -292,11 +292,11 @@ transaction(transfer);
 
 ### Compile-time Parsing
 
-Views are parsed at compile-time and gets compiled into D classes that are executed at run-time. This makes them very powerful, because they don't have to be parsed on each requests, giving them minimal processing only.
+Views are parsed at compile time and compiled into D classes that are executed at run time. This makes them very powerful; they don't have to be parsed on each request require only minimal processing.
 
 ### Partial Views
 
-Partial views can easily be implemented by creating normal views and simply calling he render functions from a view to render other vies.
+Partial views can easily be implemented by creating normal views and simply calling render functions from one view to render others.
 
 ```
 @* In a view *
@@ -314,7 +314,7 @@ Partial views can easily be implemented by creating normal views and simply call
 
 ### Layouts
 
-Views can use layout views, which allows for advanced layout techniques and view mixins.
+Views can use layout views, which allow for advanced layout techniques and view mixins.
 
 layout.dd
 
@@ -351,7 +351,7 @@ The time is: <b>@=Clock.currTime();</b>
 
 ### Fast & Performant Rendering
 
-Views are rendered fast, because most of their rendering is done at compile-time.
+Views are rendered fast, because most of their rendering is done at compile time.
 
 ### Dynamic
 
@@ -369,7 +369,7 @@ All views are dynamic and thus can render dynamic data.
 
 ### Any D Code Can Be Executed
 
-Views allows for any type of D code to be executed with no limits. This includes class generation, templates, functions, and expressions directly in the view. It's very useful to generate powerful and fast dynamic data, since D is natively compiled, so will the code execution for the view be and thus execution times for the code is very fast (On pair with C/C++.)
+Views allows for any type of D code to be executed with no restrictions. This includes class generation, templates, functions, and expressions directly in the view. This feature is very useful to generate powerful and fast dynamic data, since D is natively compiled, making execution times for the code in views very fast (on par with C and C++.)
 
 ```
     @:void b(T)(T item) {
@@ -380,7 +380,7 @@ Views allows for any type of D code to be executed with no limits. This includes
 
 ### Sections
 
-Diamond allows views to be split up in multiple sections, which can allow for views to only be partially rendered. This is a unique feature to Diamond that isn't seen in many other frameworks, and especially not as such a clean and innovative implementation. It's a great help to ex. responsive designs.
+Diamond allows views to be split into multiple sections, which can allow for views to only be partially rendered. This is a feature that isn't seen in many other frameworks, especially not as such a clean and innovative implementation. It's a great help for, e.g. responsive designs.
 
 view1:
 
@@ -417,7 +417,7 @@ Flash-messages are useful to create notification messages in a website.
 
 ### Auto-mapping
 
-Controller actions are auto-mapped by their function definitions that are declared with special attributes.
+Controller actions are auto-mapped by their function definitions, which are declared with special attributes.
 
 ```
 /// Route: /controller_or_view_route/GetSomething
@@ -431,7 +431,7 @@ Controller actions are auto-mapped by their function definitions that are declar
 
 ### View-integration
 
-Controllers have access directly to the view that's calling them. They can be shared between multiple views too.
+Controllers have direct access to the view that's calling them. They can also be shared between multiple views.
 
 ```
 @HttpDefault defaultAction()
@@ -444,7 +444,7 @@ Controllers have access directly to the view that's calling them. They can be sh
 
 ### Mandatory Actions
 
-Controllers allows for mandatory actions, which are actions that are executed and must succeed on every request done to a controller.
+Controllers allow for mandatory actions, i.e. actions which are executed and must succeed on every request handled by a controller.
 
 ```
 /// Called for all requests done to the controller.
@@ -460,15 +460,15 @@ Controllers allows for mandatory actions, which are actions that are executed an
     return Status.success;
 }
 ```
-### Version-control
+### Version Control
 
-When building web-applications and building a new version you might want to versionate the project, allowing for both an old and a new api to be used. This is useful when you're trying to migrate an application from an old api to a new api, when the new api hasn't yet implemented all the features the old api has.
+When building a new version of a web applications, you might want to version the project, allowing for both old and new APIs to be used. This is useful when you're trying to migrate an application from an old API to a new API, when the new API hasn't yet implemented all the features the old API has.
 
 ## More
 
 ### Authentication
 
-Diamond has a full integrated authentication API that can be combined with the ACL to create a strong and secure authentication implementation.
+Diamond has a fully integrated authentication API that can be combined with the ACL to create a strong and secure authentication implementation.
 
 Login:
 
@@ -498,7 +498,7 @@ else
 
 ### CSRF Protection
 
-CSRF Protection is build-in to Diamond and cann easily be integrated to forms, as well validated in an application's backend.
+CSRF Protection is built-in to Diamond and can easily be integrated with forms, as well as validated in an application's backend.
 
 View:
 
@@ -527,13 +527,13 @@ if (!isValidCSRFToken(view.client, bankTransferModel.formToken, true))
 
 ### Cryptography
 
-Cryptography is supported through the vibe.d's dependency to Botan.
+Cryptography is supported through vibe.d's dependency on Botan.
 
 See: https://code.dlang.org/packages/botan/
 
 ### JSON/BSON
 
-JSON & BSON is supported through the vibe.d integration, but some high-level json support is done to integrate better with it.
+JSON & BSON are supported through vibe.d, but some high-level JSON support is implemented for better integration.
 
 ```
 auto model = client.getModelFromJson!MyModel;
@@ -558,7 +558,7 @@ auto model = client.getModelFromJson!MyModel;
 
 ### Asynchronous
 
-Diamond requests are processed asynchrnously through vibe.d, making request processing fast and powerful. Actions etc. can also be executed asynchronously using the API provided by vibe.d.
+Diamond requests are processed asynchrnously through vibe.d, making request processing fast and powerful. Actions, etc., can also be executed asynchronously using the API provided by vibe.d.
 
 [![Async](http://vibed.org/images/feature_event.png)](http://vibed.org/features)
 
@@ -566,7 +566,7 @@ Source: http://vibed.org/features
 
 ### Fibers/Tasks
 
-Fibers and tasks are supported through vibe.d allowing for very powerful and performant multi-threading.
+Fibers and tasks are supported through vibe.d allowing for very powerful and performant multithreading.
 
 [![Fibers](http://vibed.org/images/feature_fibers.png)](http://vibed.org/features)
 
@@ -574,15 +574,15 @@ Source: http://vibed.org/features
 
 ### Sharding
 
-Diamond supports multiple database systems such as MySql, Mongo and Redis and integration with them can be done easily without any complexity put into code.
+Diamond supports multiple database systems such as MySQL, Mongo, and Redis, and integration with them can be done easily and without code complexity.
 
 ### Network Security & Restrictions
 
-Network security and restrictions can easily be done per controller actions/route or globally for the whole application. This allows to restrict certain areas of the application to ex. a local network; very useful for intern administration websites that are hosted on the same server as a public website.
+Network security and restrictions can easily be done per controller action/route, or globally for the whole application. This allows restricting certain areas of the application to e.g. a local network. This is very useful for internal administration websites that are hosted on the same server as a public website.
 
-### Unittesting
+### Unit Testing
 
-Unittesting is a must for enterprise development and must be implemented for an application to make sure everything works how it's supposed to be. Unittesting in Diamond will allow for you to create specialized requests that can target certain areas of your application.
+Unit testing is a must for enterprise development and must be implemented for an application to make sure everything works as it's supposed to. Unit testing in Diamond allows for the creation of specialized requests that can target certain areas of an application.
 
 ```
 module unittests.test;
