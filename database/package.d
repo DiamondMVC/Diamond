@@ -12,6 +12,7 @@ public
   import std.datetime : Date, DateTime, Clock, SysTime;
 
   import diamond.data.mapping.attributes;
+  import diamond.data.mapping.engines.mysql.model;
   import MySql = diamond.data.mapping.engines.mysql;
 
   /// A variant db parameter type.

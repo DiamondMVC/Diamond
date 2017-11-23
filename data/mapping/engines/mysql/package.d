@@ -31,33 +31,27 @@ private enum connectionStringFormat = "host=%s;port=%s;user=%s;pwd=%s;db=%s";
 /// The db connection string.
 private static __gshared immutable string _dbConnectionString;
 
-/// The configurations for the connection string.
-private class DbConfig
-{
-  /// The host.
-  string host;
-  /// The port.
-  @optional ushort port;
-  /// The user.
-  string user;
-  /// The password.
-  string password;
-  /// The database.
-  string database;
-}
-
 /// Static shared constructor for the module.
 shared static this()
 {
-  import std.file : exists, readText;
-  import vibe.d : deserializeJson;
-  
-  if (!exists("config/db.json"))
+  import diamond.core.webconfig;
+
+  if (!webConfig)
+  {
+    loadWebConfig();
+  }
+
+  if (!webConfig.dbConnections)
   {
     return;
   }
 
-  auto dbConfig = deserializeJson!DbConfig(readText("config/db.json"));
+  auto dbConfig = webConfig.dbConnections.mysql.get("default", null);
+
+  if (!dbConfig)
+  {
+    return;
+  }
 
   _dbConnectionString = connectionStringFormat.format(
     dbConfig.host, dbConfig.port ? dbConfig.port : 3306,
