@@ -158,7 +158,7 @@ static if (isWeb)
     emitExtension();
 
     auto router = new URLRouter;
-    
+
     handleWebSockets(router);
 
     router.any("*", &handleHTTPListen);

@@ -88,11 +88,11 @@ static if (!isWebApi)
 
 static if (isWeb)
 {
+  import vibe.data.serialization : optional;
+
   /// Web configurations.
   class WebConfig
   {
-    import vibe.data.serialization : optional;
-
     /// The name of the web application.
     string name;
     /// The routes that are mapped to static files.
@@ -117,6 +117,8 @@ static if (isWeb)
     @optional string[] globalRestrictedIPs;
     /// An array of restricted ip addresses.
     @optional string[] restrictedIPs;
+    /// A collection of db connection configurations.
+    @optional WebDbConnections dbConnections;
   }
 
   /// A web address.
@@ -139,6 +141,27 @@ static if (isWeb)
     string[string] notFound;
     /// Headers used for error responses.
     string[string] error;
+  }
+
+  /// Wrapper around db connection configurations.
+  class WebDbConnections
+  {
+    @optional WebDbConnectionConfig[string] mysql;
+  }
+
+  /// Wrapper around a db connection configuration.
+  class WebDbConnectionConfig
+  {
+    /// The host.
+    string host;
+    /// The port.
+    @optional ushort port;
+    /// The user.
+    string user;
+    /// The password.
+    string password;
+    /// The database.
+    string database;
   }
 
   /// The web configuration.
