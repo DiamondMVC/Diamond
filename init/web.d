@@ -245,7 +245,7 @@ static if (isWeb)
 
     static if (isTesting)
     {
-      if (!testsPassed && client.ipAddress != "127.0.0.1")
+      if (!testsPassed || client.ipAddress != "127.0.0.1")
       {
         client.error(HttpStatus.serviceUnavailable);
       }
