@@ -55,6 +55,29 @@ static if (isWeb)
 
       loadStaticFiles();
 
+      if (webConfig.specializedRoutes)
+      {
+        foreach (key,route; webConfig.specializedRoutes)
+        {
+          switch (route.type)
+          {
+            case "external":
+              addSpecializedRoute(SpecializedRouteType.external, key, route.value);
+              break;
+
+            case "internal":
+              addSpecializedRoute(SpecializedRouteType.internal, key, route.value);
+              break;
+
+            case "local":
+              addSpecializedRoute(SpecializedRouteType.local, key, route.value);
+              break;
+
+            default: break;
+          }
+        }
+      }
+
       foreach (address; webConfig.addresses)
       {
         loadServer(address.ipAddresses, address.port);
@@ -178,6 +201,11 @@ static if (isWeb)
 
     try
     {
+      if (handleSpecializedRoute(client))
+      {
+        return;
+      }
+
       auto routes = hasRoutes ?
         handleRoute(client.ipAddress == "127.0.0.1", request.path) :
         [request.path];

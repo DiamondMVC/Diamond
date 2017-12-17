@@ -119,6 +119,8 @@ static if (isWeb)
     @optional string[] restrictedIPs;
     /// A collection of db connection configurations.
     @optional WebDbConnections dbConnections;
+    /// Tn associative array of specialized routes.
+    @optional WebSpecialRoute[string] specializedRoutes;
   }
 
   /// A web address.
@@ -162,6 +164,15 @@ static if (isWeb)
     string password;
     /// The database.
     string database;
+  }
+
+  /// Wrapper around a special route.
+  class WebSpecialRoute
+  {
+    /// The type of the route.
+    string type;
+    /// The value of the route.
+    string value;
   }
 
   /// The web configuration.
