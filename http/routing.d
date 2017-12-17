@@ -9,15 +9,243 @@ import diamond.core.apptype;
 
 static if (isWeb)
 {
-  import vibe.d : HTTPServerRequest;
+  import vibe.d : HTTPServerRequest, HTTPClientRequest, HTTPClientResponse, requestHTTP, HTTPMethod;
+  import vibe.stream.operations : readAllUTF8;
 
   import diamond.errors : enforce;
+  import diamond.http.client;
+  import diamond.http.method;
 
   /// Collection of routes.
   private static __gshared RouteEntry[string] _routes;
 
+  /// Collection of specialized routes.
+  private static __gshared ISpecializedRoute[string] _specializedRoutes;
+
+  /// Disallowed headers for proxies, used by specialized routes.
+  private static __gshared const disallowedHeaders = ["Content-Length", "Transfer-Encoding", "Content-Encoding", "Connection"];
+
+  /// Enumeration of specialized route types.
+  enum SpecializedRouteType
+  {
+    /// An external specialized route can access external resources at another host.
+    external,
+
+    /// An internal specialized route can access resources internal to the application.
+    internal,
+
+    /// A local specialized route can access local resources on the same host.
+    local
+  }
+
+  /// An interface for a specialized route.
+  private interface ISpecializedRoute
+  {
+    /**
+    * The function to handle the specialized route.
+    * Params:
+    *   client = The client to handle for the specialized route.
+    * Returns:
+    *   False if the client should still be handled internally or true if the client has been handled by the specialized route.
+    */
+    bool handle(HttpClient client);
+  }
+
+  /// An implementation of an external specialized route.
+  private final class ExternalSpecializedRoute : ISpecializedRoute
+  {
+    /// The external url.
+    string url;
+
+    /**
+    * Creates a new external specialized route.
+    * Params:
+    *   url = The url of the external specialized route.
+    */
+    this(string url)
+    {
+      this.url = url;
+    }
+
+    /**
+    * Handles the external specialized route.
+    * Params:
+    *   client = The client to handle for the specialized route.
+    * Returns:
+    *   True, because the external specialized route handles the client.
+    */
+    final bool handle(HttpClient client)
+    {
+      auto queryString = client.rawRequest.queryString;
+
+      requestHTTP
+      (
+        url ~ (queryString ? queryString : ""),
+    		(scope request)
+        {
+    			request.method = cast(HTTPMethod)client.method;
+          request.headers = client.rawRequest.headers.dup;
+
+          foreach (disallowedHeader; disallowedHeaders)
+          {
+            if (disallowedHeader in request.headers)
+            {
+              request.headers.remove(disallowedHeader);
+            }
+          }
+
+          if (client.method == HttpMethod.POST || client.method == HttpMethod.PUT || client.method == HttpMethod.PATCH)
+          {
+            auto data = client.requestStream.readAllUTF8();
+
+            if (data && data.length)
+            {
+              request.writeBody(cast(ubyte[])data);
+            }
+          }
+    		},
+    		(scope response)
+        {
+          client.rawResponse.headers = response.headers.dup;
+
+          foreach (disallowedHeader; disallowedHeaders)
+          {
+            if (disallowedHeader in response.headers)
+            {
+              client.rawResponse.headers.remove(disallowedHeader);
+            }
+          }
+
+          auto data = response.bodyReader.readAllUTF8();
+
+          client.write(data);
+    		}
+    	);
+
+      return true;
+    }
+  }
+
+  /// Implementation of an internal specialized route.
+  private final class InternalSpecializedRoute : ISpecializedRoute
+  {
+    /// The internal route.
+    string route;
+
+    /**
+    * Creates a new internal specialized route.
+    * Params:
+    *   route = The internal route.
+    */
+    this(string route)
+    {
+      this.route = route;
+    }
+
+    /**
+    * Handles the internal specialized route.
+    * Params:
+    *   client = The client to handle for the specialized route.
+    * Returns:
+    *   False, because the client should still be handled internally.
+    */
+    final bool handle(HttpClient client)
+    {
+      client.rawRequest.path = route;
+
+      return false;
+    }
+  }
+
+  /// Implementation of a local specialized route.
+  private final class LocalSpecializedRoute : ISpecializedRoute
+  {
+    /// The local port.
+    ushort port;
+
+    /**
+    * Creates a new local specialized route.
+    * Params:
+    *   port = The port of the specialized route.
+    */
+    this(ushort port)
+    {
+      this.port = port;
+    }
+
+    /**
+    * Handles the local specialized route.
+    * Params:
+    *   client = The client to handle for the specialized route.
+    * Returns:
+    *   True, because the local specialized route handles the client.
+    */
+    final bool handle(HttpClient client)
+    {
+      import std.conv : to;
+      
+      return new ExternalSpecializedRoute("http://127.0.0.1:" ~ to!string(port) ~ "/").handle(client);
+    }
+  }
+
   package(diamond)
   {
+    /**
+    * Adds a specialized route.
+    * Params:
+    *   routeType = The type of the route.
+    *   route =     The route.
+    *   value =     The value of the specialized route eg. url, internal-route or port.
+    */
+    void addSpecializedRoute(SpecializedRouteType routeType, string route, string value)
+    {
+      final switch (routeType)
+      {
+        case SpecializedRouteType.external:
+          _specializedRoutes[route] = new ExternalSpecializedRoute(value);
+          break;
+
+        case SpecializedRouteType.internal:
+          _specializedRoutes[route] = new InternalSpecializedRoute(value);
+          break;
+
+        case SpecializedRouteType.local:
+          import std.conv : to;
+          _specializedRoutes[route] = new LocalSpecializedRoute(to!ushort(value));
+          break;
+      }
+    }
+
+    bool handleSpecializedRoute(HttpClient client)
+    {
+      if (!hasSpecializedRoutes)
+      {
+        return false;
+      }
+
+      auto route = client.rawRequest.path;
+
+      if (route[0] == '/' && route.length > 1)
+      {
+        route = route[1 .. $];
+      }
+
+      auto specializedRoute = _specializedRoutes.get(route, null);
+
+      if (!specializedRoute)
+      {
+        return false;
+      }
+
+      return specializedRoute.handle(client);
+    }
+
+    /// Gets a boolean determining whether there are special routes specified.
+    @property bool hasSpecializedRoutes()
+    {
+      return _specializedRoutes && _specializedRoutes.length;
+    }
+
     /// Gets a boolean determining whether there are routes specified.
     @property bool hasRoutes()
     {
@@ -295,7 +523,7 @@ static if (isWeb)
       }
 
       _action = _params[0];
-      
+
       if (_params.length > 1)
       {
         _params = _params[1 .. $];
