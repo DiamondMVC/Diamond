@@ -183,7 +183,7 @@ static if (isWeb)
     final bool handle(HttpClient client)
     {
       import std.conv : to;
-      
+
       return new ExternalSpecializedRoute("http://127.0.0.1:" ~ to!string(port) ~ "/").handle(client);
     }
   }
@@ -439,7 +439,7 @@ static if (isWeb)
     * Params:
     *   url = The url of the route.
     */
-    package(diamond) this(string url)
+    this(string url)
     {
       enforce(url && url.length, "Invalid route url.");
 
