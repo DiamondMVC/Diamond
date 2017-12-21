@@ -57,6 +57,15 @@ static if (!isWebApi)
     /// The layout view.
     string _layoutName;
 
+    /// Boolean determining whether the page rendering is delayed.
+    bool _delayRender;
+
+    /// The view that's currently rendering the layout view.
+    View _renderView;
+
+    /// Boolean determining whether the view generation is raw or if it should call controllers etc.
+    bool _rawGenerate;
+
     protected:
     static if (isWebServer)
     {
@@ -181,10 +190,57 @@ static if (!isWebApi)
       {
         _layoutName = newLayoutName;
       }
+
+      /// Gets a boolean determining whether the rendering is delayed.
+      bool delayRender() { return _delayRender; }
+
+      /// Sets a boolean determining whether the rendering is delayed.
+      void delayRender(bool isDelayed)
+      {
+        _delayRender = isDelayed;
+      }
+
+      /// Gets the view that's currently rendering the layout view.
+      View renderView() { return _renderView; }
+
+      /// Sets a new render view.
+      void renderView(View newRenderView)
+      {
+        _renderView = newRenderView;
+
+        copyViewData();
+      }
+
+      /// Gets a boolean determining whether the view generation is raw or if it should call controllers etc.
+      bool rawGenerate() { return _rawGenerate; }
+
+      /// Sets a boolean determining whether the view generation is raw or if it should call controllers etc.
+      void rawGenerate(bool isRawGenerate)
+      {
+        _rawGenerate= isRawGenerate;
+      }
+    }
+
+    protected void copyViewData()
+    {
+      static if (isWebServer)
+      {
+        _client = _renderView._client;
+        _rootPath = _renderView._rootPath;
+        _cached = _renderView._cached;
+      }
+
+      _placeHolders = _renderView._placeHolders;
     }
 
     final
     {
+      /// Clears the view result.
+      void clearView()
+      {
+        _result = "";
+      }
+
       /**
       * Adds a place holder to the view.
       * Params:
@@ -203,7 +259,7 @@ static if (!isWebApi)
       */
       string prepare()
       {
-        string result = _result.dup;
+        string result = _delayRender ? "" : cast(string)_result.dup;
 
         if (_layoutName && _layoutName.strip().length)
         {
@@ -212,6 +268,7 @@ static if (!isWebApi)
           if (layoutView)
           {
             layoutView.name = name;
+            layoutView._renderView = this;
 
             auto layoutResult = layoutView.generate();
 
@@ -222,7 +279,14 @@ static if (!isWebApi)
               layoutResult = layoutResult.replace("@<head>", headPlaceHolder);
             }
 
-            result = layoutResult.replace("@<view>", result);
+            if (!_delayRender)
+            {
+              result = layoutResult.replace("@<view>", result);
+            }
+            else
+            {
+              result = layoutResult;
+            }
           }
         }
 
@@ -510,7 +574,7 @@ static if (!isWebApi)
         void flashMessage(string identifier, string message, FlashMessageType type, size_t displayTime = 0)
         {
           import diamond.errors.checks;
-          
+
           enforce(identifier && identifier.length, "No identifier specified.");
 
           auto sessionValueName = "__D_FLASHMSG_" ~ _name ~ identifier;

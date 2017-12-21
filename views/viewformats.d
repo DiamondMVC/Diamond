@@ -80,15 +80,18 @@ static if (!isWebApi)
 
     /// The format for controller handlers.
     enum controllerHandleFormat = q{
-      auto controllerResult = controller.handle();
+      if (!super.rawGenerate)
+      {
+        auto controllerResult = controller.handle();
 
-      if (controllerResult == Status.notFound)
-      {
-        throw new HTTPStatusException(HTTPStatus.NotFound);
-      }
-      else if (controllerResult == Status.end)
-      {
-        return null;
+        if (controllerResult == Status.notFound)
+        {
+          throw new HTTPStatusException(HTTPStatus.NotFound);
+        }
+        else if (controllerResult == Status.end)
+        {
+          return null;
+        }
       }
     };
 
@@ -172,6 +175,20 @@ static if (!isWebApi)
 
   /// The format for the model member.
   enum modelMemberFormat = "%s model;\r\n";
+
+  enum updateModelFromRenderViewFormat = q{
+    protected override void copyViewData()
+    {
+      auto rView = cast(view_%s)renderView;
+
+      if (rView)
+      {
+        this.model = rView.model;
+      }
+
+      super.copyViewData();
+    }
+  };
 
   /// The format for ending a view generate call.
   enum endFormat = q{
