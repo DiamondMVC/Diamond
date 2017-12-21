@@ -239,6 +239,7 @@ static if (!isWebApi)
         {
           viewModelGenerateGeneration = modelGenerateFormat.format(value);
           viewClassMembersGeneration ~= modelMemberFormat.format(value);
+          viewClassMembersGeneration ~= updateModelFromRenderViewFormat.format(viewName);
           break;
         }
 
