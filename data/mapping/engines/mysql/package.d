@@ -10,11 +10,11 @@ import std.traits : hasMember;
 import std.algorithm : map;
 import std.conv : to;
 import std.string : format;
+import std.typecons : Nullable;
 
 import vibe.data.serialization : optional;
 
-import mysql.db;
-import mysql.commands;
+import mysql;
 
 public
 {
@@ -67,6 +67,36 @@ shared static this()
   {
     return _dbConnectionString;
   }
+}
+
+/// Collection of connection pools.
+private static __gshared MySQLPool[string] _pools;
+
+/// Global pool lock to ensure we don't attempt to create a connection pool twice on same connection string.
+private static shared globalPoolLock = new Object;
+
+/**
+* Gets a new mysql connection from the pool.
+* Params:
+*   connectionString = The connection string for the connection.
+* Returns:
+*   The mysql connection.
+*/
+private Connection getMySqlConnection(string connectionString)
+{
+  auto pool = _pools.get(connectionString, null);
+
+  if (!pool)
+  {
+    synchronized (globalPoolLock)
+    {
+      pool = new MySQLPool(connectionString);
+
+      _pools[connectionString] = pool;
+    }
+  }
+
+  return pool.lockConnection();
 }
 
 /**
@@ -169,36 +199,24 @@ private enum MySqlConnectionNamedParametersSetup = q{
     newSql = sql;
   }
 
-	// Setup MySql connection ...
-	import mysql.db;
-	auto mdb = new MysqlDB(useDbConnectionString);
-	auto c = mdb.lockConnection();
-	scope(exit) c.close();
+  auto connection = getMySqlConnection(useDbConnectionString);
+  //scope(exit) lockedConnection.close();
+  //auto connection = lockedConnection.connection;
 
-	// Prepare the command ...
-	auto cmd = new Command(c, newSql);
-	cmd.prepare();
-
-	// Binds the parameters ...
-	cmd.bindParameters(newParams);
+  auto prepared = prepare(connection, newSql);
+  prepared.setArgs(newParams);
 };
 
 /// CTFE string for mixin MySql connection setup.
 private enum MySqlConnectionSetup = q{
   auto useDbConnectionString = connectionString ? connectionString : _dbConnectionString;
 
-	// Setup MySql connection ...
-	import mysql.db;
-	auto mdb = new MysqlDB(useDbConnectionString);
-	auto c = mdb.lockConnection();
-	scope(exit) c.close();
+  auto connection = getMySqlConnection(useDbConnectionString);
+  //scope(exit) lockedConnection.close();
+  //auto connection = lockedConnection.connection;
 
-	// Prepare the command ...
-	auto cmd = new Command(c, sql);
-	cmd.prepare();
-
-	// Binds the parameters ...
-	cmd.bindParameters(params);
+  auto prepared = prepare(connection, sql);
+  prepared.setArgs(params);
 };
 
 /**
@@ -212,14 +230,9 @@ private enum MySqlConnectionSetup = q{
 */
 ulong execute(string sql, DbParam[string] params, string connectionString = null)
 {
-  // Setsup the mysql connection
   mixin(MySqlConnectionNamedParametersSetup);
 
-  // Executes the statement ...
-  ulong affectedRows;
-  cmd.execPrepared(affectedRows);
-
-  return affectedRows;
+  return prepared.exec();
 }
 
 /**
@@ -233,14 +246,9 @@ ulong execute(string sql, DbParam[string] params, string connectionString = null
 */
 ulong executeRaw(string sql, DbParam[] params, string connectionString = null)
 {
-  // Setsup the mysql connection
   mixin(MySqlConnectionSetup);
 
-  // Executes the statement ...
-  ulong affectedRows;
-  cmd.execPrepared(affectedRows);
-
-  return affectedRows;
+  return prepared.exec();
 }
 
 /**
@@ -254,20 +262,16 @@ ulong executeRaw(string sql, DbParam[] params, string connectionString = null)
 */
 T scalar(T)(string sql, DbParam[string] params, string connectionString = null)
 {
-  // Setup the mysql connection
   mixin(MySqlConnectionNamedParametersSetup);
 
-  // Executes the statement ...
-  auto rows = cmd.execPreparedResult();
+  auto value = prepared.queryValue();
 
-  // Checks whether there's a result ...
-  if (!rows.length)
+  if (value.isNull)
   {
     return T.init;
   }
 
-  // Returns the first column selected of the first row ...
-  return rows[0][0].get!T;
+  return value.get.get!T;
 }
 
 /**
@@ -281,20 +285,16 @@ T scalar(T)(string sql, DbParam[string] params, string connectionString = null)
 */
 T scalarRaw(T)(string sql, DbParam[] params, string connectionString = null)
 {
-  // Setup the mysql connection
   mixin(MySqlConnectionSetup);
 
-  // Executes the statement ...
-  auto rows = cmd.execPreparedResult();
+  auto value = prepared.queryValue();
 
-  // Checks whether there's a result ...
-  if (!rows.length)
+  if (value.isNull)
   {
     return T.init;
   }
 
-  // Returns the first column selected of the first row ...
-  return rows[0][0].get!T;
+  return value.get.get!T;
 }
 
 /**
@@ -308,35 +308,16 @@ T scalarRaw(T)(string sql, DbParam[] params, string connectionString = null)
 */
 T scalarInsert(T)(string sql, DbParam[string] params, string connectionString = null)
 {
-  // Setup the mysql connection
-  mixin(MySqlConnectionNamedParametersSetup);
+  auto rows = execute(sql, params, connectionString);
 
-  ulong affectedRows;
-  cmd.execPrepared(affectedRows);
-
-  if (!affectedRows)
+  if (!rows)
   {
     return T.init;
   }
 
-  // Prepare the id command ...
-	cmd = new Command(c, "SELECT last_insert_id()");
-	cmd.prepare();
+  static const idSql = "SELECT last_insert_id()";
 
-  newParams = null;
-	cmd.bindParameters(newParams);
-
-  // Executes the statement ...
-  auto rows = cmd.execPreparedResult();
-
-  // Checks whether there's a result ...
-  if (!rows.length)
-  {
-    return T.init;
-  }
-
-  // Returns the first column selected of the first row ...
-  return rows[0][0].get!T;
+  return scalar!T(sql, null, connectionString);
 }
 
 /**
@@ -350,35 +331,16 @@ T scalarInsert(T)(string sql, DbParam[string] params, string connectionString = 
 */
 T scalarInsertRaw(T)(string sql, DbParam[] params, string connectionString = null)
 {
-  // Setup the mysql connection
-  mixin(MySqlConnectionSetup);
+  auto rows = executeRaw(sql, params, connectionString);
 
-  ulong affectedRows;
-  cmd.execPrepared(affectedRows);
-
-  if (!affectedRows)
+  if (!rows)
   {
     return T.init;
   }
 
-  // Prepare the id command ...
-	cmd = new Command(c, "SELECT last_insert_id()");
-	cmd.prepare();
+  static const idSql = "SELECT last_insert_id()";
 
-  params = null;
-	cmd.bindParameters(params);
-
-  // Executes the statement ...
-  auto rows = cmd.execPreparedResult();
-
-  // Checks whether there's a result ...
-  if (!rows.length)
-  {
-    return T.init;
-  }
-
-  // Returns the first column selected of the first row ...
-  return rows[0][0].get!T;
+  return scalarRaw!T(sql, null, connectionString);
 }
 
 /**
@@ -392,13 +354,9 @@ T scalarInsertRaw(T)(string sql, DbParam[] params, string connectionString = nul
 */
 bool exists(string sql, DbParam[string] params, string connectionString = null)
 {
-  mixin(MySqlConnectionNamedParametersSetup);
+  auto rows = execute(sql, params, connectionString);
 
-  // Executes the statement ...
-  auto rows = cmd.execPreparedResult();
-
-  // Checks whether there's a result ...
-  return cast(bool)rows.length;
+  return cast(bool)rows;
 }
 
 /**
@@ -412,13 +370,9 @@ bool exists(string sql, DbParam[string] params, string connectionString = null)
 */
 bool existsRaw(string sql, DbParam[] params, string connectionString = null)
 {
-  mixin(MySqlConnectionSetup);
+  auto rows = executeRaw(sql, params, connectionString);
 
-  // Executes the statement ...
-  auto rows = cmd.execPreparedResult();
-
-  // Checks whether there's a result ...
-  return cast(bool)rows.length;
+  return cast(bool)rows;
 }
 
 /**
@@ -434,21 +388,17 @@ TModel readSingle(TModel : IMySqlModel)(string sql, DbParam[string] params, stri
 {
   params["table"] = TModel.table;
 
-  // Sets up the mysql connection
   mixin(MySqlConnectionNamedParametersSetup);
 
-  // Executes the statement ...
-  auto rows = cmd.execPreparedResult();
+  auto row = prepared.queryRow();
 
-  // Checks whether there's a result ...
-  if (!rows.length)
+  if (row.isNull)
   {
     return TModel.init;
   }
 
-  // Returns the first row and fills the model ...
   auto model = new TModel;
-  model.row = rows[0];
+  model.row = row.get;
   model.readModel();
   return model;
 }
@@ -464,21 +414,17 @@ TModel readSingle(TModel : IMySqlModel)(string sql, DbParam[string] params, stri
 */
 TModel readSingleRaw(TModel : IMySqlModel)(string sql, DbParam[] params, string connectionString = null)
 {
-  // Sets up the mysql connection
   mixin(MySqlConnectionSetup);
 
-  // Executes the statement ...
-  auto rows = cmd.execPreparedResult();
+  auto row = prepared.queryRow();
 
-  // Checks whether there's a result ...
-  if (!rows.length)
+  if (row.isNull)
   {
     return TModel.init;
   }
 
-  // Returns the first row and fills the model ...
-  auto model = new TModel();
-  model.row = rows[0];
+  auto model = new TModel;
+  model.row = row.get;
   model.readModel();
   return model;
 }
@@ -496,13 +442,11 @@ auto readMany(TModel : IMySqlModel)(string sql, DbParam[string] params, string c
 {
   params["table"] = TModel.table;
 
-  // Sets up the mysql connection
   mixin(MySqlConnectionNamedParametersSetup);
 
-  // Executes the statement ...
-  return cmd.execPreparedResult().map!((row)
+  return prepared.querySet().map!((row)
   {
-    auto model = new TModel();
+    auto model = new TModel;
     model.row = row;
     model.readModel();
     return model;
@@ -520,13 +464,11 @@ auto readMany(TModel : IMySqlModel)(string sql, DbParam[string] params, string c
 */
 auto readManyRaw(TModel : IMySqlModel)(string sql, DbParam[] params, string connectionString = null)
 {
-  // Sets up the mysql connection
   mixin(MySqlConnectionSetup);
 
-  // Executes the statement ...
-  return cmd.execPreparedResult().map!((row)
+  return prepared.querySet().map!((row)
   {
-    auto model = new TModel();
+    auto model = new TModel;
     model.row = row;
     model.readModel();
     return model;
