@@ -207,8 +207,8 @@ static if (isWeb)
       }
 
       auto routes = hasRoutes ?
-        handleRoute(client.ipAddress == "127.0.0.1", request.path) :
-        [request.path];
+        handleRoute(client.ipAddress == "127.0.0.1", client.path) :
+        [client.path];
 
       if (!routes)
       {
@@ -221,7 +221,7 @@ static if (isWeb)
 
         client.isLastRoute = i == (routes.length - 1);
 
-        client.rawRequest.path = route[0] == '/' ? route : "/" ~ route;
+        client.path = route[0] == '/' ? route : "/" ~ route;
 
         client.route = new Route(route);
 

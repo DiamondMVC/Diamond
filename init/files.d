@@ -49,7 +49,15 @@ static if (isWeb)
     }
 
     import std.array : split, join;
-    client.rawRequest.path = "/" ~ client.path.split("/")[2 .. $].join("/");
+
+    version (VIBE_D_OLD)
+    {
+      client.path = "/" ~ client.path.split("/")[2 .. $].join("/");
+    }
+    else
+    {
+      client.path = "/" ~ client.path.split("/")[1 .. $].join("/");
+    }
 
     import diamond.core.websettings;
 

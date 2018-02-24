@@ -151,7 +151,7 @@ static if (isWeb)
     */
     final bool handle(HttpClient client)
     {
-      client.rawRequest.path = route;
+      client.path = route;
 
       return false;
     }
@@ -223,7 +223,7 @@ static if (isWeb)
         return false;
       }
 
-      auto route = client.rawRequest.path;
+      auto route = client.path;
 
       if (route[0] == '/' && route.length > 1)
       {
@@ -490,13 +490,13 @@ static if (isWeb)
     /**
     * Creates a new route.
     * Params:
-    *   request = The request to create a route of.
+    *   client = The client to create a route of.
     */
-    this(HTTPServerRequest request)
+    this(HttpClient client)
     {
-      enforce(request, "No request given.");
+      enforce(client, "No client given.");
 
-      this(request.path);
+      this(client.path);
     }
 
     @property

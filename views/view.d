@@ -14,6 +14,8 @@ static if (!isWebApi)
   import std.conv : to;
   import std.algorithm : filter;
 
+  import diamond.errors.checks;
+
   static if (isWebServer)
   {
     import diamond.http;
@@ -77,8 +79,6 @@ static if (!isWebApi)
       */
       this(HttpClient client, string name)
       {
-        import diamond.errors.checks;
-
         _client = enforceInput(client, "Cannot create a view without an associated client.");
         _name = name;
 
@@ -527,6 +527,66 @@ static if (!isWebApi)
 
       static if (isWebServer)
       {
+        /**
+        * Gets a route that fits an action for the current route.
+        * Params:
+        *   actionName = The name of the action to get.
+        * Returns:
+        *   A new constructed route with the given action name.
+        */
+        string action(string actionName)
+        {
+          enforce(actionName, "No action given.");
+
+          return "/" ~ route.name ~ "/" ~ actionName;
+        }
+
+        /**
+        * Gets a route that fits an action and parameters for the current route.
+        * Params:
+        *   actionName = The name of the action to get.
+        *   params =     The data parameters to give the route.
+        * Returns:
+        *   A new constructed route with the given action name and parameters.
+        */
+        string actionParams(string actionName, string[] params)
+        {
+          enforce(actionName, "No action given.");
+          enforce(params, "No parameters given.");
+
+          return action(actionName) ~ "/" ~ params.join("/");
+        }
+
+        /**
+        * Inserts a javascript file in a script tag.
+        * Params:
+        *   file = The javascript file.
+        */
+        void script(string file)
+        {
+          append("<script src=\"%s\"></script>".format(file));
+        }
+
+        /**
+        * Inserts an asynchronous javascript file in a script tag.
+        * Params:
+        *   file = The javascript file.
+        */
+        void asyncScript(string file)
+        {
+          append("<script src=\"%s\" async></script>".format(file));
+        }
+
+        /**
+        * Inserts a javascript file in a script tag after the page has loaded.
+        * Params:
+        *   file = The javascript file.
+        */
+        void deferScript(string file)
+        {
+          append("<script src=\"%s\" defer></script>".format(file));
+        }
+
         import CSRF = diamond.security.csrf;
 
         /// Clears the current csrf token. This is recommended before generating CSRF token fields.
@@ -573,8 +633,6 @@ static if (!isWebApi)
 
         void flashMessage(string identifier, string message, FlashMessageType type, size_t displayTime = 0)
         {
-          import diamond.errors.checks;
-
           enforce(identifier && identifier.length, "No identifier specified.");
 
           auto sessionValueName = "__D_FLASHMSG_" ~ _name ~ identifier;

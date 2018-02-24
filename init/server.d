@@ -18,6 +18,37 @@ static if (isWebServer)
   */
   void handleWebServer(HttpClient client)
   {
+    import diamond.core.webconfig;
+
+    if (webConfig.maintenance)
+    {
+      import std.algorithm: canFind;
+
+      if
+      (
+        webConfig.maintenanceWhiteList &&
+        !webConfig.maintenanceWhiteList.canFind(client.ipAddress)
+      )
+      {
+        foreach (headerKey,headerValue; webConfig.defaultHeaders.general)
+        {
+          client.rawResponse.headers[headerKey] = headerValue;
+        }
+
+        import std.file : exists, readText;
+
+        if (!exists(webConfig.maintenance))
+        {
+          client.write("\n");
+        }
+        else
+        {
+          client.write(readText(webConfig.maintenance));
+        }
+        return;
+      }
+    }
+
     import diamond.init.web : getView;
 
     auto page = getView(client, client.route, true);
@@ -26,8 +57,6 @@ static if (isWebServer)
     {
       client.notFound();
     }
-
-    import diamond.core.webconfig;
 
     string pageResult;
 
