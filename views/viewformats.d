@@ -86,7 +86,11 @@ static if (!isWebApi)
 
         if (controllerResult == Status.notFound)
         {
-          throw new HTTPStatusException(HTTPStatus.NotFound);
+          client.notFound();
+        }
+        else if (controllerResult == Status.unauthorized)
+        {
+          client.unauthorized();
         }
         else if (controllerResult == Status.end)
         {

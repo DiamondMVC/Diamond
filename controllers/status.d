@@ -20,6 +20,8 @@ static if (isWeb)
       * Indicates the response should end after executing the actions.
       * This is useful if you're redirecting or responding with a different type of data than html such as json etc.
       */
-      end
+      end,
+      /// indicates the user isn't authorized for the action.
+      unauthorized
   }
 }

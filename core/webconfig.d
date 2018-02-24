@@ -121,6 +121,10 @@ static if (isWeb)
     @optional WebDbConnections dbConnections;
     /// Tn associative array of specialized routes.
     @optional WebSpecialRoute[string] specializedRoutes;
+    /// A static web-page to display for maintenance. When specified the website will automatically be set to maintenance-mode.
+    @optional string maintenance;
+    /// An array of ips that can still access the site during maintenance.
+    @optional string[] maintenanceWhiteList;
   }
 
   /// A web address.

@@ -65,6 +65,13 @@ static if (isWeb)
     /// Boolean determining whether the client's route is the last route to handle.
     bool _isLastRoute;
 
+    version (VIBE_D_OLD) {}
+    else
+    {
+      /// The path.
+      string _path;
+    }
+
     final:
     package(diamond)
     {
@@ -80,6 +87,12 @@ static if (isWeb)
         _response = enforceInput(response, "Cannot create a client without a response.");
 
         addContext("__D_RAW_HTTP_CLIENT", this);
+
+        version (VIBE_D_OLD) { }
+        else
+        {
+          _path = request.requestPath.toString();
+        }
       }
     }
 
@@ -161,8 +174,31 @@ static if (isWeb)
       /// Gets a boolean determnining whether the response is connected or not.
       bool connected() { return _response.connected; }
 
-      /// Gets the raw path. Recommended to use the "route" property instead.
-      string path() { return _request.path; }
+      /// Gets the path.
+      string path()
+      {
+        version (VIBE_D_OLD)
+        {
+          return _request.path;
+        }
+        else
+        {
+          return _path;
+        }
+      }
+
+      /// Sets the path of the client.
+      package(diamond) void path(string newPath)
+      {
+        version (VIBE_D_OLD)
+        {
+          _request.path = newPath;
+        }
+        else
+        {
+          _path = newPath;
+        }
+      }
 
       /// Gets the query string.
       string queryString() { return _request.queryString; }
@@ -360,6 +396,11 @@ static if (isWeb)
     void notFound()
     {
       error(HttpStatus.notFound);
+    }
+
+    /// Sends an unauthorized error
+    void unauthorized() {
+      error(HttpStatus.unauthorized);
     }
 
     /**

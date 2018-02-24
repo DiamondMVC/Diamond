@@ -297,7 +297,14 @@ package(diamond)
     {
       router.get(service.route, vibewebsockets.handleWebSockets((scope socket)
       {
-        auto service = _webSocketServices.get(socket.request.path, null);
+        version (VIBE_D_OLD)
+        {
+          auto service = _webSocketServices.get(socket.request.path, null);
+        }
+        else
+        {
+          auto service = _webSocketServices.get(socket.request.requestPath.toString(), null);
+        }
 
         if (!service)
         {
