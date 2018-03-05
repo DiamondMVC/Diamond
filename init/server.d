@@ -51,7 +51,18 @@ static if (isWebServer)
 
     import diamond.init.web : getView;
 
-    auto page = getView(client, client.route, true);
+    import diamond.views.view : View;
+
+    View page;
+
+    if (webConfig.viewOnly)
+    {
+      page = getView(client, new Route("__view"), false, true);
+    }
+    else
+    {
+      page = getView(client, client.route, true);
+    }
 
     if (!page)
     {
