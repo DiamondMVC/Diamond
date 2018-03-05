@@ -20,6 +20,9 @@ enum ExtensionType
   /// An extension used to extend the general view class.
   viewExtension = "ViewExtension",
 
+  /// An extension used to extend the general view constructor.
+  viewCtorExtension = "ViewCtorExtension",
+
   /// An extension used to extend the general controller class.
   controllerExtension = "ControllerExtension",
 

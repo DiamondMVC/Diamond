@@ -84,6 +84,13 @@ static if (!isWebApi)
 
         _placeHolders["doctype"] = "<!DOCTYPE html>";
         _placeHolders["defaultRoute"] = _client.route.name;
+
+        import diamond.extensions;
+        mixin ExtensionEmit!(ExtensionType.viewCtorExtension, q{
+          mixin {{extensionEntry}}.extension;
+        });
+
+        onViewCtor();
       }
     }
     else

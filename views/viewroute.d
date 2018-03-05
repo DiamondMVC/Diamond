@@ -28,7 +28,7 @@ static if (!isWebApi)
       string generateGetView()
       {
         string getViewMixin = "
-          View getView(HttpClient client, Route route, bool checkRoute)
+          View getView(HttpClient client, Route route, bool checkRoute, bool keepRoute = false)
           {
             auto viewName =
               routableViews.get(route.name, checkRoute ? null : route.name);
@@ -49,7 +49,11 @@ static if (!isWebApi)
           getViewMixin ~= format(q{
             case "%s":
             {
-              client.route = route;
+              if (!keepRoute)
+              {
+                client.route = route;
+              }
+
               return new view_%s(client, "%s");
             }
           }, viewName, viewName, viewName);

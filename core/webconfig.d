@@ -125,6 +125,8 @@ static if (isWeb)
     @optional string maintenance;
     /// An array of ips that can still access the site during maintenance.
     @optional string[] maintenanceWhiteList;
+    /// Boolean determining whethere there's only one view to use for routing. The view must be named __view.dd
+    @optional bool viewOnly;
   }
 
   /// A web address.
