@@ -76,7 +76,7 @@ static if (isWeb)
   *   key =      The key of the message.
   *   message =  The message to add.
   */
-  package(diamond) void addMessage(string language, string key, string message)
+  void addMessage(string language, string key, string message)
   {
     _messages[language][key] = message;
   }

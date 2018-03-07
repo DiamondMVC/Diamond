@@ -65,12 +65,8 @@ static if (isWeb)
     /// Boolean determining whether the client's route is the last route to handle.
     bool _isLastRoute;
 
-    version (VIBE_D_OLD) {}
-    else
-    {
-      /// The path.
-      string _path;
-    }
+    /// The path.
+    string _path;
 
     final:
     package(diamond)
@@ -88,11 +84,7 @@ static if (isWeb)
 
         addContext("__D_RAW_HTTP_CLIENT", this);
 
-        version (VIBE_D_OLD) { }
-        else
-        {
-          _path = request.requestPath.toString();
-        }
+        _path = request.requestPath.toString();
       }
     }
 
@@ -100,10 +92,10 @@ static if (isWeb)
     @property
     {
       /// Gets the raw vibe.d request.
-      HTTPServerRequest rawRequest() { return _request; }
+      package(diamond) HTTPServerRequest rawRequest() { return _request; }
 
       /// Gets the raw vibe.d response.
-      HTTPServerResponse rawResponse() { return _response; }
+      package(diamond) HTTPServerResponse rawResponse() { return _response; }
 
       /// Gets the route.
       Route route() { return _route; }
@@ -177,27 +169,13 @@ static if (isWeb)
       /// Gets the path.
       string path()
       {
-        version (VIBE_D_OLD)
-        {
-          return _request.path;
-        }
-        else
-        {
-          return _path;
-        }
+        return _path;
       }
 
       /// Sets the path of the client.
       package(diamond) void path(string newPath)
       {
-        version (VIBE_D_OLD)
-        {
-          _request.path = newPath;
-        }
-        else
-        {
-          _path = newPath;
-        }
+        _path = newPath;
       }
 
       /// Gets the query string.

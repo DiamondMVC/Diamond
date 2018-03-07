@@ -27,7 +27,7 @@ private
 
     grammars['<'] = new Grammar(
       "placeHolder", '<', '>',
-      ContentMode.appendContent, CharacterIncludeMode.both, true, false
+      ContentMode.appendContentPlaceHolder, CharacterIncludeMode.none, false, false
     );
 
     grammars['{'] = new Grammar(

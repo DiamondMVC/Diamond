@@ -1,34 +1,55 @@
 # Diamond
 
+[![DONATE](https://img.shields.io/badge/Support%20Diamond-Donate-brightgreen.svg)](https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=MA9HZKWA7EH6A&lc=US&item_name=Diamond%20MVC&currency_code=USD&bn=PP%2dDonationsBF%3abtn_donateCC_LG%2egif%3aNonHosted)
+[![OS](https://img.shields.io/badge/os-windows%20%7C%20linux%20%7C%20macos-ff69b4.svg)](http://code.dlang.org/packages/diamond)
+[![LOC](https://img.shields.io/badge/lines--of--code-6000%2B%20%7C%2010000%2B-yellow.svg)](http://code.dlang.org/packages/diamond)
 [![Dub version](https://img.shields.io/dub/v/diamond.svg)](http://code.dlang.org/packages/diamond)
 [![Dub downloads](https://img.shields.io/dub/dt/diamond.svg)](http://code.dlang.org/packages/diamond)
 [![License](https://img.shields.io/dub/l/diamond.svg)](http://code.dlang.org/packages/diamond)
 
-Diamond is a MVC / Template Framework written in the D Programming Language. It's inspired by ASP.NET's Razor syntax; however it still differs from it and has its own set of rules. Diamond was originally written to be an alternative template version of Vibe.d's Diet templates, however it has evolved far beyond that.
+Diamond is a powerful MVC / Template Framework written in the [D Programming Language](http://dlang.org/).
 
-For the legacy project view: https://github.com/bausshf/Diamond/
+Diamond can be used to write powerful websites, webapis or as stand-alone as a template parser.
 
-### Quick-links
+Website (Temporary): https://diamondmvc.github.io/Diamond/
 
-Syntax Reference: https://github.com/DiamondMVC/Diamond/wiki/Syntax-Reference
+## Goals
 
-Comparison with ASP.NET Razor: https://github.com/DiamondMVC/Diamond/wiki/Razor-Comparison
+* To provide a powerful consistent API
+  * The API of Diamond should be rich of features, but still with powerful performance and the style should be consistent all over.
+* High performance without complexity
+  * The performance of Diamond should be high without making the API complex to use.
+* Compile-time template parsing
+  * Templates are parsed at compile-time and thus produce very little run-time overhead.
+* Easy-to-use and feature-rich template syntax
+  * The syntax of templates should be feature-rich, with an easy-to-use syntax.
+  * It should be easy to create advanced templates without complex looking code.
+* Secure & less error-prone API
+  * The API of Diamond should provide security to battle error-prone code, enabling code to be written "bug-free".
+* Enterprise development
+  * Diamond should be stable enough and have enough features to be used in enterprise and commercial work.
+* Always free & open-source
+  * Diamond should always remain free and open-source, no matter the framework's size or popularity.
+* As little dependencies as possible
+  * The less dependencies Diamond has, the better.
+* Cross-platform
+  * Should always be able to support all platforms that *vibe.d*/*DMD* supports.
+* Natural development feeling
+  * Using Diamond should feel natural without annoyance, so you can focus more on developing your application, rather than setting up Diamond.
 
-Controller Tutorial: https://github.com/DiamondMVC/Diamond/wiki/Controller-Tutorial
+## Dependencies
 
-Understanding The Core: https://github.com/DiamondMVC/Diamond/wiki/Understanding-The-Core
+|Package|Version|Description|
+|---|:--:|---|
+|vibe.d|0.8.2|Used as the backend for Diamond's web applications.|
+|DMD/Phobos|2.072.2 - 2.077.0|The standard library of D and thus a required dependency.|
+|Mysql-native|2.1.0|A native wrapper for Mysql. It's a dependency, because of the MySql ORM.|
 
-Using Diamond Stand-alone: https://github.com/DiamondMVC/Diamond/wiki/Using-Diamond-Stand-alone
+## History
 
-Using Diamond for Web-api: https://github.com/DiamondMVC/Diamond/wiki/Using-Diamond-For-WebApi
+Diamond was originally written as a template parsing library only; completely as an alternative version to vibe.d's diet templates. However soon after development it evolved to a full-fletch powerful restful mvc framework on-top of vibe.d. The goal of Diamond was from the beginning to write powerful web-applications with the style of ASP.NET
 
-Using Diamond for Web-server: https://github.com/DiamondMVC/Diamond/wiki/Using-Diamond-For-WebServer
-
-Extensions: https://github.com/DiamondMVC/Diamond/wiki/Extensions
-
-Authentication: https://github.com/DiamondMVC/Diamond/wiki/Authentication
-
-Blog posts: https://github.com/DiamondMVC/Diamond/wiki/Blog-Posts
+The legacy project of Diamond can be found here: https://github.com/bausshf/Diamond/
 
 ## Features - Web
 
@@ -52,6 +73,16 @@ Blog posts: https://github.com/DiamondMVC/Diamond/wiki/Blog-Posts
  * Separate authentication that can be used either with or without the ACL
  * CSRF Protection
  * Easy integrated cookie/session API.
+ * The network can be restricted to specific ips.
+ * Transactions
+ * Unittesting
+ * Logging
+ * i18n
+ * Version-control
+ * Route rewriting
+* Database Integration & Object Relational Mapping
+* Websockets
+* Specialized Routes (Can fetch resources external internal or local)
 
 ### Views (WebServer)
 
@@ -65,6 +96,10 @@ Blog posts: https://github.com/DiamondMVC/Diamond/wiki/Blog-Posts
 * Can render other views within itself
 * Any type of D code can be written within views.
 * Allows for sections, which is useful to only render a part of the view. (Very useful for responsive designs)
+* Can be passed to controllers by their base view
+* Layout views can be changed dynamically
+* Expensive views can be cached.
+* Flash-messages
 
 ### Models
 
@@ -82,7 +117,9 @@ Blog posts: https://github.com/DiamondMVC/Diamond/wiki/Blog-Posts
   * Status.end (Will end the request; useful for json responses etc. *Note: using the json() function already does it for you.)*
   * Status.notFound (Will issue a 404 status for the response.)
 * Can map mandatory actions that are executed on every requests. (Useful for authentication etc.)
-* Easy integrated authentication
+* Easy integrated authentication (Can be combined with ACL)
+* RESTful
+* Specific actions can be restricted to specific ips.
 
 ### Controllers (WebServer)
 
@@ -94,6 +131,7 @@ Blog posts: https://github.com/DiamondMVC/Diamond/wiki/Blog-Posts
 ### Controllers (WebApi)
 
 * Can access the request, response etc. directly.
+* Can have multiple routes associated with them.
 
 ## Features - Standalone
 
@@ -109,6 +147,7 @@ Blog posts: https://github.com/DiamondMVC/Diamond/wiki/Blog-Posts
 * Any type of D code can be written within views.
 * Can be used for any type of template rendering such as email, UI etc.
 * Allows for sections, which is useful to only render a part of the view. (Very useful for responsive designs)
+* Layout views can be changed dynamically
 
 ### Models
 
@@ -116,35 +155,43 @@ Blog posts: https://github.com/DiamondMVC/Diamond/wiki/Blog-Posts
 * Models are optional
 * Models can be passed around in view rendering
 
+## Features - Other
+
+* Cross-platform
+* Transactions & Shapshot-types
+* Object-relational-mapping
+
 ## FAQ
 
 ### What is Diamond?
 
-Diamond is a MVC / Template library written in Diamond. It was written originally as an alternative to the Diet templates in vibe.d, but now its functonality and capabilities are far beyond templating only.
+Diamond is a powerful cross-platform full-stack MVC / Template Framework written in The D Programming language.
 
 ### What does Diamond depend on?
 
-Diamond can be used stand-alone without depending on any third-party libraries, other than the standard library Phobos. It has 3 types of usage, websites and webservices, where it's used on-top of vibe.d and as a stand-alone mvc/template library.
+View the dependencies above.
 
 ### What is the dependency to Vibe.d?
 
-Diamond was originally written to be used in a hobby project as an alternative syntax to the "standard" diet templates. Thus it was originally build on-top vibe.d as a pure website template. It has now evolved to be able to run stand-alone however.
+Diamond uses vibe.d as the backend for its web-applications. This comes historically from that Diamond was originally written as an alternative template engine to vibe.d's diet templates.
 
 ### What syntax does Diamond use?
 
-Diamond is heavily inspired by the ASP.NET Razor syntax, but still differs a lot from it. You can read more about that in the wiki under Syntax Reference or the comparison with ASP.NET Razor
+Diamond is heavily inspired by the ASP.NET Razor syntax, but still differs a lot from it. You can read more about that on the website.
 
 ### What advantage does Diamond have over Diet?
 
-It let's you control the markup entirely, can be integrated with any-type of D code, not limited to vibe.d and can be used as standard template library for any type of project such as email templates etc. It also allows for special rendering, easy controller implementations and management of request data, response etc.
-
-Another advantage is that Diamond is very light-weight when used standa-lone; where Diet depends on vibe.d and to use it you must have the whole library referenced.
+It let's you control the markup entirely, can be integrated with any-type of D code. You can also extend the syntax of Diamond using extensions, which can be done without having to modify Diamond itself. This is useful to introduce custom syntax rules etc. which can be useful if you build a library or something based on Diamond.
 
 ### Does Diamond parse on every request like ex. PHP?
 
-No. Views are parsed once during compile-time and then compiled into D code that gets executed on run-time; keeping view generation to a minimum, while performance and speed is kept high. The downside of this is that on every changes in code you'll need to recompile. However it's recommended to setup an environment that checks for changes and then simply recompiles when changes are found. On Windows this can be done with https://msdn.microsoft.com/en-us/library/aa365465(VS.85).aspx or if you don't mind .NET you can use https://msdn.microsoft.com/en-us/library/system.io.filesystemwatcher(v=vs.110).aspx (Not sure about *nix systems as I have very little experience with those.)
+No. Views are parsed once during compile-time and then compiled into D code that gets executed on run-time; keeping view generation to a minimum, while performance and speed is kept high. The downside of this is that on every changes in code you'll need to recompile. However it's recommended to setup an environment that checks for changes and then simply recompiles when changes are found.
 
-In the future (At least for Windows as a starter) an application will be developed that can be used to automate build-processing etc. 
+You can use this: (Until *Cryztal* has been developed.)
+
+http://code.dlang.org/packages/fswatch
+
+In the future (At least for Windows as a starter) an application will be developed that can be used to automate build-processing etc.
 
 View the repository *Cryztal* for more information.
 
@@ -158,9 +205,9 @@ Diamond has been made in a way that it's very easy to use and integrate into pro
 
 ### Are there any syntax guide-lines?
 
-The wiki has two syntax guide-lines one for the specific syntax of Diamond and one that compares it with ASP.NET Razor.
+See: https://diamondmvc.github.io/Diamond/docs/reference/views/
 
-## Installing (Web)
+## Installing (Web) -- Note: This run on older versions of Diamond (Will be updated in the future.)
 
 Diamond supports dub and compiles as a source library.
 
@@ -174,9 +221,9 @@ Diamond supports dub and compiles as a source library.
 * Run the executable and access it in the browser with *http://127.0.0.1:8080/*
 * If *Hello World!* is shown then it worked fine.
 * First time you build it can take a while
-* After you have tested Diamond was installed successully and runs fine then you can start modifying the project and begin your own using it as a template.
+* After you have tested Diamond was installed successfully and runs fine then you can start modifying the project and begin your own using it as a template.
 
-## Installing (Standalone)
+## Installing (Standalone) -- Note: This run on older versions of Diamond (Will be updated in the future.)
 
 Using Diamond stand-alone is a little more tricky than using it for web as there are no specific guide-lines in how to use it.
 
@@ -202,6 +249,12 @@ Please follow the following guide-lines though:
 * Use the same coding-style, naming-convention etc.
 * Keep each pull request to a single change or implementation to simplify merging
 
-*Please view the wki for more information.*
+## Version & Branch Support
 
-*Coming soon: Diamond website.*
+Diamond only supports up to the 3 latest minor versions of itself, including pre-release versions.
+
+If a version is not supported its working branch is deleted.
+
+Currently supported versions: 2.4.0 - 2.6.0
+
+No longer supported (Only available in release.): 2.0.0 - 2.3.2
