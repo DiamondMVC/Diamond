@@ -27,7 +27,7 @@ Website (Temporary): https://diamondmvc.github.io/Diamond/
 * Secure & less error-prone API
   * The API of Diamond should provide security to battle error-prone code, enabling code to be written "bug-free".
 * Enterprise development
-  * Diamond should be stable enough and have enough features to be used in enterprise and commercial work.
+* Diamond should be stable enough and have enough features to be used in enterprise and commercial work.
 * Always free & open-source
   * Diamond should always remain free and open-source, no matter the framework's size or popularity.
 * As little dependencies as possible
@@ -69,17 +69,17 @@ The legacy project of Diamond can be found here: https://github.com/bausshf/Diam
   * isWebServer (true for web-servers)
   * isWebApi (true for web-apis)
   * isWeb, isWebServer and isWebApi will be false for standalone.
- * ACL & Authentication tied to it
- * Separate authentication that can be used either with or without the ACL
- * CSRF Protection
- * Easy integrated cookie/session API.
- * The network can be restricted to specific ips.
- * Transactions
- * Unittesting
- * Logging
- * i18n
- * Version-control
- * Route rewriting
+* ACL & Authentication tied to it
+* Separate authentication that can be used either with or without the ACL
+* CSRF Protection
+* Easy integrated cookie/session API.
+* The network can be restricted to specific ips.
+* Transactions
+* Unittesting
+* Logging
+* i18n
+* Version-control
+* Route rewriting
 * Database Integration & Object Relational Mapping
 * Websockets
 * Specialized Routes (Can fetch resources external internal or local)
@@ -255,6 +255,8 @@ Diamond only supports up to the 3 latest minor versions of itself, including pre
 
 If a version is not supported its working branch is deleted.
 
-Currently supported versions: 2.4.0 - 2.6.0
+Anything below 2.7.0 is no longer supported, because 2.7.0 has better compatibility, does not introduce major breaking changes and fixes most major issues.
 
-No longer supported (Only available in release.): 2.0.0 - 2.3.2
+Currently supported versions: 2.7.0
+
+No longer supported (Only available in release.): 2.0.0 - 2.6.1
