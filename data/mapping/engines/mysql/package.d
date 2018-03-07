@@ -11,6 +11,7 @@ import std.algorithm : map;
 import std.conv : to;
 import std.string : format;
 import std.typecons : Nullable;
+import std.array : array;
 
 import vibe.data.serialization : optional;
 
@@ -58,6 +59,8 @@ shared static this()
     dbConfig.user, dbConfig.password,
     dbConfig.database
   );
+
+  _pools[_dbConnectionString] = new MySQLPool(_dbConnectionString);
 }
 
 @property
@@ -76,13 +79,13 @@ private static __gshared MySQLPool[string] _pools;
 private static shared globalPoolLock = new Object;
 
 /**
-* Gets a new mysql connection from the pool.
+* Gets or creates a mysql pool from a connection string.
 * Params:
-*   connectionString = The connection string for the connection.
+*   connectionString = The connection string for the pool.
 * Returns:
-*   The mysql connection.
+*   The mysql pool.
 */
-private Connection getMySqlConnection(string connectionString)
+private MySQLPool getPool(string connectionString)
 {
   auto pool = _pools.get(connectionString, null);
 
@@ -94,9 +97,11 @@ private Connection getMySqlConnection(string connectionString)
 
       _pools[connectionString] = pool;
     }
+
+    return getPool(connectionString);
   }
 
-  return pool.lockConnection();
+  return pool;
 }
 
 /**
@@ -183,7 +188,6 @@ private DbParam[] prepareSql(string sql, DbParam[string] params, out string tran
 }
 
 /// CTFE string for mixin MySql connection setup with specialized parameters.
-/// TODO: Implement MySql Pool: https://raw.githubusercontent.com/mysql-d/mysql-native/4eaf5c6bb57d4ca852aa7fa5e8d2cd8810c0808a/source/mysql/pool.d
 private enum MySqlConnectionNamedParametersSetup = q{
   auto useDbConnectionString = connectionString ? connectionString : _dbConnectionString;
 
@@ -199,11 +203,10 @@ private enum MySqlConnectionNamedParametersSetup = q{
     newSql = sql;
   }
 
-  auto connection = getMySqlConnection(useDbConnectionString);
-  //scope(exit) lockedConnection.close();
-  //auto connection = lockedConnection.connection;
+  auto pool = getPool(useDbConnectionString);
+  auto connection = pool.lockConnection();
+  auto prepared = connection.prepare(newSql);
 
-  auto prepared = prepare(connection, newSql);
   prepared.setArgs(newParams);
 };
 
@@ -211,11 +214,10 @@ private enum MySqlConnectionNamedParametersSetup = q{
 private enum MySqlConnectionSetup = q{
   auto useDbConnectionString = connectionString ? connectionString : _dbConnectionString;
 
-  auto connection = getMySqlConnection(useDbConnectionString);
-  //scope(exit) lockedConnection.close();
-  //auto connection = lockedConnection.connection;
+  auto pool = getPool(useDbConnectionString);
+  auto connection = pool.lockConnection();
+  auto prepared = connection.prepare(sql);
 
-  auto prepared = prepare(connection, sql);
   prepared.setArgs(params);
 };
 
@@ -232,7 +234,7 @@ ulong execute(string sql, DbParam[string] params, string connectionString = null
 {
   mixin(MySqlConnectionNamedParametersSetup);
 
-  return prepared.exec();
+  return connection.exec(prepared);
 }
 
 /**
@@ -248,7 +250,7 @@ ulong executeRaw(string sql, DbParam[] params, string connectionString = null)
 {
   mixin(MySqlConnectionSetup);
 
-  return prepared.exec();
+  return connection.exec(prepared);
 }
 
 /**
@@ -264,7 +266,7 @@ T scalar(T)(string sql, DbParam[string] params, string connectionString = null)
 {
   mixin(MySqlConnectionNamedParametersSetup);
 
-  auto value = prepared.queryValue();
+  auto value = connection.queryValue(prepared);
 
   if (value.isNull)
   {
@@ -287,7 +289,7 @@ T scalarRaw(T)(string sql, DbParam[] params, string connectionString = null)
 {
   mixin(MySqlConnectionSetup);
 
-  auto value = prepared.queryValue();
+  auto value = connection.queryValue(prepared);
 
   if (value.isNull)
   {
@@ -390,7 +392,7 @@ TModel readSingle(TModel : IMySqlModel)(string sql, DbParam[string] params, stri
 
   mixin(MySqlConnectionNamedParametersSetup);
 
-  auto row = prepared.queryRow();
+  auto row = connection.queryRow(prepared);
 
   if (row.isNull)
   {
@@ -416,7 +418,7 @@ TModel readSingleRaw(TModel : IMySqlModel)(string sql, DbParam[] params, string 
 {
   mixin(MySqlConnectionSetup);
 
-  auto row = prepared.queryRow();
+  auto row = connection.queryRow(prepared);
 
   if (row.isNull)
   {
@@ -444,13 +446,13 @@ auto readMany(TModel : IMySqlModel)(string sql, DbParam[string] params, string c
 
   mixin(MySqlConnectionNamedParametersSetup);
 
-  return prepared.querySet().map!((row)
+  return connection.query(prepared).map!((row)
   {
     auto model = new TModel;
     model.row = row;
     model.readModel();
     return model;
-  });
+  }).array;
 }
 
 /**
@@ -466,11 +468,11 @@ auto readManyRaw(TModel : IMySqlModel)(string sql, DbParam[] params, string conn
 {
   mixin(MySqlConnectionSetup);
 
-  return prepared.querySet().map!((row)
+  return connection.query(prepared).map!((row)
   {
     auto model = new TModel;
     model.row = row;
     model.readModel();
     return model;
-  });
+  }).array;
 }

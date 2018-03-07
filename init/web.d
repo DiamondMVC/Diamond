@@ -24,10 +24,10 @@ static if (isWeb)
   import vibe.d : HTTPServerRequestDelegateS, HTTPServerSettings, HTTPServerRequest,
                   HTTPServerResponse, HTTPServerErrorInfo, listenHTTP,
                   HTTPMethod, HTTPStatus, HTTPStatusException,
-                  serveStaticFiles, URLRouter;
+                  serveStaticFiles, URLRouter, runApplication;
 
   /// Entry point for the web application.
-  shared static this()
+  private void main()
   {
     try
     {
@@ -92,6 +92,8 @@ static if (isWeb)
 
         runTask({ initializeTests(); });
       }
+
+      runApplication();
     }
     catch (Throwable t)
     {
@@ -105,6 +107,7 @@ static if (isWeb)
     mixin GenerateViews;
 
     import std.array : join;
+
     mixin(generateViewsResult.join(""));
 
     mixin GenerateGetView;
@@ -130,7 +133,18 @@ static if (isWeb)
   {
     foreach (staticFileRoute; webConfig.staticFileRoutes)
     {
-      _staticFiles[staticFileRoute] = serveStaticFiles(staticFileRoute);
+      import std.algorithm : map, filter;
+      import std.path : baseName;
+      import std.file : dirEntries, SpanMode;
+
+      auto directoryNames = dirEntries(staticFileRoute, SpanMode.shallow)
+        .filter!(entry => !entry.isFile)
+        .map!(entry => baseName(entry.name));
+
+      foreach (directoryName; directoryNames)
+      {
+        _staticFiles[directoryName] = serveStaticFiles(staticFileRoute);
+      }
     }
   }
 

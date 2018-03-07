@@ -40,9 +40,6 @@ static if (!isWebApi)
       /// The client.
       HttpClient _client;
 
-      /// The root path.
-      string _rootPath;
-
       /// Boolean determnining whether the view can be cached or not.
       bool _cached;
     }
@@ -142,35 +139,6 @@ static if (!isWebApi)
           return !route.action || !route.action.length;
         }
 
-        /// Gets the root path.
-        final string rootPath()
-        {
-          if (_rootPath)
-          {
-            return _rootPath;
-          }
-
-          // This makes sure that it's not retrieving the page's route, but the requests.
-          // It's useful in terms of a view redirecting to another view internally.
-          // Since the redirected view will have the route of the redirection and not the request.
-          scope auto path = client.path == "/" ? "default" : client.path[1 .. $];
-          scope auto route = path.split("/").filter!(p => p && p.strip().length).array;
-
-          if (!route || route.length <= 1)
-          {
-            return "..";
-          }
-
-          auto rootPathValue = "";
-
-          foreach (i; 0 .. route.length)
-          {
-            rootPathValue ~= (i == (route.length - 1) ? ".." : "../");
-          }
-
-          return rootPathValue;
-        }
-
         static if (isTesting)
         {
           import diamond.unittesting;
@@ -233,7 +201,6 @@ static if (!isWebApi)
       static if (isWebServer)
       {
         _client = _renderView._client;
-        _rootPath = _renderView._rootPath;
         _cached = _renderView._cached;
       }
 
@@ -260,6 +227,18 @@ static if (!isWebApi)
       }
 
       /**
+      * Gets a place holder of the view.
+      * Params:
+      *   key =   The key of the place holder.
+      * Returns:
+      *   Returns the place holder.
+      */
+      string getPlaceHolder(string key)
+      {
+        return _placeHolders.get(key, null);
+      }
+
+      /**
       * Prepares the view with its layout, placeholders etc.
       * Returns:
       *   The resulting string after the view has been rendered with its layout.
@@ -277,39 +256,18 @@ static if (!isWebApi)
             layoutView.name = name;
             layoutView._renderView = this;
 
-            auto layoutResult = layoutView.generate();
+            layoutView.addPlaceHolder("view", result);
 
-            auto headPlaceHolder = _placeHolders.get("head", null);
-
-            if (headPlaceHolder)
+            foreach (key,value; _placeHolders)
             {
-              layoutResult = layoutResult.replace("@<head>", headPlaceHolder);
+              layoutView.addPlaceHolder(key, value);
             }
 
-            if (!_delayRender)
-            {
-              result = layoutResult.replace("@<view>", result);
-            }
-            else
-            {
-              result = layoutResult;
-            }
+            result = layoutView.generate();
           }
         }
 
-        foreach (key,value; _placeHolders)
-        {
-          result = result.replace(format("@<%s>", key), value);
-        }
-
-        static if (isWebServer)
-        {
-          return result.replace("@..", rootPath);
-        }
-        else
-        {
-          return result;
-        }
+        return result;
       }
 
       /**

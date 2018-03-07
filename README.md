@@ -7,7 +7,7 @@
 [![Dub downloads](https://img.shields.io/dub/dt/diamond.svg)](http://code.dlang.org/packages/diamond)
 [![License](https://img.shields.io/dub/l/diamond.svg)](http://code.dlang.org/packages/diamond)
 
-Diamond is a poweful MVC / Template Framework written in the [D Programming Language](http://dlang.org/).
+Diamond is a powerful MVC / Template Framework written in the [D Programming Language](http://dlang.org/).
 
 Diamond can be used to write powerful websites, webapis or as stand-alone as a template parser.
 
@@ -27,7 +27,7 @@ Website (Temporary): https://diamondmvc.github.io/Diamond/
 * Secure & less error-prone API
   * The API of Diamond should provide security to battle error-prone code, enabling code to be written "bug-free".
 * Enterprise development
-  * Diamond should be stable enough and have enough features to be used in enterprice and commercial work.
+* Diamond should be stable enough and have enough features to be used in enterprise and commercial work.
 * Always free & open-source
   * Diamond should always remain free and open-source, no matter the framework's size or popularity.
 * As little dependencies as possible
@@ -41,9 +41,9 @@ Website (Temporary): https://diamondmvc.github.io/Diamond/
 
 |Package|Version|Description|
 |---|:--:|---|
-|vibe.d|0.8.1|Used as the backend for Diamond's web applications.|
-|DMD/Phobos|2.072.2 - 2.076.1|The standard library of D and thus a required dependency.|
-|Mysql-native|1.1.2|A native wrapper for Mysql. It's a dependency, because of the MySql ORM.|
+|vibe.d|0.8.2|Used as the backend for Diamond's web applications.|
+|DMD/Phobos|2.072.2 - 2.077.0|The standard library of D and thus a required dependency.|
+|Mysql-native|2.1.0|A native wrapper for Mysql. It's a dependency, because of the MySql ORM.|
 
 ## History
 
@@ -69,17 +69,20 @@ The legacy project of Diamond can be found here: https://github.com/bausshf/Diam
   * isWebServer (true for web-servers)
   * isWebApi (true for web-apis)
   * isWeb, isWebServer and isWebApi will be false for standalone.
- * ACL & Authentication tied to it
- * Separate authentication that can be used either with or without the ACL
- * CSRF Protection
- * Easy integrated cookie/session API.
- * The network can be restricted to specific ips.
- * Transactions
- * Unittesting
- * Logging
- * i18n
- * Version-control
- * Route rewriting
+* ACL & Authentication tied to it
+* Separate authentication that can be used either with or without the ACL
+* CSRF Protection
+* Easy integrated cookie/session API.
+* The network can be restricted to specific ips.
+* Transactions
+* Unittesting
+* Logging
+* i18n
+* Version-control
+* Route rewriting
+* Database Integration & Object Relational Mapping
+* Websockets
+* Specialized Routes (Can fetch resources external internal or local)
 
 ### Views (WebServer)
 
@@ -96,6 +99,7 @@ The legacy project of Diamond can be found here: https://github.com/bausshf/Diam
 * Can be passed to controllers by their base view
 * Layout views can be changed dynamically
 * Expensive views can be cached.
+* Flash-messages
 
 ### Models
 
@@ -177,9 +181,7 @@ Diamond is heavily inspired by the ASP.NET Razor syntax, but still differs a lot
 
 ### What advantage does Diamond have over Diet?
 
-It let's you control the markup entirely, can be integrated with any-type of D code, not limited to vibe.d and can be used as standard template library for any type of project such as email templates etc. It also allows for special rendering, easy controller implementations and management of request data, response etc.
-
-Another advantage is that Diamond is very light-weight when used standa-lone; where Diet depends on vibe.d and to use it you must have the whole library referenced.
+It let's you control the markup entirely, can be integrated with any-type of D code. You can also extend the syntax of Diamond using extensions, which can be done without having to modify Diamond itself. This is useful to introduce custom syntax rules etc. which can be useful if you build a library or something based on Diamond.
 
 ### Does Diamond parse on every request like ex. PHP?
 
@@ -189,7 +191,7 @@ You can use this: (Until *Cryztal* has been developed.)
 
 http://code.dlang.org/packages/fswatch
 
-In the future (At least for Windows as a starter) an application will be developed that can be used to automate build-processing etc. 
+In the future (At least for Windows as a starter) an application will be developed that can be used to automate build-processing etc.
 
 View the repository *Cryztal* for more information.
 
@@ -205,7 +207,7 @@ Diamond has been made in a way that it's very easy to use and integrate into pro
 
 See: https://diamondmvc.github.io/Diamond/docs/reference/views/
 
-## Installing (Web)
+## Installing (Web) -- Note: This run on older versions of Diamond (Will be updated in the future.)
 
 Diamond supports dub and compiles as a source library.
 
@@ -219,9 +221,9 @@ Diamond supports dub and compiles as a source library.
 * Run the executable and access it in the browser with *http://127.0.0.1:8080/*
 * If *Hello World!* is shown then it worked fine.
 * First time you build it can take a while
-* After you have tested Diamond was installed successully and runs fine then you can start modifying the project and begin your own using it as a template.
+* After you have tested Diamond was installed successfully and runs fine then you can start modifying the project and begin your own using it as a template.
 
-## Installing (Standalone)
+## Installing (Standalone) -- Note: This run on older versions of Diamond (Will be updated in the future.)
 
 Using Diamond stand-alone is a little more tricky than using it for web as there are no specific guide-lines in how to use it.
 
@@ -247,16 +249,14 @@ Please follow the following guide-lines though:
 * Use the same coding-style, naming-convention etc.
 * Keep each pull request to a single change or implementation to simplify merging
 
-*Please view the wki for more information.*
-
-*Coming soon: Diamond website.*
-
 ## Version & Branch Support
 
 Diamond only supports up to the 3 latest minor versions of itself, including pre-release versions.
 
 If a version is not supported its working branch is deleted.
 
-Currently supported versions: 2.3.0 - 2.5.0
+Anything below 2.7.0 is no longer supported, because 2.7.0 has better compatibility, does not introduce major breaking changes and fixes most major issues.
 
-No longer supported (Only available in release.): 2.0.0 - 2.2.5
+Currently supported versions: 2.7.0
+
+No longer supported (Only available in release.): 2.0.0 - 2.6.1

@@ -81,6 +81,12 @@ static if (!isWebApi)
             break;
           }
 
+          case ContentMode.appendContentPlaceHolder:
+          {
+            viewCodeGeneration ~= parseAppendPlaceholderContent(part);
+            break;
+          }
+
           case ContentMode.mixinContent:
           {
             viewCodeGeneration ~= part.content;
@@ -142,6 +148,18 @@ static if (!isWebApi)
   }
 
   private:
+  /**
+  * Parses content that can be appended as a place holder.
+  * Params:
+  *   part = The part to parse.
+  * Returns:
+  *   The appended result.
+  */
+  string parseAppendPlaceholderContent(Part part)
+  {
+    return appendFormat.format("getPlaceHolder(`" ~ part.content ~ "`)");
+  }
+
   /**
   * Parses content that can be appended.
   * Params:
