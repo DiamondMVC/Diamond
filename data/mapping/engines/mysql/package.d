@@ -30,10 +30,10 @@ alias DbParam = Variant;
 private enum connectionStringFormat = "host=%s;port=%s;user=%s;pwd=%s;db=%s";
 
 /// The db connection string.
-private static __gshared immutable string _dbConnectionString;
+private static __gshared string _dbConnectionString;
 
 /// Static shared constructor for the module.
-shared static this()
+package(diamond) void initializeMySql()
 {
   import diamond.core.webconfig;
 

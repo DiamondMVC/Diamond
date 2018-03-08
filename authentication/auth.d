@@ -26,7 +26,7 @@ static if (isWeb)
   private static __gshared TokenInvalidator tokenInvalidator;
 
   /// Static constructor for the module.
-  shared static this()
+  package(diamond) void initializeAuth()
   {
     tokenValidator = new TokenValidator;
     tokenSetter = new TokenSetter;

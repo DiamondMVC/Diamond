@@ -83,6 +83,10 @@ static if (isWeb)
         loadServer(address.ipAddresses, address.port);
       }
 
+      initializeAuth();
+      import diamond.data.mapping.engines.mysql : initializeMySql;
+      initializeMySql();
+
       print("The %s %s is now running.",
         isWebServer ? "web-server" : "web-api", webConfig.name);
 
