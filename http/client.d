@@ -166,7 +166,7 @@ static if (isWeb)
       /// Gets a boolean determnining whether the response is connected or not.
       bool connected() { return _response.connected; }
 
-      /// Gets the path.
+      /// Gets the current path.
       string path()
       {
         return _path;

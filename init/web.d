@@ -33,6 +33,9 @@ static if (isWeb)
     {
       loadWebConfig();
 
+      import diamond.data.mapping.engines.mysql : initializeMySql;
+      initializeMySql();
+
       defaultPermission = true;
       requirePermissionMethod(HttpMethod.GET, PermissionType.readAccess);
       requirePermissionMethod(HttpMethod.POST, PermissionType.writeAccess);
@@ -84,8 +87,6 @@ static if (isWeb)
       }
 
       initializeAuth();
-      import diamond.data.mapping.engines.mysql : initializeMySql;
-      initializeMySql();
 
       print("The %s %s is now running.",
         isWebServer ? "web-server" : "web-api", webConfig.name);
@@ -96,6 +97,8 @@ static if (isWeb)
 
         runTask({ initializeTests(); });
       }
+
+      executeBackup();
 
       runApplication();
     }
@@ -313,27 +316,7 @@ static if (isWeb)
       client.error(HttpStatus.badRequest);
     }
 
-    if (hasRoles)
-    {
-      import std.array : split;
-
-      auto hasRootAccess = hasAccess(
-        client.role, client.method,
-        client.route.name.split(webConfig.specialRouteSplitter)[0]
-      );
-
-      if
-      (
-        !hasRootAccess ||
-        (
-          client.route.action &&
-          !hasAccess(client.role, client.method, client.route.name ~ "/" ~ client.route.action)
-        )
-      )
-      {
-        client.error(HttpStatus.unauthorized);
-      }
-    }
+    handleHTTPPermissions(client);
 
     auto staticFile = _staticFiles.get(client.route.name, null);
 
@@ -371,6 +354,31 @@ static if (isWeb)
     {
       import diamond.core.logging;
       executeLog(LogType.after, client);
+    }
+  }
+}
+
+void handleHTTPPermissions(HttpClient client)
+{
+  if (hasRoles)
+  {
+    import std.array : split;
+
+    auto hasRootAccess = hasAccess(
+      client.role, client.method,
+      client.route.name.split(webConfig.specialRouteSplitter)[0]
+    );
+
+    if
+    (
+      !hasRootAccess ||
+      (
+        client.route.action &&
+        !hasAccess(client.role, client.method, client.route.name ~ "/" ~ client.route.action)
+      )
+    )
+    {
+      client.error(HttpStatus.unauthorized);
     }
   }
 }
