@@ -17,4 +17,5 @@ public
   import diamond.core.string;
   import diamond.core.traits;
   import diamond.core.logging;
+  import diamond.core.webinitialization;
 }
