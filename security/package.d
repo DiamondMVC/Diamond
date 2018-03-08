@@ -10,4 +10,5 @@ public
   import diamond.security.tokens;
   import diamond.security.csrf;
   import diamond.security.network;
+  import diamond.security.backup;
 }
