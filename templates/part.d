@@ -68,9 +68,9 @@ final class Part
   @property
   {
     /// Sets the current grammar.
-    void currentGrammar(const(Grammar) newGrammar)
+    void currentGrammar(Grammar newGrammar)
     {
-      _currentGrammar = cast(Grammar)newGrammar;
+      _currentGrammar = newGrammar;
     }
   }
 
@@ -78,16 +78,16 @@ final class Part
   @property
   {
     /// Gets the current grammar.
-    auto currentGrammar() { return _currentGrammar; }
+    Grammar currentGrammar() { return _currentGrammar; }
 
     /// Gets the name of the part.
-    auto name() { return _currentGrammar ? _currentGrammar.name : _name; }
+    const(string) name() { return _currentGrammar ? _currentGrammar.name : _name; }
 
     /// Gets the content of the part.
-    auto content() { return _content; }
+    const(string) content() { return _content; }
 
     /// Gets the content mode.
-    auto contentMode()
+    const(ContentMode) contentMode()
     {
       return !_currentGrammar ?
         ContentMode.appendContent : _currentGrammar.contentMode;
