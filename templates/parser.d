@@ -96,6 +96,7 @@ auto parseTemplate(string content)
   Part[][string] parts;
 
   auto current = new Part;
+
   size_t curlyBracketCount = 0;
   size_t squareBracketcount = 0;
   size_t parenthesisCount = 0;
@@ -152,15 +153,20 @@ auto parseTemplate(string content)
     {
       if (current.currentGrammar)
       {
-        if (current.currentGrammar.mandatoryStartCharacter != '\0' &&
-        beforeSecondaryChar == '@' &&
-        beforeChar == current.currentGrammar.startCharacter &&
-        currentChar == current.currentGrammar.mandatoryStartCharacter)
+        if
+        (
+          current.currentGrammar.mandatoryStartCharacter != '\0' &&
+          beforeSecondaryChar == '@' &&
+          beforeChar == current.currentGrammar.startCharacter &&
+          currentChar == current.currentGrammar.mandatoryStartCharacter
+        )
         {
           continue;
         }
 
-        if (currentChar == current.currentGrammar.startCharacter &&
+        if
+        (
+          currentChar == current.currentGrammar.startCharacter &&
           (!current.currentGrammar.ignoreDepth || !current.isStart())
         )
         {

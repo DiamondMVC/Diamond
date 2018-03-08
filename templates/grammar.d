@@ -58,27 +58,27 @@ final class Grammar
 
   @property {
     /// Gets the name.
-    auto name() { return _name; }
+    const(string) name() { return _name; }
 
     /// Gets the start character.
-    auto startCharacter() { return _startCharacter; }
+    const(char) startCharacter() { return _startCharacter; }
 
     /// Gets the end character.
-    auto endCharacter() { return _endCharacter; }
+    const(char) endCharacter() nothrow { return _endCharacter; }
 
     /// Gets the content mode.
-    auto contentMode() { return _contentMode; }
+    const(ContentMode) contentMode() { return _contentMode; }
 
     /// Gets the character include mode.
-    auto characterIncludeMode() { return _characterIncludeMode; }
+    const(CharacterIncludeMode) characterIncludeMode() { return _characterIncludeMode; }
 
     /// Gets a boolean determining whether the statement character should be included.
-    auto includeStatementCharacter() { return _includeStatementCharacter; }
+    const(bool) includeStatementCharacter() { return _includeStatementCharacter; }
 
     /// Gets a boolean determining whether the grammar should ignore depth or not.
-    auto ignoreDepth() { return _ignoreDepth; }
+    const(bool) ignoreDepth() { return _ignoreDepth; }
 
     /// Gets a character that must follow the start character. '\0' indicates no character.
-    auto mandatoryStartCharacter() { return _mandatoryStartCharacter; }
+    const(char) mandatoryStartCharacter() { return _mandatoryStartCharacter; }
   }
 }
