@@ -14,4 +14,5 @@ public
   import diamond.http.cookies;
   import diamond.http.sessions;
   import diamond.http.websockets;
+  import diamond.http.remote;
 }
