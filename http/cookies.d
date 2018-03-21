@@ -114,7 +114,7 @@ static if (isWeb)
         default: break;
       }
 
-      return true;
+      return _client.cookieConsent != HttpCookieConsent.none;
     }
 
     /**
