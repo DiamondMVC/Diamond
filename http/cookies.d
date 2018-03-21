@@ -15,6 +15,32 @@ static if (isWeb)
   import diamond.core.senc;
   import diamond.http.client;
 
+  /// Enumeration of http cookie consent types.
+  enum HttpCookieConsent
+  {
+    /// All cookies are allowed.
+    all,
+    /// No third-party cookies are allowed.
+    noThirdParty,
+    /// Only functional required cookies are allowed. Third-party cookies etc. are not allowed.
+    functional,
+    /// No cookies are allowed.
+    none
+  }
+
+  /// The type of cookie added.
+  enum HttpCookieType
+  {
+    /// A general cookie used for miscellaneous functionality.
+    general,
+    /// A cookie required for minimum functionality.
+    functional,
+    /// A third-party cookie.
+    thirdParty,
+    /// A session cookie. Session cookies cannot be disabled.
+    session
+  }
+
   /// Wrapper around a http cookie collections.
   final class HttpCookies
   {
@@ -35,20 +61,84 @@ static if (isWeb)
     }
 
     /**
+    * Checks whether a user has consent for a specific cookie type.
+    * Params:
+    *   cookieType = The type of the cookie.
+    * Returns:
+    *   True if the user accepts the cookie, false otherwise.
+    */
+    private bool hasConsent(HttpCookieType cookieType)
+    {
+      switch (cookieType)
+      {
+        case HttpCookieType.general:
+        {
+          if
+          (
+            _client.cookieConsent != HttpCookieConsent.all &&
+            _client.cookieConsent != HttpCookieConsent.noThirdParty
+          )
+          {
+            return false;
+          }
+
+          break;
+        }
+
+        case HttpCookieType.functional:
+        {
+          if
+          (
+            _client.cookieConsent == HttpCookieConsent.none
+          )
+          {
+            return false;
+          }
+
+          break;
+        }
+
+        case HttpCookieType.thirdParty:
+        {
+          if
+          (
+            _client.cookieConsent != HttpCookieConsent.all
+          )
+          {
+            return false;
+          }
+
+          break;
+        }
+
+        default: break;
+      }
+
+      return _client.cookieConsent != HttpCookieConsent.none;
+    }
+
+    /**
     * Creates a cookie.
     * Params:
-    *   name =     The name of the cookie.
-    *   value =    The value of the cookie.
-    *   maxAge =   The max-age of the cookie. (Seconds the cookie will be alive.)
-    *   path =     The path of the cookie. (Default: "/")
+    *   cookieType = The type of the cookie.
+    *   name =       The name of the cookie.
+    *   value =      The value of the cookie.
+    *   maxAge =     The max-age of the cookie. (Seconds the cookie will be alive.)
+    *   path =       The path of the cookie. (Default: "/")
     */
     void create
     (
+      HttpCookieType cookieType,
       string name, string value,
       long maxAge,
       string path = "/"
     )
     {
+      if (!hasConsent(cookieType))
+      {
+        return;
+      }
+
       auto cookie = new Cookie;
       cookie.path = path;
       cookie.maxAge = maxAge;
@@ -60,6 +150,7 @@ static if (isWeb)
     /**
     * Creates a cookie.
     * Params:
+    *   cookieType = The type of the cookie.
     *   name =      The name of the cookie.
     *   buffer =    The buffer to encode into a SENC encoded cookie string.
     *   maxAge =    The max-age of the cookie. (Seconds the cookie will be alive.)
@@ -67,12 +158,18 @@ static if (isWeb)
     */
     void createBuffered
     (
+      HttpCookieType cookieType,
       string name, ubyte[] buffer,
       long maxAge,
       string path = "/"
     )
     {
-      return create(name, SENC.encode(buffer), maxAge, path);
+      if (!hasConsent(cookieType))
+      {
+        return;
+      }
+
+      create(cookieType, name, SENC.encode(buffer), maxAge, path);
     }
 
     /**

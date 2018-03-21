@@ -220,12 +220,12 @@ Message:
       import diamond.core.webconfig;
       import diamond.core.senc;
 
-      string requestHeaders;
+      string requestHeaders = client.headers.toString();
 
-      foreach (key,value; client.headers.byKeyValue())
-      {
-        requestHeaders ~= "%s: %s\r\n".format(key, value);
-      }
+      // foreach (key,value; client.headers.byKeyValue())
+      // {
+      //   requestHeaders ~= "%s: %s\r\n".format(key, value);
+      // }
 
       string responseHeaders;
 

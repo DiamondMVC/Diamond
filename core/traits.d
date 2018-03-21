@@ -1,3 +1,8 @@
+/**
+* Copyright © DiamondMVC 2018
+* License: MIT (https://github.com/DiamondMVC/Diamond/blob/master/LICENSE)
+* Author: Jacob Jensen (bausshf)
+*/
 module diamond.core.traits;
 
 /// Creates a string to use with mixin that is an exact copy members of an enum

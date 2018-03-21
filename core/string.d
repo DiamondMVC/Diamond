@@ -1,14 +1,26 @@
+/**
+* Copyright © DiamondMVC 2018
+* License: MIT (https://github.com/DiamondMVC/Diamond/blob/master/LICENSE)
+* Author: Jacob Jensen (bausshf)
+*/
 module diamond.core.string;
 
 import std.traits : isSomeString;
 
+/**
+* Converts the first character of a string to lowercase.
+* Params:
+*   s = The string to lowercase the first character.
+* Returns:
+*   Returns a new string with the first character lowercased. The string is returned unmodified if its null or empty.
+*/
 TString firstToLower(TString)(TString s)
 if (isSomeString!TString)
 {
   import std.string : toLower;
   import std.conv : to;
 
-  if (!s)
+  if (!s || !s.length)
   {
     return s;
   }

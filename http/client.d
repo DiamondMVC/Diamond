@@ -12,10 +12,14 @@ static if (isWeb)
   /// The name of the language session key.
   private static __gshared const languageSessionKey = "__D_LANGUAGE";
 
+  /// The name of the cookie consent's cookie.
+  private static const __gshared consentCookieName = "__D_COOKIE_CONSENT";
+
   /// Wrapper around the client's request aand response.
   final class HttpClient
   {
     import std.conv : to;
+    import std.typecons : Nullable;
 
     import vibe.d : HTTPServerRequest, HTTPServerResponse,
                     HTTPStatusException;
@@ -40,6 +44,9 @@ static if (isWeb)
 
     /// The cookies.
     HttpCookies _cookies;
+
+    /// The cookie consent of a user.
+    Nullable!HttpCookieConsent _cookieConsent;
 
     /// The route.
     Route _route;
@@ -142,6 +149,35 @@ static if (isWeb)
         _cookies = new HttpCookies(this);
 
         return _cookies;
+      }
+
+      /// Gets the cookie consent of a user.
+      HttpCookieConsent cookieConsent()
+      {
+        if (_cookieConsent.isNull)
+        {
+          auto consent = cookies.get(consentCookieName);
+
+          if (!consent || !consent.length)
+          {
+            cookieConsent = HttpCookieConsent.all;
+          }
+          else
+          {
+            _cookieConsent = cast(HttpCookieConsent)consent;
+          }
+        }
+
+        return _cookieConsent.get;
+      }
+
+      /// Sets the cookie consent of a user.
+      void cookieConsent(HttpCookieConsent newCookieConsent)
+      {
+        _cookieConsent = newCookieConsent;
+
+        cookies.remove(consentCookieName);
+        cookies.create(HttpCookieType.session, consentCookieName, cast(string)_cookieConsent, 60 * 60 * 24 * 14);
       }
 
       /// Gets the ip address.

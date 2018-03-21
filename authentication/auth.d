@@ -214,7 +214,7 @@ static if (isWeb)
 
     auto token = enforceInput(tokenSetter.getAndSetToken(client), "Could not set token.");
 
-    client.cookies.create(authCookieKey, token, loginTime * 60);
+    client.cookies.create(HttpCookieType.functional, authCookieKey, token, loginTime * 60);
 
     validateAuthentication(client);
   }
