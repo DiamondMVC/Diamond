@@ -26,8 +26,17 @@ static if (isWeb)
                   HTTPMethod, HTTPStatus, HTTPStatusException,
                   serveStaticFiles, URLRouter, runApplication;
 
-  /// Entry point for the web application.
-  private void main()
+  static if (!isCustomMain)
+  {
+    /// Entry point for the web application.
+    private void main()
+    {
+      runDiamond();
+    }
+  }
+
+  /// Runs the diamond application.
+  private void runDiamond()
   {
     try
     {
@@ -36,11 +45,7 @@ static if (isWeb)
       import diamond.data.mapping.engines.mysql : initializeMySql;
       initializeMySql();
 
-      defaultPermission = true;
-      requirePermissionMethod(HttpMethod.GET, PermissionType.readAccess);
-      requirePermissionMethod(HttpMethod.POST, PermissionType.writeAccess);
-      requirePermissionMethod(HttpMethod.PUT, PermissionType.updateAccess);
-      requirePermissionMethod(HttpMethod.DELETE, PermissionType.deleteAccess);
+      setDetaulfPermissions();
 
       import diamond.extensions;
       mixin ExtensionEmit!(ExtensionType.applicationStart, q{
@@ -58,28 +63,7 @@ static if (isWeb)
 
       loadStaticFiles();
 
-      if (webConfig.specializedRoutes)
-      {
-        foreach (key,route; webConfig.specializedRoutes)
-        {
-          switch (route.type)
-          {
-            case "external":
-              addSpecializedRoute(SpecializedRouteType.external, key, route.value);
-              break;
-
-            case "internal":
-              addSpecializedRoute(SpecializedRouteType.internal, key, route.value);
-              break;
-
-            case "local":
-              addSpecializedRoute(SpecializedRouteType.local, key, route.value);
-              break;
-
-            default: break;
-          }
-        }
-      }
+      loadSpecializedRoutes();
 
       foreach (address; webConfig.addresses)
       {
@@ -106,6 +90,43 @@ static if (isWeb)
     {
       handleUnhandledError(t);
       throw t;
+    }
+  }
+
+  /// Sets the default permissions for each http method.
+  private void setDetaulfPermissions()
+  {
+    defaultPermission = true;
+    requirePermissionMethod(HttpMethod.GET, PermissionType.readAccess);
+    requirePermissionMethod(HttpMethod.POST, PermissionType.writeAccess);
+    requirePermissionMethod(HttpMethod.PUT, PermissionType.updateAccess);
+    requirePermissionMethod(HttpMethod.DELETE, PermissionType.deleteAccess);
+  }
+
+  /// Loads the specialized routes.
+  private void loadSpecializedRoutes()
+  {
+    if (webConfig.specializedRoutes)
+    {
+      foreach (key,route; webConfig.specializedRoutes)
+      {
+        switch (route.type)
+        {
+          case "external":
+            addSpecializedRoute(SpecializedRouteType.external, key, route.value);
+            break;
+
+          case "internal":
+            addSpecializedRoute(SpecializedRouteType.internal, key, route.value);
+            break;
+
+          case "local":
+            addSpecializedRoute(SpecializedRouteType.local, key, route.value);
+            break;
+
+          default: break;
+        }
+      }
     }
   }
 
@@ -197,7 +218,7 @@ static if (isWeb)
 
     import diamond.extensions;
     mixin ExtensionEmit!(ExtensionType.httpSettings, q{
-      {{extensionEntry}}.handleSettings(setting);
+      {{extensionEntry}}.handleSettings(settings);
     });
     emitExtension();
 

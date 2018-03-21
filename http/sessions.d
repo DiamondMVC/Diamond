@@ -91,7 +91,7 @@ static if (isWeb)
       /// Gets the session id.
       string id() { return _session.id; }
     }
-    
+
     /**
     * Gets a session value.
     * Params:
@@ -307,7 +307,7 @@ static if (isWeb)
       session.directory = "sessions/" ~ to!string(nextSessionGroupId) ~ "/" ~ session.id[$-52 .. $] ~ "/";
     }
 
-    client.cookies.create(sessionCookieName, session.id, webConfig.sessionAliveTime * 60);
+    client.cookies.create(HttpCookieType.session, sessionCookieName, session.id, webConfig.sessionAliveTime * 60);
     session.endTime = Clock.currTime();
     session.endTime = session.endTime + webConfig.sessionAliveTime.minutes;
 

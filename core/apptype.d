@@ -53,4 +53,15 @@ public
     /// Boolean determining whether the application logs or not.
     static const bool loggingEnabled = false;
   }
+
+  version (Diamond_CustomMain)
+  {
+    /// Boolean determining whether the application uses a custom main or not.
+    static const bool isCustomMain = isWeb;
+  }
+  else
+  {
+    /// Boolean determining whether the application uses a custom main or not.
+    static const bool isCustomMain = false;
+  }
 }
