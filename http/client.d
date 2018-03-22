@@ -177,7 +177,7 @@ static if (isWeb)
         _cookieConsent = newCookieConsent;
 
         cookies.remove(consentCookieName);
-        cookies.create(HttpCookieType.session, consentCookieName, cast(string)_cookieConsent, 60 * 60 * 24 * 14);
+        cookies.create(HttpCookieType.session, consentCookieName, cast(string)_cookieConsent.get, 60 * 60 * 24 * 14);
       }
 
       /// Gets the ip address.
