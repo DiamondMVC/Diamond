@@ -16,10 +16,10 @@
 	],
 	"dependencies": {
 		"vibe-d": {
-			"version": "~>0.8.2"
+			"version": "~>0.8.3"
 		},
 		"mysql-native": {
-			"version": "~>2.1.0"
+			"version": "~>2.2.1"
 		}
 	}
 }
