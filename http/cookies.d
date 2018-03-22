@@ -16,16 +16,16 @@ static if (isWeb)
   import diamond.http.client;
 
   /// Enumeration of http cookie consent types.
-  enum HttpCookieConsent
+  enum HttpCookieConsent : string
   {
     /// All cookies are allowed.
-    all,
+    all = "all",
     /// No third-party cookies are allowed.
-    noThirdParty,
+    noThirdParty = "noThirdParty",
     /// Only functional required cookies are allowed. Third-party cookies etc. are not allowed.
-    functional,
+    functional = "functional",
     /// No cookies are allowed.
-    none
+    none = "none"
   }
 
   /// The type of cookie added.
