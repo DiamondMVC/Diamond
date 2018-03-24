@@ -204,7 +204,7 @@ static if (!isWebApi)
         _cached = _renderView._cached;
       }
 
-      _placeHolders = _renderView._placeHolders;
+      _placeholders = _renderView._placeholders;
     }
 
     final
@@ -256,7 +256,7 @@ static if (!isWebApi)
       * Returns:
       *   Returns the place holder.
       */
-      string getPlaceHolder(string key)
+      string getPlaceholder(string key)
       {
         return _placeholders.get(key, null);
       }
