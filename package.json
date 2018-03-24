@@ -12,7 +12,7 @@
 		"data", "database", "errors",
 		"extensions", "http", "init",
 		"mail", "security", "templates",
-		"unittesting", "views"
+		"unittesting", "views", "web"
 	],
 	"dependencies": {
 		"vibe-d": {
