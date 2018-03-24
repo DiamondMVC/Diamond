@@ -11,8 +11,8 @@
 		"authentication", "controllers", "core",
 		"data", "database", "errors",
 		"extensions", "http", "init",
-		"security", "templates", "unittesting",
-		"views"
+		"mail", "security", "templates",
+		"unittesting", "views"
 	],
 	"dependencies": {
 		"vibe-d": {
