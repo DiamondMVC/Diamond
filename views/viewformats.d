@@ -54,7 +54,7 @@ static if (!isWebApi)
             // controller
             %s
 
-            // placeHolders
+            // placeholders
             %s
 
             switch (sectionName)
@@ -142,7 +142,7 @@ static if (!isWebApi)
         {
           try
           {
-            // placeHolders
+            // placeholders
             %s
 
             switch (sectionName)
@@ -207,10 +207,10 @@ static if (!isWebApi)
   };
 
   /// The format for place holders.
-  enum placeHolderFormat = q{
+  enum placeholderFormat = q{
     foreach (key,value; %s)
     {
-      super.addPlaceHolder(key,value);
+      super.addPlaceholder(key,value);
     }
   };
 

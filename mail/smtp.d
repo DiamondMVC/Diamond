@@ -13,7 +13,8 @@ static if (isWeb)
                   TLSContext, TLSPeerValidationMode, TLSVersion,
                   Mail, sendMail;
 
-  import diamond.errors.check;
+  import diamond.errors.checks;
+  import diamond.core.traits;
 
   // Alias to SMTPAuthType.
   mixin(createEnumAlias!SMTPAuthType("SmtpAuthType"));
@@ -66,21 +67,21 @@ static if (isWeb)
     @property
     {
       /// Gets the authentication type.
-      SmtpAuthType authType() { return _settings.authType; }
+      SmtpAuthType authType() { return cast(SmtpAuthType)_settings.authType; }
 
       /// Sets the authentication type.
       void authType(SmtpAuthType newAuthType)
       {
-        _settings = newAuthType;
+        _settings.authType = cast(SMTPAuthType)newAuthType;
       }
 
       /// Gets the connection type.
-      SmtpConnectionType connectionType() { return _settings.connectionType; }
+      SmtpConnectionType connectionType() { return cast(SmtpConnectionType)_settings.connectionType; }
 
       /// Sets the connection type.
       void connectionType(SmtpConnectionType newConnectionType)
       {
-        _settings.connectionType = newConnectionType;
+        _settings.connectionType = cast(SMTPConnectionType)newConnectionType;
       }
 
       /// Gets the host.
@@ -89,7 +90,7 @@ static if (isWeb)
       /// Sets the host.
       void host(string newHost)
       {
-        _settings = newHost;
+        _settings.host = newHost;
       }
 
       /// Gets the local name.
@@ -129,10 +130,10 @@ static if (isWeb)
       }
 
       /// Get the tls context setup.
-      @safe void delegate(scope TLSContext) tlsContextSetup() { return _settings.tlsContextSetup; }
+      void delegate(scope TLSContext) @safe tlsContextSetup() { return _settings.tlsContextSetup; }
 
       /// Sets the tls context setup.
-      void tlsContextSetup(@safe void delegate(scope TLSContext) newContextSetup)
+      void tlsContextSetup(void delegate(scope TLSContext) @safe newContextSetup)
       {
         _settings.tlsContextSetup = newContextSetup;
       }
@@ -167,6 +168,8 @@ static if (isWeb)
     SmtpClientSettings _settings;
     /// The sender.
     string _sender;
+    /// The from-mail.
+    string _fromMail;
     /// The recipient;
     string _recipient;
     /// The subject.
