@@ -11,4 +11,5 @@ public
   import diamond.security.csrf;
   import diamond.security.network;
   import diamond.security.backup;
+  import diamond.security.validation;
 }
