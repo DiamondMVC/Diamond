@@ -33,7 +33,7 @@ static if (!isWebApi)
     string viewConstructorGeneration = "";
     string viewModelGenerateGeneration = "";
     string viewCodeGeneration = "";
-    string viewPlaceHolderGeneration = "";
+    string viewPlaceholderGeneration = "";
     bool hasController;
     bool useBaseView;
     bool hasDefaultSection;
@@ -81,7 +81,7 @@ static if (!isWebApi)
             break;
           }
 
-          case ContentMode.appendContentPlaceHolder:
+          case ContentMode.appendContentPlaceholder:
           {
             viewCodeGeneration ~= parseAppendPlaceholderContent(part);
             break;
@@ -99,7 +99,7 @@ static if (!isWebApi)
               part,
               viewName,
               viewClassMembersGeneration, viewConstructorGeneration,
-              viewModelGenerateGeneration, viewPlaceHolderGeneration,
+              viewModelGenerateGeneration, viewPlaceholderGeneration,
               useBaseView,
               hasController,
               route
@@ -128,7 +128,7 @@ static if (!isWebApi)
         viewConstructorGeneration,
         viewModelGenerateGeneration,
         hasController ? controllerHandleFormat : "",
-        viewPlaceHolderGeneration,
+        viewPlaceholderGeneration,
         viewCodeGeneration,
         endFormat
       );
@@ -140,7 +140,7 @@ static if (!isWebApi)
         viewClassMembersGeneration,
         viewConstructorGeneration,
         viewModelGenerateGeneration,
-        viewPlaceHolderGeneration,
+        viewPlaceholderGeneration,
         viewCodeGeneration,
         endFormat
       );
@@ -157,7 +157,7 @@ static if (!isWebApi)
   */
   string parseAppendPlaceholderContent(Part part)
   {
-    return appendFormat.format("getPlaceHolder(`" ~ part.content ~ "`)");
+    return appendFormat.format("getPlaceholder(`" ~ part.content ~ "`)");
   }
 
   /**
@@ -210,7 +210,7 @@ static if (!isWebApi)
     ref string viewClassMembersGeneration,
     ref string viewConstructorGeneration,
     ref string viewModelGenerateGeneration,
-    ref string viewPlaceHolderGeneration,
+    ref string viewPlaceholderGeneration,
     ref bool useBaseView,
     ref bool hasController,
     ref string route)
@@ -240,9 +240,10 @@ static if (!isWebApi)
 
       switch (key)
       {
-        case "placeHolders":
+        case "placeHolders": // TODO: Remove in 2.9.0
+        case "placeholders":
         {
-          viewPlaceHolderGeneration = placeHolderFormat.format(value);
+          viewPlaceholderGeneration = placeholderFormat.format(value);
           break;
         }
 

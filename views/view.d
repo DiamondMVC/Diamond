@@ -47,8 +47,8 @@ static if (!isWebApi)
     /// The name of the view.
     string _name;
 
-    /// The place holders.
-    string[string] _placeHolders;
+    /// The placeholders.
+    string[string] _placeholders;
 
     /// The result.
     string _result;
@@ -79,8 +79,8 @@ static if (!isWebApi)
         _client = enforceInput(client, "Cannot create a view without an associated client.");
         _name = name;
 
-        _placeHolders["doctype"] = "<!DOCTYPE html>";
-        _placeHolders["defaultRoute"] = _client.route.name;
+        _placeholders["doctype"] = "<!DOCTYPE html>";
+        _placeholders["defaultRoute"] = _client.route.name;
 
         import diamond.extensions;
         mixin ExtensionEmit!(ExtensionType.viewCtorExtension, q{
@@ -221,9 +221,32 @@ static if (!isWebApi)
       *   key =   The key of the place holder.
       *   value = The value of the place holder.
       */
-      void addPlaceHolder(string key, string value)
+      deprecated("Please use addPlaceholder() -- Will be removed in 2.9.0") void addPlaceHolder(string key, string value)
       {
-        _placeHolders[key] = value;
+        addPlaceholder(key, value);
+      }
+
+      /**
+      * Gets a place holder of the view.
+      * Params:
+      *   key =   The key of the place holder.
+      * Returns:
+      *   Returns the place holder.
+      */
+      deprecated("Please use getPlaceholder() -- Will be removed in 2.9.0") string getPlaceHolder(string key)
+      {
+        return getPlaceholder(key);
+      }
+
+      /**
+      * Adds a place holder to the view.
+      * Params:
+      *   key =   The key of the place holder.
+      *   value = The value of the place holder.
+      */
+      void addPlaceholder(string key, string value)
+      {
+        _placeholders[key] = value;
       }
 
       /**
@@ -235,7 +258,7 @@ static if (!isWebApi)
       */
       string getPlaceHolder(string key)
       {
-        return _placeHolders.get(key, null);
+        return _placeholders.get(key, null);
       }
 
       /**
@@ -256,11 +279,11 @@ static if (!isWebApi)
             layoutView.name = name;
             layoutView._renderView = this;
 
-            layoutView.addPlaceHolder("view", result);
+            layoutView.addPlaceholder("view", result);
 
-            foreach (key,value; _placeHolders)
+            foreach (key,value; _placeholders)
             {
-              layoutView.addPlaceHolder(key, value);
+              layoutView.addPlaceholder(key, value);
             }
 
             result = layoutView.generate();

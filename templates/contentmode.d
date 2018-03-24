@@ -11,7 +11,7 @@ enum ContentMode
   /// Will append content to the view.
   appendContent,
   /// Will append content to the view with a placeholder
-  appendContentPlaceHolder,
+  appendContentPlaceholder,
   /// Will mixin the content as D code.
   mixinContent,
   /// Will parse the content as meta and handle it as such
