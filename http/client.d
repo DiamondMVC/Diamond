@@ -285,7 +285,9 @@ static if (isWeb)
       {
         if (_language is null)
         {
-          _language = session.getValue!string(languageSessionKey, "");
+          import diamond.data.i18n.messages : _defaultLanguage;
+          
+          _language = session.getValue!string(languageSessionKey, _defaultLanguage);
         }
 
         return _language;

@@ -87,7 +87,10 @@ static if (!isWebApi)
           mixin {{extensionEntry}}.extension;
         });
 
-        onViewCtor();
+        static if (__traits(compiles, { onViewCtor();}))
+        {
+          onViewCtor();
+        }
       }
     }
     else

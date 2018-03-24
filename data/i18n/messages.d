@@ -9,7 +9,6 @@ import diamond.core.apptype;
 
 static if (isWeb)
 {
-
   import diamond.http;
 
   /// Alias for an associative array.
@@ -19,7 +18,7 @@ static if (isWeb)
   private __gshared Language[string] _messages;
 
   /// The default language.
-  private __gshared string _defaultLanguage;
+  package(diamond) __gshared string _defaultLanguage;
 
   /**
   * Sets the default language of the application.

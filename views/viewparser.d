@@ -83,7 +83,14 @@ static if (!isWebApi)
 
           case ContentMode.appendContentPlaceholder:
           {
-            viewCodeGeneration ~= parseAppendPlaceholderContent(part);
+            if (part.content[0] == '%' && part.content[$-1] == '%')
+            {
+              viewCodeGeneration ~= parseAppendTranslateContent(part);
+            }
+            else
+            {
+              viewCodeGeneration ~= parseAppendPlaceholderContent(part);
+            }
             break;
           }
 
@@ -158,6 +165,18 @@ static if (!isWebApi)
   string parseAppendPlaceholderContent(Part part)
   {
     return appendFormat.format("getPlaceholder(`" ~ part.content ~ "`)");
+  }
+
+  /**
+  * Parses content that can be appended as i18n.
+  * Params:
+  *   part = The part to parse.
+  * Returns:
+  *   The appended result.
+  */
+  string parseAppendTranslateContent(Part part)
+  {
+    return appendFormat.format("i18n.getMessage(super.client, \"" ~ part.content[1 .. $-1] ~ "\")");
   }
 
   /**
