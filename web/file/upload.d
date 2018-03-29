@@ -17,7 +17,7 @@ static if (isWeb)
   *   client =          The client that performed the upload.
   *   uploadedHandler = Handler for handling the uploaded files.
   */
-  void uploaded(HttpClient client, void delegate(string tempPath) uploadedHandler)
+  void uploaded(HttpClient client, void delegate(string tempPath, string fileName) uploadedHandler)
   {
     if (!uploadedHandler)
     {
@@ -26,7 +26,7 @@ static if (isWeb)
 
     foreach (name, file; client.files)
     {
-      uploadedHandler(file.tempPath.toString());
+      uploadedHandler(file.tempPath.toString(), name);
     }
   }
 }
