@@ -11,7 +11,7 @@ Diamond is a powerful MVC / Template Framework written in the [D Programming Lan
 
 Diamond can be used to write powerful websites, webapis or as stand-alone as a template parser.
 
-Website (Temporary): https://diamondmvc.github.io/Diamond/
+Website: http://diamondmvc.org/
 
 ## Goals
 
@@ -48,8 +48,6 @@ Website (Temporary): https://diamondmvc.github.io/Diamond/
 ## History
 
 Diamond was originally written as a template parsing library only; completely as an alternative version to vibe.d's diet templates. However soon after development it evolved to a full-fletch powerful restful mvc framework on-top of vibe.d. The goal of Diamond was from the beginning to write powerful web-applications with the style of ASP.NET
-
-The legacy project of Diamond can be found here: https://github.com/bausshf/Diamond/
 
 ## Features - Web
 
@@ -259,6 +257,6 @@ If a version is not supported its working branch is deleted.
 
 Anything below 2.7.0 is no longer supported, because 2.7.0 has better compatibility, does not introduce major breaking changes and fixes most major issues.
 
-Currently supported versions: 2.7.0 - 2.8.0
+Currently supported versions: 2.7.0 - 2.8.3
 
 No longer supported (Only available in release.): 2.0.0 - 2.6.1
