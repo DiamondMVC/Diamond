@@ -1,6 +1,6 @@
 # Diamond
 
-[![DONATE](https://img.shields.io/badge/Support%20Diamond-Donate-brightgreen.svg)](https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=MA9HZKWA7EH6A&lc=US&item_name=Diamond%20MVC&currency_code=USD&bn=PP%2dDonationsBF%3abtn_donateCC_LG%2egif%3aNonHosted)
+[![DONATE](https://img.shields.io/badge/Support%20Diamond-Donate-brightgreen.svg)](http://diamondmvc.org/donate)
 [![OS](https://img.shields.io/badge/os-windows%20%7C%20linux%20%7C%20macos-ff69b4.svg)](http://code.dlang.org/packages/diamond)
 [![LOC](https://img.shields.io/badge/lines--of--code-8000%2B%20%7C%2013000%2B-yellow.svg)](http://code.dlang.org/packages/diamond)
 [![Dub version](https://img.shields.io/dub/v/diamond.svg)](http://code.dlang.org/packages/diamond)
