@@ -187,13 +187,9 @@ It let's you control the markup entirely, can be integrated with any-type of D c
 
 No. Views are parsed once during compile-time and then compiled into D code that gets executed on run-time; keeping view generation to a minimum, while performance and speed is kept high. The downside of this is that on every changes in code you'll need to recompile. However it's recommended to setup an environment that checks for changes and then simply recompiles when changes are found.
 
-You can use this: (Until *Cryztal* has been developed.)
+You can use this:
 
 http://code.dlang.org/packages/fswatch
-
-In the future (At least for Windows as a starter) an application will be developed that can be used to automate build-processing etc.
-
-View the repository *Cryztal* for more information.
 
 ### What are some main features of Diamond?
 
