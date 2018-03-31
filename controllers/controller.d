@@ -696,7 +696,7 @@ else static if (isWebApi)
   mixin template GenerateControllers(string[] controllerInitializers)
   {
     import std.traits : hasUDA, getUDAs;
-	  import controllers;
+    import controllers;
 
     /// Format for generating the routes for controllers.
     private enum generateFormat = q{
@@ -724,14 +724,14 @@ else static if (isWebApi)
     };
 
      /// Generates the controller collection.
-	  string generateControllerCollection()
+    string generateControllerCollection()
     {
-		  auto controllerCollectionResult = "";
+      auto controllerCollectionResult = "";
 
-		  foreach (controller; controllerInitializers)
+      foreach (controller; controllerInitializers)
       {
         import std.string : format;
-		    controllerCollectionResult ~=
+        controllerCollectionResult ~=
           format
           (
             generateFormat,
@@ -740,10 +740,10 @@ else static if (isWebApi)
             controller.firstToLower(),
             controller
           );
-		  }
+      }
 
-		  return controllerCollectionResult;
-	  }
+      return controllerCollectionResult;
+    }
 
     /// The controller collection.
     GenerateControllerAction[string] controllerCollection;
@@ -756,7 +756,7 @@ else static if (isWebApi)
         mixin(generateControllerCollection);
       }
 
-		  return controllerCollection.get(name, null);
-	 }
+      return controllerCollection.get(name, null);
+   }
   }
 }

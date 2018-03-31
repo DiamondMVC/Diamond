@@ -25,7 +25,7 @@ private template SENCImpl(bool unused)
   */
   string encode(string s)
   {
-  	return encode(cast(ubyte[])s);
+    return encode(cast(ubyte[])s);
   }
 
   /**
@@ -39,7 +39,7 @@ private template SENCImpl(bool unused)
   {
     auto buf = new char[data.length * 2];
 
-  	size_t i;
+    size_t i;
 
     foreach (b; data)
     {
@@ -48,16 +48,16 @@ private template SENCImpl(bool unused)
       if (hex.length == 1)
       {
         buf[i] = '0';
-		    i++;
+        i++;
         buf[i] = hex[0];
-		    i++;
+        i++;
       }
       else
       {
         buf[i] = hex[0];
-		    i++;
+        i++;
         buf[i] = hex[1];
-		    i++;
+        i++;
       }
     }
 
@@ -73,7 +73,7 @@ private template SENCImpl(bool unused)
   */
   string decodeToString(string data)
   {
-  	return cast(string)decode(data);
+    return cast(string)decode(data);
   }
 
   /**
@@ -85,20 +85,20 @@ private template SENCImpl(bool unused)
   */
   ubyte[] decode(string data)
   {
-  	auto buf = new ubyte[data.length / 2];
+    auto buf = new ubyte[data.length / 2];
 
-  	size_t i;
-  	size_t c;
+    size_t i;
+    size_t c;
 
-  	foreach (ref b; buf)
+    foreach (ref b; buf)
     {
-  		buf[c] = to!ubyte(data[i .. i + 2], 16);
+      buf[c] = to!ubyte(data[i .. i + 2], 16);
 
-  		c++;
-  		i += 2;
-  	}
+      c++;
+      i += 2;
+    }
 
-  	return buf;
+    return buf;
   }
 }
 

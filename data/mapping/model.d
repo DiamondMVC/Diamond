@@ -12,33 +12,33 @@ interface IModel { }
 abstract class Model : IModel
 {
   private:
-	/// The reader.
+  /// The reader.
   void delegate() _reader;
-	/// The inserter.
+  /// The inserter.
   void delegate() _inserter;
-	/// The updater.
+  /// The updater.
   void delegate() _updater;
-	/// The deleter.
+  /// The deleter.
   void delegate() _deleter;
 
   public:
   final:
-	/// Creates a new model.
+  /// Creates a new model.
   this
-	(
-		void delegate() reader,
-		void delegate() inserter,
-		void delegate() updater,
-		void delegate() deleter
-	)
+  (
+    void delegate() reader,
+    void delegate() inserter,
+    void delegate() updater,
+    void delegate() deleter
+  )
   {
-		_reader = reader;
-		_inserter = inserter;
-		_updater = updater;
-		_deleter = deleter;
+    _reader = reader;
+    _inserter = inserter;
+    _updater = updater;
+    _deleter = deleter;
   }
 
-	/// Reads the model from the reader. Called internally from readSingle & readMany
+  /// Reads the model from the reader. Called internally from readSingle & readMany
   void readModel() @system
   {
     if (_reader)
@@ -47,7 +47,7 @@ abstract class Model : IModel
     }
   }
 
-	/// Inserts the model.
+  /// Inserts the model.
   void insertModel() @system
   {
     if (_inserter)
@@ -56,7 +56,7 @@ abstract class Model : IModel
     }
   }
 
-	/// Updates the model.
+  /// Updates the model.
   void updateModel() @system
   {
     if (_updater)
@@ -65,7 +65,7 @@ abstract class Model : IModel
     }
   }
 
-	/// Deletes the model.
+  /// Deletes the model.
   void deleteModel() @system
   {
     if (_deleter)
@@ -79,8 +79,8 @@ abstract class Model : IModel
 
 /**
 * Inserts an array of models.
-*	Params:
-*		models = The models to insert.
+*  Params:
+*    models = The models to insert.
 */
 void insertMany(T : IModel)(T[] models) @system
 {
@@ -92,8 +92,8 @@ void insertMany(T : IModel)(T[] models) @system
 
 /**
 * Updates an array of models.
-*	Params:
-*		models = The models to update.
+*  Params:
+*    models = The models to update.
 */
 void updateMany(T : IModel)(T[] models) @system
 {
@@ -105,8 +105,8 @@ void updateMany(T : IModel)(T[] models) @system
 
 /**
 * Deletes an array of models.
-*	Params:
-*		models = The models to delete.
+*  Params:
+*    models = The models to delete.
 */
 void deleteMany(T : IModel)(T[] models) @system
 {

@@ -191,19 +191,19 @@ static if (isWeb && isTesting)
     requestHTTP
     (
       url,
-  		(scope request)
+      (scope request)
       {
-  			request.method = cast(HTTPMethod)method;
+        request.method = cast(HTTPMethod)method;
 
         if (requester !is null)
         {
           requester(request);
         }
-  		},
-  		(scope response)
+      },
+      (scope response)
       {
-  			responder(new HttpUnitTestResult(response));
-  		}
-  	);
+        responder(new HttpUnitTestResult(response));
+      }
+    );
   }
 }
