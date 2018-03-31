@@ -77,9 +77,9 @@ static if (isWeb)
 
       static if (isTesting)
       {
-        import vibe.core.core;
+        import diamond.tasks;
 
-        runTask({ initializeTests(); });
+        executeTask({ initializeTests(); });
       }
 
       executeBackup();
