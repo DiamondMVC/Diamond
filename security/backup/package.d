@@ -33,12 +33,11 @@ package(diamond) void executeBackup()
     return;
   }
 
-  import vibe.core.core : runTask, sleep;
-  import core.time : minutes;
+  import diamond.tasks;
 
   foreach (service; _backupServices)
   {
-    runTask
+    executeTask
     ({
       while (true)
       {

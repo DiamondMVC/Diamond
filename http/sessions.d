@@ -9,17 +9,15 @@ import diamond.core.apptype;
 
 static if (isWeb)
 {
-  import core.time : msecs, minutes;
   import std.datetime : Clock, SysTime;
   import std.variant : Variant;
-
-  import vibe.d : runTask;
 
   import diamond.core.webconfig;
   import diamond.core.collections;
   import diamond.errors.checks;
   import diamond.http.cookies;
   import diamond.http.client;
+  import diamond.tasks;
 
   /// The name of the session cookie.
   private static const __gshared sessionCookieName = "__D_SESSION";
@@ -314,7 +312,7 @@ static if (isWeb)
     clientSession = new HttpSession(client, session);
     client.addContext(sessionCookieName, clientSession);
 
-    runTask((InternalHttpSession session) { invalidateSession(session, 3); }, session);
+    executeTask((InternalHttpSession session) { invalidateSession(session, 3); }, session);
 
     return clientSession;
   }
@@ -328,7 +326,7 @@ static if (isWeb)
   */
   private void invalidateSession(InternalHttpSession session, size_t retries, bool isRetry = false)
   {
-    import vibe.core.core : sleep;
+    import diamond.tasks : sleep;
 
     auto time = isRetry ? 100.msecs : (webConfig.sessionAliveTime + 2).minutes;
 
@@ -339,7 +337,7 @@ static if (isWeb)
       // The endtime differs from the default, so we cycle once more.
       if (Clock.currTime() < session.endTime)
       {
-        runTask((InternalHttpSession session) { invalidateSession(session, 3); }, session);
+        executeTask((InternalHttpSession session) { invalidateSession(session, 3); }, session);
       }
       else
       {
@@ -364,7 +362,7 @@ static if (isWeb)
     {
       if (retries)
       {
-        runTask((InternalHttpSession s, size_t r) { invalidateSession(s, r, true); }, session, retries - 1);
+        executeTask((InternalHttpSession s, size_t r) { invalidateSession(s, r, true); }, session, retries - 1);
       }
     }
   }
