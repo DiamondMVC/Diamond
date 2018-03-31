@@ -81,9 +81,9 @@ static if (isWeb)
       requestHTTP
       (
         url ~ (queryString ? queryString : ""),
-    		(scope request)
+        (scope request)
         {
-    			request.method = cast(HTTPMethod)client.method;
+          request.method = cast(HTTPMethod)client.method;
           request.headers = client.rawRequest.headers.dup;
 
           foreach (disallowedHeader; disallowedHeaders)
@@ -103,8 +103,8 @@ static if (isWeb)
               request.writeBody(cast(ubyte[])data);
             }
           }
-    		},
-    		(scope response)
+        },
+        (scope response)
         {
           client.rawResponse.headers = response.headers.dup;
 
@@ -119,8 +119,8 @@ static if (isWeb)
           auto data = response.bodyReader.readAllUTF8();
 
           client.write(data);
-    		}
-    	);
+        }
+      );
 
       return true;
     }

@@ -97,8 +97,8 @@ static if (isWeb && isTesting)
         s ~= "foreach (member; __traits(allMembers, " ~ moduleName ~ "))\r\n";
 
         s ~= q{
-        	{
-        		mixin(q{
+          {
+            mixin(q{
               static if (mixin("hasUDA!(%1$s, HttpTest)"))
               {
                 static test_%1$s = getUDAs!(%1$s, HttpTest)[0];
@@ -134,7 +134,7 @@ static if (isWeb && isTesting)
                 }
               }
             }.format(member));
-        	}
+          }
         };
 
         s ~= "}\r\n";

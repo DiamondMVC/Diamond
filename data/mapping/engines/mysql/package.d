@@ -115,36 +115,36 @@ private MySQLPool getPool(string connectionString)
 */
 private DbParam[] prepareSql(string sql, DbParam[string] params, out string transformedSql)
 {
-	transformedSql = "";
-	string paramName = "";
-	bool selectParam = false;
-	DbParam[] sqlParams;
+  transformedSql = "";
+  string paramName = "";
+  bool selectParam = false;
+  DbParam[] sqlParams;
 
-	foreach (i; 0 .. sql.length)
+  foreach (i; 0 .. sql.length)
   {
-		auto c = sql[i];
+    auto c = sql[i];
 
-		if (c == 13) continue;
+    if (c == 13) continue;
 
-		bool isEnd = i == (sql.length - 1);
+    bool isEnd = i == (sql.length - 1);
 
-		if (c == '@')
+    if (c == '@')
     {
-			paramName = "";
-			selectParam = true;
-		}
-		else if (selectParam && (
-			c == ';' || c == '=' ||
-			c == '+' || c == '-' ||
-			c == 9 || c == 13 ||
-			c == 10 || c == ' ' ||
-			c == 0 || c == '|' ||
-			c == '.' || c == '/' ||
-			c == '*' || c == '(' ||
-			c == ')' || c == '[' ||
-			c == ']' || c == ',' ||
+      paramName = "";
+      selectParam = true;
+    }
+    else if (selectParam && (
+      c == ';' || c == '=' ||
+      c == '+' || c == '-' ||
+      c == 9 || c == 13 ||
+      c == 10 || c == ' ' ||
+      c == 0 || c == '|' ||
+      c == '.' || c == '/' ||
+      c == '*' || c == '(' ||
+      c == ')' || c == '[' ||
+      c == ']' || c == ',' ||
       c == '`' || c == 39
-		))
+    ))
     {
       if (paramName == "table")
       {
@@ -154,37 +154,37 @@ private DbParam[] prepareSql(string sql, DbParam[string] params, out string tran
       }
       else
       {
-    		sqlParams ~= params[paramName];
-    		transformedSql ~= "?" ~ c;
+        sqlParams ~= params[paramName];
+        transformedSql ~= "?" ~ c;
 
-    		selectParam = false;
-    		paramName = "";
+        selectParam = false;
+        paramName = "";
       }
-		}
-		else if (selectParam)
+    }
+    else if (selectParam)
     {
-			paramName ~= c;
+      paramName ~= c;
 
-			if (isEnd)
+      if (isEnd)
       {
-				if (paramName == "table")
+        if (paramName == "table")
         {
-  				transformedSql ~= params[paramName].get!string ~ to!string(c);
+          transformedSql ~= params[paramName].get!string ~ to!string(c);
         }
         else
         {
           sqlParams ~= params[paramName];
-  				transformedSql ~= "?";
+          transformedSql ~= "?";
         }
-			}
-		}
-		else
+      }
+    }
+    else
     {
-			transformedSql ~= c;
-		}
-	}
+      transformedSql ~= c;
+    }
+  }
 
-	return sqlParams;
+  return sqlParams;
 }
 
 /// CTFE string for mixin MySql connection setup with specialized parameters.
@@ -222,13 +222,13 @@ private enum MySqlConnectionSetup = q{
 };
 
 /**
-*	Executes an sql statement.
-*	Params:
-*		sql =				        The sql query.
-*		params = 			      The parameters.
-*		connectionString =	The connection string. (If null, it will select the default)
-*	Returns:
-*		The amount of rows affected.
+*  Executes an sql statement.
+*  Params:
+*    sql =                The sql query.
+*    params =             The parameters.
+*    connectionString =  The connection string. (If null, it will select the default)
+*  Returns:
+*    The amount of rows affected.
 */
 ulong execute(string sql, DbParam[string] params, string connectionString = null)
 {
@@ -238,13 +238,13 @@ ulong execute(string sql, DbParam[string] params, string connectionString = null
 }
 
 /**
-*	Executes a raw sql statement.
-*	Params:
-*		sql =				        The sql query.
-*		params = 			      The parameters.
-*		connectionString =	The connection string. (If null, it will select the default)
-*	Returns:
-*		The amount of rows affected.
+*  Executes a raw sql statement.
+*  Params:
+*    sql =                The sql query.
+*    params =             The parameters.
+*    connectionString =  The connection string. (If null, it will select the default)
+*  Returns:
+*    The amount of rows affected.
 */
 ulong executeRaw(string sql, DbParam[] params, string connectionString = null)
 {
@@ -254,13 +254,13 @@ ulong executeRaw(string sql, DbParam[] params, string connectionString = null)
 }
 
 /**
-*	Executes a scalar sql statement.
-*	Params:
-*		sql =				        The sql query.
-*		params = 			      The parameters.
-*		connectionString =	The connection string. (If null, it will select the default)
-*	Returns:
-*		The value of the statement.
+*  Executes a scalar sql statement.
+*  Params:
+*    sql =                The sql query.
+*    params =             The parameters.
+*    connectionString =  The connection string. (If null, it will select the default)
+*  Returns:
+*    The value of the statement.
 */
 T scalar(T)(string sql, DbParam[string] params, string connectionString = null)
 {
@@ -277,13 +277,13 @@ T scalar(T)(string sql, DbParam[string] params, string connectionString = null)
 }
 
 /**
-*	Executes a raw scalar sql statement.
-*	Params:
-*		sql =				        The sql query.
-*		params = 			      The parameters.
-*		connectionString =	The connection string. (If null, it will select the default)
-*	Returns:
-*		The value of the statement.
+*  Executes a raw scalar sql statement.
+*  Params:
+*    sql =                The sql query.
+*    params =             The parameters.
+*    connectionString =  The connection string. (If null, it will select the default)
+*  Returns:
+*    The value of the statement.
 */
 T scalarRaw(T)(string sql, DbParam[] params, string connectionString = null)
 {
@@ -300,13 +300,13 @@ T scalarRaw(T)(string sql, DbParam[] params, string connectionString = null)
 }
 
 /**
-*	Executes a scalar insert sql statement.
-*	Params:
-*		sql =				        The sql query.
-*		params = 			      The parameters.
-*		connectionString =	The connection string. (If null, it will select the default)
-*	Returns:
-*		The id of inserted row.
+*  Executes a scalar insert sql statement.
+*  Params:
+*    sql =                The sql query.
+*    params =             The parameters.
+*    connectionString =  The connection string. (If null, it will select the default)
+*  Returns:
+*    The id of inserted row.
 */
 T scalarInsert(T)(string sql, DbParam[string] params, string connectionString = null)
 {
@@ -323,13 +323,13 @@ T scalarInsert(T)(string sql, DbParam[string] params, string connectionString = 
 }
 
 /**
-*	Executes a raw scalar insert sql statement.
-*	Params:
-*		sql =				        The sql query.
-*		params = 			      The parameters.
-*		connectionString =	The connection string. (If null, it will select the default)
-*	Returns:
-*		The id of the inserted row.
+*  Executes a raw scalar insert sql statement.
+*  Params:
+*    sql =                The sql query.
+*    params =             The parameters.
+*    connectionString =  The connection string. (If null, it will select the default)
+*  Returns:
+*    The id of the inserted row.
 */
 T scalarInsertRaw(T)(string sql, DbParam[] params, string connectionString = null)
 {
@@ -346,13 +346,13 @@ T scalarInsertRaw(T)(string sql, DbParam[] params, string connectionString = nul
 }
 
 /**
-*	Validates whether a row is selected from the query or not.
-*	Params:
-*		sql =				        The sql query.
-*		params = 			      The parameters.
-*		connectionString =	The connection string. (If null, it will select the default)
-*	Returns:
-*		True if the row exists, false otherwise.
+*  Validates whether a row is selected from the query or not.
+*  Params:
+*    sql =                The sql query.
+*    params =             The parameters.
+*    connectionString =  The connection string. (If null, it will select the default)
+*  Returns:
+*    True if the row exists, false otherwise.
 */
 bool exists(string sql, DbParam[string] params, string connectionString = null)
 {
@@ -362,13 +362,13 @@ bool exists(string sql, DbParam[string] params, string connectionString = null)
 }
 
 /**
-*	Validates whether a row is selected from the raw query or not.
-*	Params:
-*		sql =				        The sql query.
-*		params = 			      The parameters.
-*		connectionString =	The connection string. (If null, it will select the default)
-*	Returns:
-*		True if the row exists, false otherwise.
+*  Validates whether a row is selected from the raw query or not.
+*  Params:
+*    sql =                The sql query.
+*    params =             The parameters.
+*    connectionString =  The connection string. (If null, it will select the default)
+*  Returns:
+*    True if the row exists, false otherwise.
 */
 bool existsRaw(string sql, DbParam[] params, string connectionString = null)
 {
@@ -378,13 +378,13 @@ bool existsRaw(string sql, DbParam[] params, string connectionString = null)
 }
 
 /**
-*	Executes a single sql read.
-*	Params:
-*		sql =				        The sql query.
-*		params = 			      The parameters.
-*		connectionString =	The connection string. (If null, it will select the default)
-*	Returns:
-*		The model of the first row read.
+*  Executes a single sql read.
+*  Params:
+*    sql =                The sql query.
+*    params =             The parameters.
+*    connectionString =  The connection string. (If null, it will select the default)
+*  Returns:
+*    The model of the first row read.
 */
 TModel readSingle(TModel : IMySqlModel)(string sql, DbParam[string] params, string connectionString = null)
 {
@@ -406,13 +406,13 @@ TModel readSingle(TModel : IMySqlModel)(string sql, DbParam[string] params, stri
 }
 
 /**
-*	Executes a single raw sql read.
-*	Params:
-*		sql =				        The sql query.
-*		params = 			      The parameters.
-*		connectionString =	The connection string. (If null, it will select the default)
-*	Returns:
-*		The model of the first row read.
+*  Executes a single raw sql read.
+*  Params:
+*    sql =                The sql query.
+*    params =             The parameters.
+*    connectionString =  The connection string. (If null, it will select the default)
+*  Returns:
+*    The model of the first row read.
 */
 TModel readSingleRaw(TModel : IMySqlModel)(string sql, DbParam[] params, string connectionString = null)
 {
@@ -432,13 +432,13 @@ TModel readSingleRaw(TModel : IMySqlModel)(string sql, DbParam[] params, string 
 }
 
 /**
-*	Executes a multi sql read.
-*	Params:
-*		sql =				        The sql query.
-*		params = 			      The parameters.
-*		connectionString =	The connection string. (If null, it will select the default)
-*	Returns:
-*		A range filled models with the rows returned by the sql read.
+*  Executes a multi sql read.
+*  Params:
+*    sql =                The sql query.
+*    params =             The parameters.
+*    connectionString =  The connection string. (If null, it will select the default)
+*  Returns:
+*    A range filled models with the rows returned by the sql read.
 */
 auto readMany(TModel : IMySqlModel)(string sql, DbParam[string] params, string connectionString = null)
 {
@@ -456,13 +456,13 @@ auto readMany(TModel : IMySqlModel)(string sql, DbParam[string] params, string c
 }
 
 /**
-*	Executes a raw multi sql read.
-*	Params:
-*		sql =				        The sql query.
-*		params = 			      The parameters.
-*		connectionString =	The connection string. (If null, it will select the default)
-*	Returns:
-*		A range filled models with the rows returned by the sql read.
+*  Executes a raw multi sql read.
+*  Params:
+*    sql =                The sql query.
+*    params =             The parameters.
+*    connectionString =  The connection string. (If null, it will select the default)
+*  Returns:
+*    A range filled models with the rows returned by the sql read.
 */
 auto readManyRaw(TModel : IMySqlModel)(string sql, DbParam[] params, string connectionString = null)
 {

@@ -11,89 +11,89 @@ import std.traits : isScalarType;
 final class Snapshot(T)
 if (is(T == struct) || isScalarType!T)
 {
-	private:
+  private:
   /// The values.
-	T[] _values;
+  T[] _values;
   /// The current value.
-	T _current;
+  T _current;
 
-	public:
-	final:
+  public:
+  final:
   /// Creates a new snapshot of a type.
-	this() { }
+  this() { }
 
   /**
   * Creates a new snapshot of a type.
   * Params:
   *   initValue = The initializationValue
   */
-	this(T initValue)
-	{
-		value = initValue;
-	}
+  this(T initValue)
+  {
+    value = initValue;
+  }
 
-	@property
-	{
+  @property
+  {
     /// Sets the value.
-		void value(T newValue)
-		{
-			_values ~= newValue;
-			_current = newValue;
-		}
+    void value(T newValue)
+    {
+      _values ~= newValue;
+      _current = newValue;
+    }
 
     /// Gets the value.
-		T value()
-		{
-			if (!_values || !_values.length)
-			{
-				return T.init;
-			}
+    T value()
+    {
+      if (!_values || !_values.length)
+      {
+        return T.init;
+      }
 
-			return _current;
-		}
-	}
+      return _current;
+    }
+  }
 
   /// Rolls back to the previous value.
-	void prev()
-	{
-		if (!_values || !_values.length)
-		{
-			return;
-		}
+  void prev()
+  {
+    if (!_values || !_values.length)
+    {
+      return;
+    }
 
-		_values = _values[0 .. $-1];
-		_current = _values[$-1];
-	}
+    _values = _values[0 .. $-1];
+    _current = _values[$-1];
+  }
 
   /**
   * Rolls back a specific amount of states.
   * Params:
   *   states = The amount of states to roll back.
   */
-	void prev(size_t states)
-	{
-		if (states >= _values.length)
-		{
-			_values = [];
-			_current = T.init;
-		}
-		else
-		{
-			_values = _values[0 .. $-states];
-			_current = _values[$-1];
-		}
-	}
+  void prev(size_t states)
+  {
+    if (states >= _values.length)
+    {
+      _values = [];
+      _current = T.init;
+    }
+    else
+    {
+      _values = _values[0 .. $-states];
+      _current = _values[$-1];
+    }
+  }
 
   /// Resets the value to its first known value.
-	void reset()
-	{
-		if (!_values || !_values.length)
-		{
-			return;
-		}
+  void reset()
+  {
+    if (!_values || !_values.length)
+    {
+      return;
+    }
 
-		_values = [_values[0]];
-	}
+    _values = [_values[0]];
+  }
 
   /**
   * Operator overload for indexing to retrieve a specific historical snapshot of the type.
@@ -102,41 +102,41 @@ if (is(T == struct) || isScalarType!T)
   * Returns:
   *   The value at the index if found, T.init otherwise.
   */
-	T opIndex(size_t index)
-	{
-		if (index >= _values.length)
-		{
-			return T.init;
-		}
+  T opIndex(size_t index)
+  {
+    if (index >= _values.length)
+    {
+      return T.init;
+    }
 
-		return _values[index];
-	}
+    return _values[index];
+  }
 
-	static if (isScalarType!T)
-	{
+  static if (isScalarType!T)
+  {
     /// Operator overload for comparing scalar types.
-		int opCmp(T comparison)
-		{
-			if (_current < comparison)
-			{
-				return -1;
-			}
+    int opCmp(T comparison)
+    {
+      if (_current < comparison)
+      {
+        return -1;
+      }
 
-			if (_current > comparison)
-			{
-				return 1;
-			}
+      if (_current > comparison)
+      {
+        return 1;
+      }
 
-			return 0;
-		}
+      return 0;
+    }
 
     /// Operator overload for equality comparison between scalar types.
-		bool opEquals(T comparison)
-		{
-			return opCmp(comparison) == 0;
-		}
-	}
+    bool opEquals(T comparison)
+    {
+      return opCmp(comparison) == 0;
+    }
+  }
 
   /// Alias this to set the value directly for the snapshot.
-	alias value this;
+  alias value this;
 }
