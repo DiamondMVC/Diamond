@@ -45,6 +45,12 @@ static if (isWeb)
       import diamond.data.mapping.engines.mysql : initializeMySql;
       initializeMySql();
 
+      if (webConfig.mongoDb)
+      {
+        import diamond.database.mongo;
+        initializeMongo(webConfig.mongoDb.host, webConfig.mongoDb.port);
+      }
+
       setDetaulfPermissions();
 
       import diamond.extensions;
