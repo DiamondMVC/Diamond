@@ -12,7 +12,7 @@ static if (isWeb)
   import vibe.data.serialization : optional;
 
   /// Web configurations.
-  class WebConfig
+  final class WebConfig
   {
     /// The name of the web application.
     string name;
@@ -48,10 +48,12 @@ static if (isWeb)
     @optional string[] maintenanceWhiteList;
     /// Boolean determining whethere there's only one view to use for routing. The view must be named __view.dd
     @optional bool viewOnly;
+    /// Configurations for mongo db.
+    @optional WebMongoDb mongoDb;
   }
 
   /// A web address.
-  class WebAddress
+  final class WebAddress
   {
     /// An array of ip addresses that the web address is bound to.
     string[] ipAddresses;
@@ -60,7 +62,7 @@ static if (isWeb)
   }
 
   /// Web headers.
-  class WebHeaders
+  final class WebHeaders
   {
     /// Headers used for general purpose.
     string[string] general;
@@ -73,13 +75,13 @@ static if (isWeb)
   }
 
   /// Wrapper around db connection configurations.
-  class WebDbConnections
+  final class WebDbConnections
   {
     @optional WebDbConnectionConfig[string] mysql;
   }
 
   /// Wrapper around a db connection configuration.
-  class WebDbConnectionConfig
+  final class WebDbConnectionConfig
   {
     /// The host.
     string host;
@@ -94,12 +96,21 @@ static if (isWeb)
   }
 
   /// Wrapper around a special route.
-  class WebSpecialRoute
+  final class WebSpecialRoute
   {
     /// The type of the route.
     string type;
     /// The value of the route.
     string value;
+  }
+
+  /// Wrapper around mongo db configurations.
+  final class WebMongoDb
+  {
+    /// The host of the mongo db.
+    string host;
+    /// The port of the mongo db. This should only be used if the host is an IP.
+    @optional ushort port;
   }
 
   /// The web configuration.

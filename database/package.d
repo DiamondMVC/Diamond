@@ -17,6 +17,8 @@ public
 
   /// A variant db parameter type.
   alias DbParam = Variant;
+
+  import diamond.database.mongo;
 }
 
 /// Gets an associative array to use for specialized parameters.
