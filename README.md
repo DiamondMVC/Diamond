@@ -55,7 +55,7 @@ Diamond was originally written as a template parsing library only; completely as
 * "Websettings" file that lets you control requests / responses for:
   * Before a request is handled.
   * After a request has been handled.
-  * When an error occurres.
+  * When an error occurred.
   * When a page or controller action wasn't found.
   * When a static file has been requested.
 * Multiple static file paths
@@ -71,7 +71,7 @@ Diamond was originally written as a template parsing library only; completely as
 * Separate authentication that can be used either with or without the ACL
 * CSRF Protection
 * Easy integrated cookie/session API.
-* The network can be restricted to specific ips.
+* The network can be restricted to specific IPs.
 * Transactions
 * Unittesting
 * Logging
@@ -119,7 +119,7 @@ Diamond was originally written as a template parsing library only; completely as
 * Can map mandatory actions that are executed on every requests. (Useful for authentication etc.)
 * Easy integrated authentication (Can be combined with ACL)
 * RESTful
-* Specific actions can be restricted to specific ips.
+* Specific actions can be restricted to specific IPs.
 
 ### Controllers (WebServer)
 
@@ -211,7 +211,7 @@ See: http://diamondmvc.org/download
 
 Using Diamond stand-alone is a little more tricky than using it for web as there are no specific guide-lines in how to use it.
 
-It's not adviced to use Diamond as stand-alone until you have a basic understanding of the Diamond API.
+It's not advised to use Diamond as stand-alone until you have a basic understanding of the Diamond API.
 
 * First get a D compiler here: https://dlang.org/download.html
 * Then download and install DUB: http://code.dlang.org/download
