@@ -493,7 +493,7 @@ MarkdownPart[] parse(string markdown)
 
       auto content = line[line.indexOf(ulistChar) + 1 .. $].strip();
 
-      parseContent(content ~ " (" ~ to!string(ulist) ~ ")( " ~ to!string(indentation) ~ ")");
+      parseContent(content);
 
       parts ~= new MarkdownPart(MarkdownType.listItemEnd);
     }
