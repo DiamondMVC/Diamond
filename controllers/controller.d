@@ -192,7 +192,7 @@ static if (isWebServer)
       static if (hasUDA!(TController, HttpVersion))
       {
         import std.string : indexOf;
-        
+
         enum versionUDA = getUDAs!(TController, HttpVersion)[0];
 
         mixin
@@ -267,7 +267,7 @@ static if (isWebServer)
         _view.client.rawResponse.headers[headerKey] = headerValue;
       }
 
-      _view.client.rawResponse.headers["Content-Type"] = "text/json; charset=UTF-8";
+      _view.client.rawResponse.headers["Content-Type"] = "application/json; charset=UTF-8";
       _view.client.write(s);
 
       return Status.end;
@@ -542,7 +542,7 @@ else static if (isWebApi)
         _client.rawResponse.headers[headerKey] = headerValue;
       }
 
-      _client.rawResponse.headers["Content-Type"] = "text/json; charset=UTF-8";
+      _client.rawResponse.headers["Content-Type"] = "application/json; charset=UTF-8";
       _client.write(s);
 
       return Status.end;
