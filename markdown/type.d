@@ -37,5 +37,29 @@ enum MarkdownType
   /// Code-block start.
   codeStart,
   /// Code-block end.
-  codeEnd
+  codeEnd,
+  /// Block-quote start
+  blockQuoteStart,
+  /// Block-quote end
+  blockQuoteEnd,
+  /// Table start
+  tableStart,
+  /// Table-row start
+  tableRowStart,
+  /// Table-head start
+  tableHeadStart,
+  /// Table-cell start
+  tableCellStart,
+  /// Table end
+  tableEnd,
+  /// Table-row end
+  tableRowEnd,
+  /// Table-head end
+  tableHeadEnd,
+  /// Table-cell end
+  tableCellEnd,
+  /// Horizontal
+  horizontal,
+  // Inline-code
+  inlineCode
 }

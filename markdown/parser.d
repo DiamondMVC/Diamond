@@ -5,10 +5,10 @@
 */
 module diamond.markdown.parser;
 
-import std.array : replace, split;
+import std.array : replace, split, array;
 import std.string : format, strip, indexOf, isNumeric;
 import std.conv : to;
-import std.algorithm : canFind, startsWith;
+import std.algorithm : canFind, startsWith, count, map, filter;
 
 import diamond.markdown.type;
 import diamond.markdown.part;
@@ -23,6 +23,9 @@ import diamond.markdown.part;
 string parseToHtml(string markdown)
 {
   string result;
+
+  string[] cellAlignment;
+  size_t cellIndex;
 
   foreach (part; parse(markdown))
   {
@@ -102,6 +105,92 @@ string parseToHtml(string markdown)
         break;
       }
 
+      case MarkdownType.blockQuoteStart:
+      {
+        result ~= "<blockquote>\r\n";
+        break;
+      }
+
+      case MarkdownType.blockQuoteEnd:
+      {
+        result ~= "</blockquote>\r\n";
+        break;
+      }
+
+      case MarkdownType.horizontal:
+      {
+        result ~= "<hr>\r\n";
+        break;
+      }
+
+      case MarkdownType.tableStart:
+      {
+        cellAlignment = null;
+
+        result ~= "<table>\r\n";
+        break;
+      }
+
+      case MarkdownType.tableEnd:
+      {
+        result ~= "</table>\r\n";
+        break;
+      }
+
+      case MarkdownType.tableRowStart:
+      {
+        cellIndex = 0;
+        result ~= "<tr>\r\n";
+        break;
+      }
+
+      case MarkdownType.tableRowEnd:
+      {
+        result ~= "\r\n</tr>\r\n";
+        break;
+      }
+
+      case MarkdownType.tableHeadStart:
+      {
+        auto alignment = part.getMetadata("align");
+
+        cellAlignment ~= alignment ? alignment : "";
+        cellIndex = 0;
+
+        result ~= "<th>\r\n";
+        break;
+      }
+
+      case MarkdownType.tableHeadEnd:
+      {
+        result ~= "</th>\r\n";
+        break;
+      }
+
+      case MarkdownType.tableCellStart:
+      {
+        if (cellAlignment && cellIndex < cellAlignment.length)
+        {
+          auto alignment = cellAlignment[cellIndex];
+          cellIndex++;
+
+          if (alignment && alignment.length)
+          {
+            result ~= "<td align=\"%s\">\r\n".format(alignment);
+            break;
+          }
+        }
+
+        result ~= "<td>\r\n";
+        break;
+      }
+
+      case MarkdownType.tableCellEnd:
+      {
+        result ~= "</td>\r\n";
+        break;
+      }
+
       case MarkdownType.codeStart:
       {
         auto language = part.content;
@@ -151,6 +240,12 @@ string parseToHtml(string markdown)
             break;
           }
 
+          case "inlineCode":
+          {
+            result ~= "<code>";
+            break;
+          }
+
           default: break;
         }
         break;
@@ -181,6 +276,12 @@ string parseToHtml(string markdown)
           case "strike":
           {
             result ~= "</del>";
+            break;
+          }
+
+          case "inlineCode":
+          {
+            result ~= "</code>";
             break;
           }
 
@@ -221,11 +322,16 @@ MarkdownPart[] parse(string markdown)
   bool italic = false;
   bool underline = false;
   bool strike = false;
+  bool inlineCode = false;
 
   size_t ulist = false;
   size_t olist = false;
 
   bool code = false;
+
+  bool quote = false;
+
+  bool table = false;
 
   foreach (ref i; 0 .. lines.length)
   {
@@ -328,6 +434,21 @@ MarkdownPart[] parse(string markdown)
 
           parts ~= part;
         }
+        else if ((inlineCode || (!inlineCode && (lastChar == ' '  || lastChar == tab || j == 0))) && currentChar == '`')
+        {
+          if (currentPart)
+          {
+            parts ~= currentPart;
+            currentPart = null;
+          }
+
+          inlineCode = !inlineCode;
+
+          auto part = new MarkdownPart(inlineCode ? MarkdownType.contentWrapStart : MarkdownType.contentWrapEnd);
+          part.content = "inlineCode";
+
+          parts ~= part;
+        }
         else
         {
           if (currentPart)
@@ -387,12 +508,136 @@ MarkdownPart[] parse(string markdown)
         olist--;
       }
 
+      if (quote)
+      {
+        parts ~= new MarkdownPart(MarkdownType.blockQuoteEnd);
+        quote = false;
+      }
+
+      if (table)
+      {
+        parts ~= new MarkdownPart(MarkdownType.tableEnd);
+        table = false;
+      }
+
       parts ~= new MarkdownPart(MarkdownType.newline);
       continue;
     }
 
+    // Block-quote
+    if (line[0] == '>')
+    {
+      if (!quote)
+      {
+        parts ~= new MarkdownPart(MarkdownType.blockQuoteStart);
+        quote = true;
+      }
+
+      auto content = line[1 .. $].strip();
+
+      parseContent(content);
+    }
+    // Table
+    else if (line.canFind('|') && (table || (!table && nextLine && nextLine.count('|') == line.count('|'))))
+    {
+      auto entries = line.strip().split("|").filter!(e => e && e.length).array;
+
+      if (!table)
+      {
+        auto nextLinesEntries = nextLine.strip().split("|").filter!(e => e && e.length).array;
+
+        bool invalidTable = false;
+
+        string[] alignments;
+
+        foreach (entry; nextLinesEntries.map!(e => e.strip()))
+        {
+          auto finalResult = entry.replace(":", "").strip();
+
+          if (finalResult.length < 3 || entry.count('-') != finalResult.length)
+          {
+            invalidTable = true;
+            break;
+          }
+
+          if (entry[0] == ':' && entry[$-1] != ':')
+          {
+            alignments ~= "left";
+          }
+          else if (entry[0] != ':' && entry[$-1] == ':')
+          {
+            alignments ~= "right";
+          }
+          else if (entry[0] == ':' && entry[$-1] == ':')
+          {
+            alignments ~= "center";
+          }
+          else
+          {
+            alignments ~= "";
+          }
+        }
+
+        i++;
+
+        if (!invalidTable)
+        {
+          parts ~= new MarkdownPart(MarkdownType.tableStart);
+          parts ~= new MarkdownPart(MarkdownType.tableRowStart);
+
+          size_t alignmentCounter;
+          foreach (entry; entries.map!(e => e.strip()))
+          {
+            auto head = new MarkdownPart(MarkdownType.tableHeadStart);
+
+            if (alignmentCounter < alignments.length)
+            {
+              head.setMetadata("align", alignments[alignmentCounter]);
+            }
+
+            alignmentCounter++;
+
+            parts ~= head;
+
+            parseContent(entry);
+
+            parts ~= new MarkdownPart(MarkdownType.tableHeadEnd);
+          }
+
+          table = true;
+
+          parts ~= new MarkdownPart(MarkdownType.tableRowEnd);
+        }
+      }
+      else
+      {
+        parts ~= new MarkdownPart(MarkdownType.tableRowStart);
+
+        foreach (entry; entries)
+        {
+          parts ~= new MarkdownPart(MarkdownType.tableCellStart);
+
+          parseContent(entry.strip());
+
+          parts ~= new MarkdownPart(MarkdownType.tableCellEnd);
+        }
+
+        parts ~= new MarkdownPart(MarkdownType.tableRowEnd);
+      }
+
+      continue; // Don't want new-lines in tables ...
+    }
+    else if
+    (
+      (line.strip().count('-') == line.strip().length && line.strip().count('-') >= 3) ||
+      (line.strip().count('*') == line.strip().length && line.strip().count('*') >= 3) ||
+      (line.strip().count('_') == line.strip().length && line.strip().count('_') >= 3)
+    )
+    {
+      parts ~= new MarkdownPart(MarkdownType.horizontal);
+    }
     // Header
-    if (line[0] == '#')
+    else if (line[0] == '#')
     {
       auto hIndex = line.strip().indexOf(' ');
       auto headerStart = hIndex;
@@ -556,6 +801,30 @@ MarkdownPart[] parse(string markdown)
     }
 
     parts ~= new MarkdownPart(MarkdownType.newline);
+  }
+
+  while (ulist)
+  {
+    parts ~= new MarkdownPart(MarkdownType.ulistEnd);
+    ulist--;
+  }
+
+  while (olist)
+  {
+    parts ~= new MarkdownPart(MarkdownType.olistEnd);
+    olist--;
+  }
+
+  if (quote)
+  {
+    parts ~= new MarkdownPart(MarkdownType.blockQuoteEnd);
+    quote = false;
+  }
+
+  if (table)
+  {
+    parts ~= new MarkdownPart(MarkdownType.tableEnd);
+    table = false;
   }
 
   return parts ? parts : [];
