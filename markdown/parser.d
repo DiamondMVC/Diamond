@@ -357,7 +357,7 @@ MarkdownPart[] parse(string markdown)
       else
       {
         auto part = new MarkdownPart(MarkdownType.content);
-        part.content = line ~ "\r\n";
+        part.content = line.replace("<", "&lt;").replace(">", "&gt;") ~ "\r\n";
 
         parts ~= part;
       }
