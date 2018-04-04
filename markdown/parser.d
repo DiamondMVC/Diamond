@@ -367,6 +367,8 @@ MarkdownPart[] parse(string markdown)
 
     void parseContent(string content)
     {
+      const backSlash = cast(char)0x5c;
+
       MarkdownPart currentPart;
       foreach (ref j; 0 .. content.length)
       {
@@ -374,7 +376,7 @@ MarkdownPart[] parse(string markdown)
         auto currentChar = content[j];
         auto nextChar = j < (content.length - 1) ? content[j + 1] : cast(char)0;
 
-        if ((bold || (!bold && (lastChar == ' '  || lastChar == tab || j == 0))) && currentChar == '*' && nextChar == '*')
+        if ((bold || (!bold && (lastChar == ' '  || lastChar == tab || j == 0))) && currentChar == '*' && nextChar == '*' && lastChar != backSlash)
         {
           if (currentPart)
           {
@@ -391,7 +393,7 @@ MarkdownPart[] parse(string markdown)
 
           j++;
         }
-        else if ((italic || (!italic && (lastChar == ' '  || lastChar == tab || j == 0))) && currentChar == '*')
+        else if ((italic || (!italic && (lastChar == ' '  || lastChar == tab || j == 0))) && currentChar == '*' && lastChar != backSlash)
         {
           if (currentPart)
           {
@@ -406,7 +408,7 @@ MarkdownPart[] parse(string markdown)
 
           parts ~= part;
         }
-        else if ((underline || (!underline && (lastChar == ' '  || lastChar == tab || j == 0))) && currentChar == '_')
+        else if ((underline || (!underline && (lastChar == ' '  || lastChar == tab || j == 0))) && currentChar == '_' && lastChar != backSlash)
         {
           if (currentPart)
           {
@@ -421,7 +423,7 @@ MarkdownPart[] parse(string markdown)
 
           parts ~= part;
         }
-        else if ((strike || (!strike && (lastChar == ' '  || lastChar == tab || j == 0))) && currentChar == '~')
+        else if ((strike || (!strike && (lastChar == ' '  || lastChar == tab || j == 0))) && currentChar == '~' && lastChar != backSlash)
         {
           if (currentPart)
           {
@@ -436,7 +438,7 @@ MarkdownPart[] parse(string markdown)
 
           parts ~= part;
         }
-        else if ((inlineCode || (!inlineCode && (lastChar == ' '  || lastChar == tab || j == 0))) && currentChar == '`')
+        else if ((inlineCode || (!inlineCode && (lastChar == ' '  || lastChar == tab || j == 0))) && currentChar == '`' && lastChar != backSlash)
         {
           if (currentPart)
           {
@@ -451,7 +453,7 @@ MarkdownPart[] parse(string markdown)
 
           parts ~= part;
         }
-        else
+        else if (currentChar != backSlash || (currentChar == backSlash && lastChar == backSlash))
         {
           if (currentPart)
           {
