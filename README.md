@@ -92,6 +92,8 @@ View:
 ```
 module controllers.homecontroller;
 
+import diamond.controllers;
+
 final class HomeController(TView) : Controller!TView
 {
   this(TView view)
