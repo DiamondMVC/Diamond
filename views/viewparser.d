@@ -113,7 +113,8 @@ static if (!isWebApi)
               viewModelGenerateGeneration, viewPlaceholderGeneration,
               useBaseView,
               hasController,
-              route
+              route,
+              viewCodeGeneration
             );
             break;
           }
@@ -257,7 +258,8 @@ static if (!isWebApi)
     ref string viewPlaceholderGeneration,
     ref bool useBaseView,
     ref bool hasController,
-    ref string route)
+    ref string route,
+    ref string viewCodeGeneration)
   {
     string[string] metaData;
     auto metaContent = part.content.replace("\r", "").split("---");
@@ -341,7 +343,7 @@ static if (!isWebApi)
 
         case "contentType":
         {
-          viewConstructorGeneration ~= "super.client.rawResponse.headers[\"Content-Type\"] = \"%s\";".format(value.replace("\n", ""));
+          viewCodeGeneration ~= "super.client.rawResponse.headers[\"Content-Type\"] = \"%s\";\r\n".format(value.replace("\n", ""));
           break;
         }
 
@@ -351,31 +353,31 @@ static if (!isWebApi)
           {
             case "text":
             {
-              viewConstructorGeneration ~= "super.client.rawResponse.headers[\"Content-Type\"] = \"text/plain; charset=UTF-8\";";
+              viewCodeGeneration ~= "super.client.rawResponse.headers[\"Content-Type\"] = \"text/plain; charset=UTF-8\";\r\n";
               break;
             }
 
             case "xml":
             {
-              viewConstructorGeneration ~= "super.client.rawResponse.headers[\"Content-Type\"] = \"application/xml; charset=UTF-8\";";
+              viewCodeGeneration ~= "super.client.rawResponse.headers[\"Content-Type\"] = \"application/xml; charset=UTF-8\";\r\n";
               break;
             }
 
             case "rss":
             {
-              viewConstructorGeneration ~= "super.client.rawResponse.headers[\"Content-Type\"] = \"application/rss+xml; charset=UTF-8\";";
+              viewCodeGeneration ~= "super.client.rawResponse.headers[\"Content-Type\"] = \"application/rss+xml; charset=UTF-8\";\r\n";
               break;
             }
 
             case "atom":
             {
-              viewConstructorGeneration ~= "super.client.rawResponse.headers[\"Content-Type\"] = \"application/atom+xml; charset=UTF-8\";";
+              viewCodeGeneration ~= "super.client.rawResponse.headers[\"Content-Type\"] = \"application/atom+xml; charset=UTF-8\";\r\n";
               break;
             }
 
             case "json":
             {
-              viewConstructorGeneration ~= "super.client.rawResponse.headers[\"Content-Type\"] = \"application/json; charset=UTF-8\";";
+              viewCodeGeneration ~= "super.client.rawResponse.headers[\"Content-Type\"] = \"application/json; charset=UTF-8\";\r\n";
               break;
             }
 
