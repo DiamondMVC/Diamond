@@ -6,7 +6,7 @@
 module diamond.markdown.parser;
 
 import std.array : replace, split, array;
-import std.string : format, strip, indexOf, isNumeric;
+import std.string : format, strip, indexOf, isNumeric, toLower;
 import std.conv : to;
 import std.algorithm : canFind, startsWith, count, map, filter;
 
@@ -292,7 +292,9 @@ string parseToHtml(string markdown)
 
       case MarkdownType.header:
       {
-        result ~= "<h%d>%s</h%d>\r\n".format(part.volume, part.content, part.volume);
+        auto id = part.content.replace(" ", "-").toLower();
+
+        result ~= "<h%d id=\"%s\">%s</h%d>\r\n".format(part.volume, id, part.content, part.volume);
         break;
       }
 
