@@ -45,6 +45,103 @@ Website: http://diamondmvc.org/
 |DMD/Phobos|2.072.2 - 2.077.0|The standard library of D and thus a required dependency.|
 |Mysql-native|2.2.1|A native wrapper for Mysql. It's a dependency, because of the MySql ORM.|
 
+## Example
+
+### View
+
+Layout:
+```
+@<doctype>
+<html>
+<head>
+  <title>Website - @<title></title>
+</head>
+<body>
+  @<view>
+</body>
+</html>
+```
+
+View:
+
+```
+@[
+  layout:
+    layout
+---
+  route:
+    home
+---
+  model:
+    Home
+---
+  controller:
+    HomeController
+---
+  placeholders:
+    [
+      "title": "Home"
+    ]
+]
+
+<p>Hello @=model.name;!</p>
+```
+
+### Controller
+
+```
+module controllers.homecontroller;
+
+final class HomeController(TView) : Controller!TView
+{
+  this(TView view)
+  {
+    super(view);
+  }
+  
+  /// / || /home
+  @HttpDefault Status defaultAction()
+  {
+    view.model = new Home("World!");
+    
+    return Status.success;
+  }
+  
+  /// /home/setname/{name}
+  @HttpAction(HttpPost) Status setName()
+  {
+    auto name = this.getByIndex!string(0);
+    view.model = new Home(name);
+    
+    return Status.success;
+  }
+}
+```
+
+### Model
+
+```
+module models.home;
+
+final class Home
+{
+  private:
+  string _name;
+  
+  public:
+  final:
+  this(string name)
+  {
+    _name = name;
+  }
+  
+  @property
+  {
+    string name() { return _name; }
+  }
+}
+```
+
 ## History
 
 Diamond was originally written as a template parsing library only; completely as an alternative version to vibe.d's diet templates. However soon after development it evolved to a full-fletch powerful restful mvc framework on-top of vibe.d. The goal of Diamond was from the beginning to write powerful web-applications with the style of ASP.NET
