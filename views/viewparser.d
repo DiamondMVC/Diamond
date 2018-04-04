@@ -87,6 +87,10 @@ static if (!isWebApi)
             {
               viewCodeGeneration ~= parseAppendTranslateContent(part);
             }
+            else if (part.content[0] == '#' && part.content[$-1] == '#')
+            {
+              viewCodeGeneration ~= parseAppendPartialViewContent(part);
+            }
             else
             {
               viewCodeGeneration ~= parseAppendPlaceholderContent(part);
@@ -177,6 +181,27 @@ static if (!isWebApi)
   string parseAppendTranslateContent(Part part)
   {
     return appendFormat.format("i18n.getMessage(super.client, \"" ~ part.content[1 .. $-1] ~ "\")");
+  }
+
+  /**
+  * Parses content that can be appended as partial view.
+  * Params:
+  *   part = The part to parse.
+  * Returns:
+  *   The appended result.
+  */
+  string parseAppendPartialViewContent(Part part)
+  {
+    auto viewData = part.content[1 .. $-1].split(",");
+
+    if (viewData.length == 2)
+    {
+      return appendFormat.format("retrieveModel!\"%s\"(%s)".format(viewData[0], viewData[1]));
+    }
+    else
+    {
+      return appendFormat.format("retrieve(\"%s\")".format(viewData[0]));
+    }
   }
 
   /**
@@ -311,6 +336,51 @@ static if (!isWebApi)
             viewConstructorGeneration ~= "super.cached = true;\r\n";
           }
 
+          break;
+        }
+
+        case "contentType":
+        {
+          viewConstructorGeneration ~= "super.client.rawResponse.headers[\"Content-Type\"] = \"%s\";".format(value.replace("\n", ""));
+          break;
+        }
+
+        case "type":
+        {
+          switch (value.replace("\n", ""))
+          {
+            case "text":
+            {
+              viewConstructorGeneration ~= "super.client.rawResponse.headers[\"Content-Type\"] = \"text/plain; charset=UTF-8\";";
+              break;
+            }
+
+            case "xml":
+            {
+              viewConstructorGeneration ~= "super.client.rawResponse.headers[\"Content-Type\"] = \"application/xml; charset=UTF-8\";";
+              break;
+            }
+
+            case "rss":
+            {
+              viewConstructorGeneration ~= "super.client.rawResponse.headers[\"Content-Type\"] = \"application/rss+xml; charset=UTF-8\";";
+              break;
+            }
+
+            case "atom":
+            {
+              viewConstructorGeneration ~= "super.client.rawResponse.headers[\"Content-Type\"] = \"application/atom+xml; charset=UTF-8\";";
+              break;
+            }
+
+            case "json":
+            {
+              viewConstructorGeneration ~= "super.client.rawResponse.headers[\"Content-Type\"] = \"application/json; charset=UTF-8\";";
+              break;
+            }
+
+            default: break;
+          }
           break;
         }
 
