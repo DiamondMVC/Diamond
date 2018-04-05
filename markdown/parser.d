@@ -16,11 +16,12 @@ import diamond.markdown.part;
 /**
 * Parses markdown to html.
 * Params:
-*   markdown = The markdown to parse.
+*   markdown =     The markdown to parse.
+*   customParser = A custom parser that can be ued to customize certain markdown parts. (If it returns null, then it will skip to the default parser.)
 * Returns:
 *   A string equivalent to the parsed html from the markdwon.
 */
-string parseToHtml(string markdown)
+string parseToHtml(string markdown, string delegate(MarkdownPart) customParser = null)
 {
   string result;
 
@@ -29,6 +30,17 @@ string parseToHtml(string markdown)
 
   foreach (part; parse(markdown))
   {
+    if (customParser)
+    {
+      auto customResult = customParser(part);
+
+      if (customResult)
+      {
+        result ~= customResult;
+        continue;
+      }
+    }
+
     switch (part.type)
     {
       case MarkdownType.content:
@@ -197,11 +209,11 @@ string parseToHtml(string markdown)
 
         if (language)
         {
-          result ~= "<pre class=\"highlight highlight-source-%s\"><code>\r\n".format(language);
+          result ~= "<pre class=\"highlight highlight-source-%s\"><code>".format(language);
         }
         else
         {
-          result ~= "<pre><code>\r\n";
+          result ~= "<pre><code>";
         }
         break;
       }
@@ -639,6 +651,7 @@ MarkdownPart[] parse(string markdown)
     )
     {
       parts ~= new MarkdownPart(MarkdownType.horizontal);
+      continue; // hr shouldn't have a new line
     }
     // Header
     else if (line[0] == '#')
@@ -670,6 +683,8 @@ MarkdownPart[] parse(string markdown)
 
         parts ~= part;
       }
+
+      continue; // Headers shouldn't have a new line
     }
     // Header alt
     else if (nextLine.strip() == "======" || nextLine.strip() == "------")
@@ -681,6 +696,8 @@ MarkdownPart[] parse(string markdown)
       parts ~= part;
 
       i++;
+
+      continue; // Headers shouldn't have a new line
     }
     else if (line.strip() == "```" || line.strip().startsWith("```"))
     {
@@ -693,7 +710,7 @@ MarkdownPart[] parse(string markdown)
 
       parts ~= part;
       code = true;
-      continue;
+      continue; // Code shouldn't have a new line
     }
     // unordered list
     else if (line.strip().length > 2 && (line.strip()[0] == '*' || line.strip()[0] == '+' || line.strip()[0] == '-') && line.strip()[1] == ' ')
