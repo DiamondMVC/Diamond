@@ -78,6 +78,7 @@ static if (isWeb)
   final class WebDbConnections
   {
     @optional WebDbConnectionConfig[string] mysql;
+    @optional WebDbConnectionConfig[string] postgresql;
   }
 
   /// Wrapper around a db connection configuration.
@@ -92,7 +93,7 @@ static if (isWeb)
     /// The password.
     string password;
     /// The database.
-    string database;
+    @optional string database;
   }
 
   /// Wrapper around a special route.

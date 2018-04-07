@@ -45,6 +45,12 @@ static if (isWeb)
       import diamond.data.mapping.engines.mysql : initializeMySql;
       initializeMySql();
 
+      version (Diamond_PostgreSqlDev)
+      {
+        import diamond.data.mapping.engines.postgresql : initializePostgreSql;
+        initializePostgreSql();
+      }
+
       if (webConfig.mongoDb)
       {
         import diamond.database.mongo;

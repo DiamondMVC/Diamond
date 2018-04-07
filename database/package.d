@@ -12,8 +12,19 @@ public
   import std.datetime : Date, DateTime, Clock, SysTime;
 
   import diamond.data.mapping.attributes;
+
   import diamond.data.mapping.engines.mysql.model;
+
+  version (Diamond_PostgreSqlDev)
+  {
+    import diamond.data.mapping.engines.postgresql.model;
+  }
+
   import MySql = diamond.data.mapping.engines.mysql;
+  version (Diamond_PostgreSqlDev)
+  {
+    import PostgreSql = diamond.data.mapping.engines.postgresql;
+  }
 
   /// A variant db parameter type.
   alias DbParam = Variant;

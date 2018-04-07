@@ -17,6 +17,8 @@ import vibe.data.serialization : optional;
 
 import mysql;
 
+import diamond.data.mapping.engines.sqlshared;
+
 public
 {
   import diamond.data.mapping.engines.mysql.generators;
@@ -32,7 +34,7 @@ private enum connectionStringFormat = "host=%s;port=%s;user=%s;pwd=%s;db=%s";
 /// The db connection string.
 private static __gshared string _dbConnectionString;
 
-/// Static shared constructor for the module.
+/// Initializing Mysql
 package(diamond) void initializeMySql()
 {
   import diamond.core.webconfig;
@@ -42,7 +44,7 @@ package(diamond) void initializeMySql()
     loadWebConfig();
   }
 
-  if (!webConfig.dbConnections)
+  if (!webConfig.dbConnections && !webConfig.dbConnections.mysql)
   {
     return;
   }
@@ -75,33 +77,9 @@ package(diamond) void initializeMySql()
 /// Collection of connection pools.
 private static __gshared MySQLPool[string] _pools;
 
-/// Global pool lock to ensure we don't attempt to create a connection pool twice on same connection string.
-private static shared globalPoolLock = new Object;
-
-/**
-* Gets or creates a mysql pool from a connection string.
-* Params:
-*   connectionString = The connection string for the pool.
-* Returns:
-*   The mysql pool.
-*/
-private MySQLPool getPool(string connectionString)
+private
 {
-  auto pool = _pools.get(connectionString, null);
-
-  if (!pool)
-  {
-    synchronized (globalPoolLock)
-    {
-      pool = new MySQLPool(connectionString);
-
-      _pools[connectionString] = pool;
-    }
-
-    return getPool(connectionString);
-  }
-
-  return pool;
+  mixin CreatePool!(MySQLPool);
 }
 
 /**
