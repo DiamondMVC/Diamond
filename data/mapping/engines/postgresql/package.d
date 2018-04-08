@@ -35,7 +35,7 @@ version (Diamond_PostgreSqlDev)
       loadWebConfig();
     }
 
-    if (!webConfig.dbConnections && !webConfig.dbConnections.postgresql)
+    if (!webConfig.dbConnections || !webConfig.dbConnections.postgresql)
     {
       return;
     }

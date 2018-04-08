@@ -224,29 +224,6 @@ static if (!isWebApi)
       *   key =   The key of the place holder.
       *   value = The value of the place holder.
       */
-      deprecated("Please use addPlaceholder() -- Will be removed in 2.9.0") void addPlaceHolder(string key, string value)
-      {
-        addPlaceholder(key, value);
-      }
-
-      /**
-      * Gets a place holder of the view.
-      * Params:
-      *   key =   The key of the place holder.
-      * Returns:
-      *   Returns the place holder.
-      */
-      deprecated("Please use getPlaceholder() -- Will be removed in 2.9.0") string getPlaceHolder(string key)
-      {
-        return getPlaceholder(key);
-      }
-
-      /**
-      * Adds a place holder to the view.
-      * Params:
-      *   key =   The key of the place holder.
-      *   value = The value of the place holder.
-      */
       void addPlaceholder(string key, string value)
       {
         _placeholders[key] = value;
@@ -576,6 +553,89 @@ static if (!isWebApi)
         void deferScript(string file)
         {
           append("<script src=\"%s\" defer></script>".format(file));
+        }
+
+        import diamond.seo.schema : SchemaObject;
+
+        /**
+        * Adds a structured data entry.
+        * Params:
+        *   schemaObject = The schema object with the structured data.
+        */
+        void schema(SchemaObject schemaObject)
+        {
+          enforce(schemaObject.isRoot, "The schema object must be a root object.");
+
+          append
+          (
+            `<script type="application/ld+json">
+%s
+</script>`
+            .format(schemaObject.toString())
+          );
+        }
+
+        /**
+        * Adds a meta tag.
+        * Params:
+        *   name =    The name.
+        *   content = The content.
+        */
+        void meta(string nameField = "name")(string name, string content)
+        {
+          append("<meta %s=\"%s\" content\"%s\">".format(nameField, name, content));
+        }
+
+        /**
+        * Adds google meta tags.
+        * Params:
+        *   name =        The name.
+        *   description = The description.
+        *   image =       The image.
+        */
+        void googleMeta(string name, string description, string image)
+        {
+          meta!"itemprop"("name", name);
+          meta!"itemprop"("description", description);
+          meta!"itemprop"("image", image);
+        }
+
+        /**
+        * Adds twitter meta tags.
+        * Params:
+        *   card =        The card.
+        *   title =       The title.
+        *   description = The description.
+        *   site =        The site.
+        *   image =       The image.
+        */
+        void twitterMeta(string card, string title, string description, string site, string image)
+        {
+          meta("twitter:card", card);
+          meta("twitter:title", title);
+          meta("twitter:description", description);
+          meta("twitter:site", site);
+          meta("twitter:image:src", image);
+        }
+
+        /**
+        * Adds open graph general meta tags.
+        * Params:
+        *   title =       The title.
+        *   description = The description.
+        *   image =       The image.
+        *   url =         The url.
+        *   siteName =    The site name.
+        *   type =        The type.
+        */
+        void openGraphGeneralMeta(string title, string description, string image, string url, string siteName, string type)
+        {
+          meta("og:title", title);
+          meta("og:description", description);
+          meta("og:image", image);
+          meta("og:url", url);
+          meta("og:site_name", siteName);
+          meta("og:type", type);
         }
 
         import CSRF = diamond.security.csrf;

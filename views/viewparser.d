@@ -245,7 +245,7 @@ static if (!isWebApi)
   *   viewClassMembersGeneration =  The resulting string of the view's class members.
   *   viewConstructorGeneration =   The resulting string of the view's constructor.
   *   viewModelGenerateGeneration = The resulting string of the view's model-generate function.
-  *   viewPlaceHolderGeneration =   The resulting string of the view's placeholder generation.
+  *   viewPlaceholderGeneration =   The resulting string of the view's placeholder generation.
   *   useBaseView =                 Boolean determining whether the view should use the base view for controllers.
   *   hasController =               Boolean determining whether the view has a controller or not.
   *   route =                       The name of the view's route. (null if no route or if stand-alone.)
@@ -286,7 +286,6 @@ static if (!isWebApi)
 
       switch (key)
       {
-        case "placeHolders": // TODO: Remove in 2.9.0
         case "placeholders":
         {
           viewPlaceholderGeneration = placeholderFormat.format(value);
