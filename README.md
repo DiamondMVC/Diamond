@@ -184,6 +184,6 @@ If a version is not supported its working branch is deleted.
 
 Anything below 2.7.0 is no longer supported, because 2.7.0 has better compatibility, does not introduce major breaking changes and fixes most major issues.
 
-Currently supported versions: 2.7.0 - 2.8.6
+Currently supported versions: 2.7.0 - 2.9.0
 
 No longer supported (Only available in release.): 2.0.0 - 2.6.1
