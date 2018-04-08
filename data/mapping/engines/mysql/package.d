@@ -44,7 +44,7 @@ package(diamond) void initializeMySql()
     loadWebConfig();
   }
 
-  if (!webConfig.dbConnections && !webConfig.dbConnections.mysql)
+  if (!webConfig.dbConnections || !webConfig.dbConnections.mysql)
   {
     return;
   }
