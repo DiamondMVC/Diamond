@@ -472,9 +472,9 @@ static if (isWeb)
 
       auto routeData = url.split("/");
 
-      enforce(!routeData[$-1].canFind("?"), "Found query string in the routing url.");
+      enforce(!routeData.length || !routeData[$-1].canFind("?"), "Found query string in the routing url.");
 
-      _name = routeData[0].strip().firstToLower();
+      _name = routeData.length ? routeData[0].strip().firstToLower() : "";
 
       if (routeData.length > 1)
       {
