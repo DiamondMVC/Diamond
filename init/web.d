@@ -146,9 +146,10 @@ static if (isWeb)
   {
     mixin GenerateViews;
 
-    import std.array : join;
-
-    mixin(generateViewsResult.join(""));
+    static foreach (viewResult; generateViewsResult)
+    {
+      mixin("#line 1 \"view: " ~ viewResult.name ~ "\"\n" ~ viewResult.source);
+    }
 
     mixin GenerateGetView;
   }

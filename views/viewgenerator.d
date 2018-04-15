@@ -15,15 +15,21 @@ static if (!isWebApi)
     import diamond.core.webconfig;
     import diamond.views.viewparser;
 
+    struct ViewResult
+    {
+      string name;
+      string source;
+    }
+
     /**
     * Generates the strings of the view classes to use with mixin.
     * Returns:
     *   An array consisting of the generated classes of the views.
     *   The first element of the array is the routable data.
     */
-    private string[] generateViews()
+    private ViewResult[] generateViews()
     {
-      string[] viewGenerations = [];
+      ViewResult[] viewGenerations = [];
 
       string routableViewsMixin = "private static __gshared string[string] _routableViews;
       @property string[string] routableViews()
@@ -40,7 +46,7 @@ static if (!isWebApi)
         auto parts = parseTemplate(viewContent);
 
         string route;
-        viewGenerations ~= parseViewParts(parts, viewName, route);
+        viewGenerations ~= ViewResult(viewName, parseViewParts(parts, viewName, route));
 
         if (route && route.length)
         {
@@ -52,7 +58,7 @@ static if (!isWebApi)
       routableViewsMixin ~= "return _routableViews;
       }";
 
-      return [routableViewsMixin] ~ viewGenerations;
+      return [ViewResult("__routes", routableViewsMixin)] ~ viewGenerations;
     }
 
     /// The result of the generated views.
