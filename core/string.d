@@ -32,3 +32,29 @@ if (isSomeString!TString)
 
   return to!string(s[0]).toLower() ~ s[1 .. $];
 }
+
+/**
+* Converts the first character of a string to uppercase.
+* Params:
+*   s = The string to uppercase the first character.
+* Returns:
+*   Returns a new string with the first character uppercased. The string is returned unmodified if its null or empty.
+*/
+TString firstToUpper(TString)(TString s)
+if (isSomeString!TString)
+{
+  import std.string : toUpper;
+  import std.conv : to;
+
+  if (!s || !s.length)
+  {
+    return s;
+  }
+
+  if (s.length == 1)
+  {
+    return s.toUpper();
+  }
+
+  return to!string(s[0]).toUpper() ~ s[1 .. $];
+}
