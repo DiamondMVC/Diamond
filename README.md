@@ -7,7 +7,7 @@
 [![Dub downloads](https://img.shields.io/dub/dt/diamond.svg)](http://code.dlang.org/packages/diamond)
 [![License](https://img.shields.io/dub/l/diamond.svg)](http://code.dlang.org/packages/diamond)
 
-Diamond is a powerful MVC / Template Framework written in the [D Programming Language](http://dlang.org/).
+Diamond is a powerful full-stack web-framework written in the [D Programming Language](http://dlang.org/).
 
 Diamond can be used to write powerful websites, webapis or as stand-alone as a template parser.
 
