@@ -73,6 +73,8 @@ static if (isWeb)
         webSettings.onApplicationStart();
       }
 
+      loadWhiteListPaths();
+
       loadStaticFiles();
 
       loadSpecializedRoutes();
@@ -166,6 +168,20 @@ static if (isWeb)
 
 
   private:
+  /// Loads the white-list paths.
+  void loadWhiteListPaths()
+  {
+    if (webConfig.whiteListPaths)
+    {
+      foreach (whiteListPath; webConfig.whiteListPaths)
+      {
+        import diamond.io.file : addPathToWhiteList;
+
+        addPathToWhiteList(whiteListPath);
+      }
+    }
+  }
+  
   /// The static file handlers.
   __gshared HTTPServerRequestDelegateS[string] _staticFiles;
 
