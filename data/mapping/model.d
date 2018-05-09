@@ -20,6 +20,8 @@ abstract class Model : IModel
   void delegate() _updater;
   /// The deleter.
   void delegate() _deleter;
+  /// The relationship reader.
+  void delegate() _readerRelationship;
 
   public:
   final:
@@ -29,13 +31,15 @@ abstract class Model : IModel
     void delegate() reader,
     void delegate() inserter,
     void delegate() updater,
-    void delegate() deleter
+    void delegate() deleter,
+    void delegate() readerRelationship
   )
   {
     _reader = reader;
     _inserter = inserter;
     _updater = updater;
     _deleter = deleter;
+    _readerRelationship = readerRelationship;
   }
 
   /// Reads the model from the reader. Called internally from readSingle & readMany
@@ -71,6 +75,15 @@ abstract class Model : IModel
     if (_deleter)
     {
       _deleter();
+    }
+  }
+
+  /// Reads the relationships the model has.
+  void readRelationships() @system
+  {
+    if (_readerRelationship)
+    {
+      _readerRelationship();
     }
   }
 }
