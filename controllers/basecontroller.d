@@ -147,6 +147,8 @@ static if (isWeb)
     Action _defaultAction;
     /// The mandatory action for the controller.
     Action _mandatoryAction;
+    /// The no-action handler for the controller.
+    Action _noAction;
 
     /// Creates a new base controller.
     this() { }
@@ -249,6 +251,36 @@ static if (isWeb)
     void mapMandatory(Status function() f)
     {
       _mandatoryAction = new Action(f);
+    }
+
+    /**
+    * Maps a no-action for the controller.
+    * Params:
+    *     fun =       The controller action associated with the mapping.
+    */
+    void mapNoAction(Action fun)
+    {
+      _noAction = fun;
+    }
+
+    /**
+    * Maps a no-action for the controller.
+    * Params:
+    *     d =       The controller action associated with the mapping.
+    */
+    void mapNoAction(Status delegate() d)
+    {
+      _noAction = new Action(d);
+    }
+
+    /**
+    * Maps a no-action for the controller.
+    * Params:
+    *     f =       The controller action associated with the mapping.
+    */
+    void mapNoAction(Status function() f)
+    {
+      _noAction = new Action(f);
     }
 
     /**
