@@ -51,6 +51,14 @@ static if (isWeb)
     }
   };
 
+  /// The format used for no-action formats.
+  enum noActionMappingFormat = q{
+    static if (hasUDA!(%1$s.%2$s, HttpNoAction))
+    {
+      mapNoAction(&controller.%2$s);
+    }
+  };
+
   /// The format for creating the http acton member.
   enum actionNameFormat = "static HttpAction action_%2$s;\r\n";
 
@@ -219,6 +227,7 @@ static if (isWebServer)
         {
           mixin(defaultMappingFormat.format(TController.stringof, member));
           mixin(mandatoryMappingFormat.format(TController.stringof, member));
+          mixin(noActionMappingFormat.format(TController.stringof, member));
           mixin(actionMappingFormat.format(TController.stringof, member));
           mixin(disableAuthFormat.format(TController.stringof, member));
           mixin(restrictedFormat.format(TController.stringof, member));
@@ -358,6 +367,13 @@ static if (isWebServer)
           return _defaultAction();
         }
 
+        if (_noAction)
+        {
+          auto noActionResult = _noAction();
+
+          return noActionResult;
+        }
+
         return Status.success;
       }
 
@@ -365,13 +381,27 @@ static if (isWebServer)
 
       if (!methodEntries)
       {
-          return Status.notFound;
+        if (_noAction)
+        {
+          auto noActionResult = _noAction();
+
+          return noActionResult;
+        }
+
+        return Status.notFound;
       }
 
       auto action = methodEntries.get(_view.route.action, null);
 
       if (!action)
       {
+        if (_noAction)
+        {
+          auto noActionResult = _noAction();
+
+          return noActionResult;
+        }
+
         return Status.notFound;
       }
 
@@ -489,6 +519,7 @@ else static if (isWebApi)
         {
           mixin(defaultMappingFormat.format(TController.stringof, member));
           mixin(mandatoryMappingFormat.format(TController.stringof, member));
+          mixin(noActionMappingFormat.format(TController.stringof, member));
           mixin(actionMappingFormat.format(TController.stringof, member));
           mixin(disableAuthFormat.format(TController.stringof, member));
           mixin(restrictedFormat.format(TController.stringof, member));
@@ -633,6 +664,13 @@ else static if (isWebApi)
           return _defaultAction();
         }
 
+        if (_noAction)
+        {
+          auto noActionResult = _noAction();
+
+          return noActionResult;
+        }
+
         return Status.notFound;
       }
 
@@ -640,6 +678,13 @@ else static if (isWebApi)
 
       if (!methodEntries)
       {
+        if (_noAction)
+        {
+          auto noActionResult = _noAction();
+
+          return noActionResult;
+        }
+
         return Status.notFound;
       }
 
@@ -647,6 +692,13 @@ else static if (isWebApi)
 
       if (!action)
       {
+        if (_noAction)
+        {
+          auto noActionResult = _noAction();
+
+          return noActionResult;
+        }
+
         return Status.notFound;
       }
 

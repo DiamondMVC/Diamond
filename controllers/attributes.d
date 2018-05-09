@@ -27,6 +27,9 @@ static if (isWeb)
     string action;
   }
 
+  /// Attribute for a no-action handler.
+  struct HttpNoAction {}
+
   /// Attribute for authentication.
   struct HttpAuthentication
   {
