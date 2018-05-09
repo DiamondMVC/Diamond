@@ -15,6 +15,9 @@ static if (isWeb)
   /// The name of the cookie consent's cookie.
   private static const __gshared consentCookieName = "__D_COOKIE_CONSENT";
 
+  /// The name of the privacy key.
+  private static __gshared const privacySessionKey = "__D_PRIVACY_CONFIG";
+
   /// Wrapper around the client's request aand response.
   final class HttpClient
   {
@@ -30,6 +33,7 @@ static if (isWeb)
     import diamond.http.method;
     import diamond.http.status;
     import diamond.http.routing;
+    import diamond.http.privacy;
     import diamond.errors.checks;
 
     private:
@@ -74,6 +78,9 @@ static if (isWeb)
 
     /// The path.
     string _path;
+
+    /// The privacy collection.
+    PrivacyCollection _privacyCollection;
 
     final:
     package(diamond)
@@ -286,7 +293,7 @@ static if (isWeb)
         if (_language is null)
         {
           import diamond.data.i18n.messages : _defaultLanguage;
-          
+
           _language = session.getValue!string(languageSessionKey, _defaultLanguage);
         }
 
@@ -298,6 +305,24 @@ static if (isWeb)
       {
         _language = newLanguage;
         session.setValue(languageSessionKey, _language);
+      }
+
+      /// Gets the privacy collection of the client.
+      PrivacyCollection privacy()
+      {
+        if (_privacyCollection is null)
+        {
+          _privacyCollection = session.getValue!PrivacyCollection(privacySessionKey, null);
+
+          if (_privacyCollection is null)
+          {
+            _privacyCollection = new PrivacyCollection;
+
+            session.setValue(privacySessionKey, _privacyCollection);
+          }
+        }
+
+        return _privacyCollection;
       }
     }
 

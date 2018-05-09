@@ -19,3 +19,6 @@ struct DbId { }
 
 /// Attribute for timestamps.
 struct DbTimestamp { }
+
+// Attribute to mark data as personal. Use this to easily integrate with GDPR.
+struct DbPersonal { }

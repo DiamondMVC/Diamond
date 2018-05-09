@@ -15,4 +15,5 @@ public
   import diamond.http.sessions;
   import diamond.http.websockets;
   import diamond.http.remote;
+  import diamond.http.privacy;
 }
