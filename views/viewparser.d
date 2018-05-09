@@ -402,6 +402,12 @@ static if (!isWebApi)
           break;
         }
 
+        case "title":
+        {
+          viewConstructorGeneration ~= "super.addPlaceholder(\"title\", \"" ~ value.strip() ~ "\");\r\n";
+          break;
+        }
+
         default: break;
       }
     }
