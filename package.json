@@ -12,9 +12,10 @@
 		"authentication", "controllers", "core",
 		"data", "database", "errors",
 		"extensions", "http", "init",
-		"mail", "markdown", "security",
-		"seo", "tasks", "templates",
-		"unittesting", "views", "web"
+		"io", "mail", "markdown",
+		"security", "seo", "tasks",
+		"templates", "unittesting", "views",
+		"web"
 	],
 	"dependencies": {
 		"vibe-d": {

@@ -12,4 +12,5 @@ public
   import diamond.views.viewparser;
   import diamond.views.view;
   import diamond.views.viewroute;
+  import diamond.views.viewcache;
 }
