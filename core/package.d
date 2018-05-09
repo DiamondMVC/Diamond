@@ -18,4 +18,5 @@ public
   import diamond.core.traits;
   import diamond.core.logging;
   import diamond.core.webinitialization;
+  import diamond.core.cache;
 }

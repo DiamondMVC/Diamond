@@ -69,9 +69,16 @@ static if (isWebServer)
       client.notFound();
     }
 
-    string pageResult;
+    import diamond.views.viewcache;
 
-    if (webConfig.shouldCacheViews && page.cached)
+    string pageResult;
+    auto routeName = client.route.name;
+
+    if (page.staticCache)
+    {
+      pageResult = getCachedView(routeName);
+    }
+    else if (webConfig.shouldCacheViews && page.cached)
     {
       pageResult = client.session.getCachedView(page.name);
     }
@@ -92,7 +99,11 @@ static if (isWebServer)
         return;
       }
 
-      if (webConfig.shouldCacheViews && pageResult && pageResult.length && page.cached)
+      if (page.staticCache)
+      {
+        cacheView(routeName, pageResult, page.cacheTime);
+      }
+      else if (webConfig.shouldCacheViews && pageResult && pageResult.length && page.cached)
       {
         client.session.cacheView(page.name, pageResult);
       }

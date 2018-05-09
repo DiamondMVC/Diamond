@@ -10,4 +10,5 @@ public
   import diamond.errors.exceptions.enforceexception;
   import diamond.errors.exceptions.viewexception;
   import diamond.errors.exceptions.routeexception;
+  import diamond.errors.exceptions.filesecurityexception;
 }

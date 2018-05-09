@@ -340,6 +340,23 @@ static if (!isWebApi)
           break;
         }
 
+        case "staticCache":
+        {
+          if (to!bool(value))
+          {
+            viewConstructorGeneration ~= "super.staticCache = true;\r\n";
+          }
+
+          break;
+        }
+
+        case "staticCacheTime":
+        {
+          viewConstructorGeneration ~= "super.cacheTime = " ~ to!string(to!size_t(value)) ~ ";\r\n";
+
+          break;
+        }
+
         case "contentType":
         {
           viewCodeGeneration ~= "super.client.rawResponse.headers[\"Content-Type\"] = \"%s\";\r\n".format(value.replace("\n", ""));

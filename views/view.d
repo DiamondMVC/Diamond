@@ -65,6 +65,12 @@ static if (!isWebApi)
     /// Boolean determining whether the view generation is raw or if it should call controllers etc.
     bool _rawGenerate;
 
+    /// The time a view should be statically cached.
+    size_t _cacheTime;
+
+    /// Boolean determining wheter the view is statically cached or not.
+    bool _staticCache;
+
     protected:
     static if (isWebServer)
     {
@@ -116,6 +122,18 @@ static if (!isWebApi)
         {
           _cached = canBeCached;
         }
+
+        /// Sets the time the view is statically cached.
+        void cacheTime(size_t newCacheTime)
+        {
+          _cacheTime = newCacheTime;
+        }
+
+        /// Sets a boolean determining wheter the view is statically cached or not.
+        void staticCache(bool staticCached)
+        {
+          _staticCache = staticCached;
+        }
       }
     }
 
@@ -126,6 +144,12 @@ static if (!isWebApi)
       {
         /// Gets a boolean determining whether the view can be cached or not.
         bool cached() { return _cached; }
+
+        /// Gets the time the view is statically cached.
+        size_t cacheTime() { return _cacheTime; }
+
+        /// Gets a boolean determining wheter the view is statically cached or not.
+        bool staticCache() { return _staticCache; }
 
         /// Gets the client.
         HttpClient client() { return _client; }

@@ -5,7 +5,7 @@
 */
 module diamond.io.file;
 
-import std.file : write, append, read, readText, exists, mkdir, rmdirRecurse, remove;
+import std.file;
 import std.string : toLower, strip, stripLeft, stripRight;
 import std.algorithm : startsWith;
 
@@ -19,7 +19,7 @@ private
   alias dremove = std.file.remove;
 }
 
-import diamond.errors.checks;
+import diamond.errors;
 
 /// Enumeration of file access security.
 enum FileAccessSecurity
@@ -78,7 +78,7 @@ private string _webRootPath;
 */
 private string transformPath(FileAccessSecurity security, string path)
 {
-  static const backSlash = cast(char)0x5c;
+  static const char backSlash = cast(char)0x5c;
 
   enforce(path, "Cannot transform an empty path.");
 
@@ -106,7 +106,7 @@ private string transformPath(FileAccessSecurity security, string path)
   {
     case FileAccessSecurity.webRootAccess:
     {
-      if (!path.toLower().startsWith(rootPath.toLower()))
+      if (!path.toLower().startsWith(webRootPath.toLower()))
       {
         path = webRootPath ~ path;
       }
@@ -116,12 +116,12 @@ private string transformPath(FileAccessSecurity security, string path)
     case FileAccessSecurity.staticFileAccess:
     {
       import diamond.core.webconfig;
-      
+
       bool isStaticPath;
 
       foreach (staticFileRoute; webConfig.staticFileRoutes)
       {
-        if (path.startsWith(staticFileRoute.strip().stripLeft(backSlash).stripLeft('/'))
+        if (path.startsWith(staticFileRoute.strip().stripLeft([backSlash, '/'])))
         {
           isStaticPath = true;
         }
@@ -132,7 +132,7 @@ private string transformPath(FileAccessSecurity security, string path)
         throw new FileSecurityException("The path is not a static file path");
       }
 
-      path = webRootPath = path;
+      path = webRootPath ~ path;
       break;
     }
 
@@ -144,7 +144,7 @@ private string transformPath(FileAccessSecurity security, string path)
       {
         foreach (whiteListPath; _whiteList)
         {
-          if (path.startsWith(whiteListPath.strip().stripLeft(backSlash).stripLeft('/'))
+          if (path.startsWith(whiteListPath.strip().stripLeft([backSlash, '/'])))
           {
             isWhiteListPath = true;
           }
@@ -244,7 +244,7 @@ bool exists(FileAccessSecurity security, string path)
 */
 void remove(FileAccessSecurity security, string file)
 {
-  path = transformPath(security, file);
+  file = transformPath(security, file);
 
   dremove(file);
 }
@@ -270,7 +270,7 @@ void makeDir(FileAccessSecurity security, string path)
 */
 void removeDir(FileAccessSecurity security, string path)
 {
-  auto path = transformPath(security, path);
+  path = transformPath(security, path);
 
   rmdirRecurse(path);
 }
