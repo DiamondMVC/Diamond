@@ -15,13 +15,11 @@ static if (!isWebApi)
     enum viewClassFormat = q{
       final class view_%s : View
       {
-        import std.array : replace, split, array;
-        import std.algorithm : map, filter, countUntil, count, canFind;
-        import std.string : strip, indexOf, lastIndexOf, isNumeric;
+        import std.array : replace, split, array, join, split;
+        import std.algorithm : map, filter, countUntil, count, canFind, startsWith, endsWith, splitter;
+        import std.string : strip, stripLeft, stripRight, indexOf, lastIndexOf, isNumeric, format;
         import std.datetime : Date, DateTime, SysTime, Clock, Month, DayOfWeek;
         import std.conv : to;
-
-        import vibe.d : HTTPServerRequest, HTTPServerResponse, HTTPMethod;
 
         import diamond.http;
         import diamond.errors.exceptions;
@@ -112,9 +110,9 @@ static if (!isWebApi)
     enum viewClassFormat = q{
       final class view_%s : View
       {
-        import std.array : replace, split, array;
-        import std.algorithm : filter, countUntil, count, canFind;
-        import std.string : strip, indexOf, lastIndexOf, isNumeric;
+        import std.array : replace, split, array, join, split;
+        import std.algorithm : map, filter, countUntil, count, canFind, startsWith, endsWith, splitter;
+        import std.string : strip, stripLeft, stripRight, indexOf, lastIndexOf, isNumeric, format;
         import std.datetime : Date, DateTime, SysTime, Clock, Month, DayOfWeek;
         import std.conv : to;
 
