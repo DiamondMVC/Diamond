@@ -111,18 +111,55 @@ class MySqlModel(string tableName) : Model, IMySqlModel
     auto model = cast(TModel)this;
 
     enum readNullEnumFomat = "model.%s = retrieve!(%s, true, true);";
-    enum readNullFomat = "model.%s = retrieve!(%s, true, false);";
-    enum readEnumFomat = "model.%s = retrieve!(%s, false, true);";
+
+    enum readNullProxyFormat = q{
+      import std.variant : Variant;
+      mixin("model." ~ proxy.handler ~ "!(\"%s\")(_row.isNull(_index) ? Variant.init : _row[_index]);");
+      _index++;
+    };
+
+    enum readNullFormat = "model.%s = retrieve!(%s, true, false);";
+    enum readEnumFormat = "model.%s = retrieve!(%s, false, true);";
+
+    enum readProxyFormat = q{
+      mixin("model." ~ proxy.handler ~ "!(\"%s\")(_row[_index]);");
+      _index++;
+    };
+
+    enum readRelationshipFormat = q{
+      if (relationship.sql)
+      {
+        model.%1$s = MySql.readMany!(%3$s)(relationship.sql, null);
+      }
+      else if (relationship.members)
+      {
+        auto params = getParams();
+
+        string[] whereClause = [];
+
+        static foreach (memberLocal,memberRemote; relationship.members)
+        {
+          mixin("whereClause ~= \"`" ~ memberRemote ~ "` = @" ~ memberLocal ~ "\";");
+          mixin("params[\"" ~ memberLocal ~ "\"] = model." ~ memberLocal ~ ";");
+        }
+
+        import std.array : join;
+
+        model.%1$s = MySql.readMany!(%3$s)("SELECT * FROM `@table` WHERE " ~ whereClause.join(" AND "), params);
+      }
+    };
+
     enum readBoolFormat = "model.%s = retrieve!(%s);";
-    enum readFomat = "model.%s = retrieve!(%s);";
+    enum readFormat = "model.%s = retrieve!(%s);";
 
     import models;
     mixin
     (
-      "super(%s, %s, %s, %s);".format
+      "super(%s, %s, %s, %s, %s);".format
       (
         generateRead!TModel, generateInsert!TModel,
-        generateUpdate!TModel, generateDelete!TModel
+        generateUpdate!TModel, generateDelete!TModel,
+        generateReadRelationship!TModel
       )
     );
   }
@@ -132,7 +169,7 @@ class MySqlModel(string tableName) : Model, IMySqlModel
     /// Gets the raw row.
     @ignore Row row() @system { return _row; }
 
-    /// Sets the native row. Settings this manually outside the engine is undefined-behavior.
+    /// Sets the native row. Setting this manually outside the engine is undefined-behavior.
     @ignore void row(Row newRow)  @system
     {
       _row = newRow;

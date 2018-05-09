@@ -29,6 +29,9 @@ public
   /// A variant db parameter type.
   alias DbParam = Variant;
 
+  /// A variant db value type.
+  alias DbValue = Variant;
+
   import diamond.database.mongo;
 }
 

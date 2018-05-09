@@ -27,24 +27,41 @@ string generateRead(T : IMySqlModel)()
 
   mixin HandleFields!(T, q{{
     enum hasNoMap = hasUDA!({{fullName}}, DbNoMap);
+    enum hasRelationship = hasUDA!({{fullName}}, DbRelationship);
 
-    static if (!hasNoMap)
+    static if (!hasNoMap && !hasRelationship)
     {
+      import std.traits : getUDAs;
+
       enum hasNull = hasUDA!({{fullName}}, DbNull);
       enum hasEnum = hasUDA!({{fullName}}, DbEnum);
+      enum hasProxy = hasUDA!({{fullName}}, DbProxy);
+
       enum typeName = typeof({{fullName}}).stringof;
 
       static if (hasNull && hasEnum)
       {
-        mixin(readNullEnumFomat.format("{{fieldName}}", typeName));
+        mixin(readNullEnumFormat.format("{{fieldName}}", typeName));
+      }
+      else static if (hasNull && hasProxy)
+      {
+        mixin("enum proxy = getUDAs!(%s, DbProxy)[0];".format("{{fullName}}"));
+
+        mixin(readNullProxyFormat.format("{{fieldName}}"));
       }
       else static if (hasNull)
       {
-        mixin(readNullFomat.format("{{fieldName}}", typeName));
+        mixin(readNullFormat.format("{{fieldName}}", typeName));
       }
       else static if (hasEnum)
       {
-        mixin(readEnumFomat.format("{{fieldName}}", typeName));
+        mixin(readEnumFormat.format("{{fieldName}}", typeName));
+      }
+      else static if (hasProxy)
+      {
+        mixin("enum proxy = getUDAs!(%s, DbProxy)[0];".format("{{fullName}}"));
+
+        mixin(readProxyFormat.format("{{fieldName}}"));
       }
       else static if (is(typeof({{fullName}}) == bool))
       {
@@ -52,7 +69,46 @@ string generateRead(T : IMySqlModel)()
       }
       else
       {
-        mixin(readFomat.format("{{fieldName}}", typeName));
+        mixin(readFormat.format("{{fieldName}}", typeName));
+      }
+    }
+  }});
+
+  return s.format(handleThem());
+}
+
+/**
+* Generates the read relationship function for a database model.
+* Returns:
+*   The read relationship function string to use with mixin.
+*/
+string generateReadRelationship(T : IMySqlModel)()
+{
+  string s = q{
+    {
+      %s
+    }
+  };
+
+  mixin HandleFields!(T, q{{
+    enum hasNoMap = hasUDA!({{fullName}}, DbNoMap);
+
+    static if (!hasNoMap)
+    {
+      import std.string : indexOf;
+      import std.traits : getUDAs;
+
+      enum hasRelationship = hasUDA!({{fullName}}, DbRelationship);
+
+      enum typeName = typeof({{fullName}}).stringof;
+
+      static if (hasRelationship)
+      {
+        enum shortTypeName = typeof({{fullName}}).stringof[0 .. typeof({{fullName}}).stringof.indexOf('[')];
+
+        mixin("enum relationship = getUDAs!(%s, DbRelationship)[0];".format("{{fullName}}"));
+
+        mixin(readRelationshipFormat.format("{{fieldName}}", typeName, shortTypeName));
       }
     }
   }});
