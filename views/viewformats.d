@@ -24,6 +24,7 @@ static if (!isWebApi)
         import diamond.http;
         import diamond.errors.exceptions;
         import diamond.controllers;
+        import diamond.markdown;
         import i18n = diamond.data.i18n;
 
         import controllers;
