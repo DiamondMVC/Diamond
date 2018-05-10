@@ -20,6 +20,8 @@ static if (isWeb)
     string[] staticFileRoutes;
     /// The paths to white-list for file-access/directory-access.
     @optional string[] whiteListPaths;
+    /// A list of hosts that the server accepts.
+    @optional string[] hostWhiteList;
     /// The route that's mapped to the home page.
     string homeRoute;
     /// Boolean determining whether views can be accessed by their file name.

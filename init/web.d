@@ -181,7 +181,7 @@ static if (isWeb)
       }
     }
   }
-  
+
   /// The static file handlers.
   __gshared HTTPServerRequestDelegateS[string] _staticFiles;
 
@@ -272,6 +272,13 @@ static if (isWeb)
 
     try
     {
+      import std.algorithm : canFind;
+
+      if (webConfig.hostWhiteList && !webConfig.hostWhiteList.canFind(client.host))
+      {
+        client.forbidden();
+      }
+
       if (handleSpecializedRoute(client))
       {
         return;
@@ -297,6 +304,15 @@ static if (isWeb)
         client.route = new Route(route);
 
         handleHTTPListenInternal(client);
+      }
+    }
+    catch (HTTPStatusException hse)
+    {
+      auto e = cast(Exception)hse;
+
+      if (e)
+      {
+        handleUserException(e,request,response,null);
       }
     }
     catch (Throwable t)
