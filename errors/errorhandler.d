@@ -29,34 +29,32 @@ static if (isWeb)
   {
     try
     {
-      response.statusCode = error ? error.code : 500;
-      auto httpStatusExcepton = cast(HTTPStatusException)e;
+      response.statusCode = (error ? error.code : 500);
 
-      if ((!httpStatusExcepton || httpStatusExcepton.status != HTTPStatus.NotFound) &&
-        (response.statusCode != 404 && response.statusCode != 200)
-        )
+      auto httpStatusException = cast(HTTPStatusException)e;
+
+      if (httpStatusException)
       {
-        // log ...
-      }
+        response.statusCode = httpStatusException.status;
 
-      if (httpStatusExcepton && httpStatusExcepton.status == HTTPStatus.NotFound)
-      {
-        response.statusCode = 404;
+        if (httpStatusException.status == 404)
+        {
+          foreach (headerKey,headerValue; webConfig.defaultHeaders.notFound)
+          {
+            response.headers[headerKey] = headerValue;
+          }
 
-        foreach (headerKey,headerValue; webConfig.defaultHeaders.notFound)
-        {
-          response.headers[headerKey] = headerValue;
-        }
+          if (webSettings)
+          {
+            webSettings.onNotFound(request,response);
+          }
+          else
+          {
+            response.bodyWriter.write("Not found ...");
+          }
 
-        if (webSettings)
-        {
-          webSettings.onNotFound(request,response);
+          return;
         }
-        else
-        {
-          response.bodyWriter.write("Not found ...");
-        }
-        return;
       }
 
       foreach (headerKey,headerValue; webConfig.defaultHeaders.error)
@@ -98,7 +96,7 @@ static if (isWeb)
   {
     try
     {
-      response.statusCode = error ? error.code : 500;
+      response.statusCode = (error ? error.code : 500);
 
       if (error && error.code == 404)
       {

@@ -440,8 +440,15 @@ static if (isWeb)
     }
 
     /// Sends an unauthorized error
-    void unauthorized() {
+    void unauthorized()
+    {
       error(HttpStatus.unauthorized);
+    }
+
+    /// Sends a forbidden error
+    void forbidden()
+    {
+      error(HttpStatus.forbidden);
     }
 
     /**
