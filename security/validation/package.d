@@ -12,4 +12,5 @@ public
   import diamond.security.validation.email;
   import diamond.security.validation.types;
   import diamond.security.validation.url;
+  import diamond.security.validation.sensitive;
 }
