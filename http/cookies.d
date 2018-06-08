@@ -15,6 +15,53 @@ static if (isWeb)
   import diamond.core.senc;
   import diamond.http.client;
 
+  /// Collection of standard cookies used within Diamond.
+  private CookieInformation[] _cookieInformation;
+
+  /// Wrapper around cookie information.
+  class CookieInformation
+  {
+    private:
+    /// The cookie name.
+    string _cookieName;
+    /// The cookie description.
+    string _cookieDescription;
+
+    /**
+    * Creates a new cookie information wrapper.
+    * Params:
+    *   cookieName =        The name of the cookie.
+    *   cookieDescription = The description of the cookie.
+    */
+    this(string cookieName, string cookieDescription)
+    {
+      _cookieName = cookieName;
+      _cookieDescription = cookieDescription;
+    }
+
+    public:
+    /// Gets the name of the cookie.
+    string cookieName() { return _cookieName; }
+
+    /// Gets the description of the cookie.
+    string cookieDescription() { return _cookieDescription; }
+  }
+
+  /// Gets information about all standard cookies used within Diamond.
+  CookieInformation[] getCookieInformation()
+  {
+    if (!_cookieInformation)
+    {
+      _cookieInformation = [
+        new CookieInformation("__D_AUTH_TOKEN", "This cookie is used to store the authentication token used by Diamond."),
+        new CookieInformation("__D_COOKIE_CONSENT", "This cookie is used to store the cookie consent used by Diamond."),
+        new CookieInformation("__D_SESSION", "This cookie is used to store the Diamond session id of a client.")
+      ];
+    }
+
+    return _cookieInformation
+  }
+
   /// Enumeration of http cookie consent types.
   enum HttpCookieConsent : string
   {

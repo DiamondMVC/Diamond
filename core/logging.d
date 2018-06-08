@@ -207,6 +207,8 @@ Message:
       lazy string message = null
     )
     {
+      import diamond.core.webconfig;
+
       auto loggers = _loggers.get(logType, null);
 
       if (!loggers)
@@ -214,24 +216,31 @@ Message:
         return;
       }
 
+      bool protectedPrivacy = !webConfig.disablePrivacyLogging;
+      bool protectedIP = protectedPrivacy || !client.privacy["__D_LOGGING_PROTECT_IP"].adminVisible;
+      bool protectedBody = protectedPrivacy || !client.privacy["__D_LOGGING_PROTECT_BODY"].adminVisible;
+      bool protectedHeaders = protectedPrivacy || !client.privacy["__D_LOGGING_PROTECT_HEADERS"].adminVisible;
+
       import std.algorithm : canFind;
       import std.string : format;
       import vibe.stream.operations : readAllUTF8;
       import diamond.core.webconfig;
       import diamond.core.senc;
 
-      string requestHeaders = client.headers.toString();
+      string requestHeaders = protectedHeaders ? "" : client.headers.toString();
 
-      // foreach (key,value; client.headers.byKeyValue())
-      // {
-      //   requestHeaders ~= "%s: %s\r\n".format(key, value);
-      // }
+      string responseHeaders = void;
 
-      string responseHeaders;
-
-      foreach (key,value; client.rawResponse.headers)
+      if (!protectedHeaders)
       {
-        responseHeaders ~= "%s: %s\r\n".format(key, value);
+        foreach (key,value; client.rawResponse.headers)
+        {
+          responseHeaders ~= "%s: %s\r\n".format(key, value);
+        }
+      }
+      else
+      {
+        responseHeaders = "";
       }
 
       import std.uuid : randomUUID, sha1UUID;
@@ -258,19 +267,40 @@ Message:
         statusCode = HttpStatus.ok;
       }
 
+      string protectIP(string ip)
+      {
+        if (!ip || !ip.length || ip.indexOf('.') == -1)
+        {
+          return "";
+        }
+
+        auto newIP = ip[0 .. ip.indexOf('.')];
+        auto last = ip.lastIndexOf('.');
+
+        if (last > 0)
+        {
+          newIP ~= "..." ~ ip[ip.lastIndexOf('.') .. $];
+        }
+
+        return newIP;
+      }
+
       auto logResult = new LogResult
       (
         logToken,
         logType,
         webConfig.name,
-        client.ipAddress,
+        protectedIP ? protectIP(client.ipAddress) : client.ipAddress,
         client.method,
         requestHeaders ? requestHeaders : "",
-        client.requestStream.readAllUTF8(),
+        protectedBody ? "" : client.requestStream.readAllUTF8(),
         client.fullUrl.toString(),
         responseHeaders,
-        client.rawResponse.contentType.canFind("text") ?
-          cast(string)client.getBody() : SENC.encode(client.getBody()),
+        protectedBody ? "" :
+        (
+          client.rawResponse.contentType.canFind("text") ?
+          cast(string)client.getBody() : SENC.encode(client.getBody())
+        ),
         statusCode,
         message ? message : "",
         client.cookies.hasAuthCookie() ? client.cookies.getAuthCookie() : ""

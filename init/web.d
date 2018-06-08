@@ -24,7 +24,8 @@ static if (isWeb)
   import vibe.d : HTTPServerRequestDelegateS, HTTPServerSettings, HTTPServerRequest,
                   HTTPServerResponse, HTTPServerErrorInfo, listenHTTP,
                   HTTPMethod, HTTPStatus, HTTPStatusException,
-                  serveStaticFiles, URLRouter, runApplication;
+                  serveStaticFiles, URLRouter, runApplication,
+                  TLSContextKind, createTLSContext;
 
   static if (!isCustomMain)
   {
@@ -78,6 +79,10 @@ static if (isWeb)
       loadStaticFiles();
 
       loadSpecializedRoutes();
+
+      import diamond.security.validation.sensitive;
+
+      initializeSensitiveDataValidator();
 
       foreach (address; webConfig.addresses)
       {
@@ -214,6 +219,21 @@ static if (isWeb)
   void loadServer(string[] ipAddresses, ushort port)
   {
     auto settings = new HTTPServerSettings;
+
+    if (webConfig.sslCertificateFile && webConfig.sslPrivateKeyFile)
+    {
+      if (port == 80)
+      {
+        loadServer(ipAddresses, 443);
+      }
+      else
+      {
+        settings.tlsContext = createTLSContext(TLSContextKind.server);
+        settings.tlsContext.useCertificateChainFile(webConfig.sslCertificateFile);
+        settings.tlsContext.usePrivateKeyFile(webConfig.sslPrivateKeyFile);
+      }
+    }
+
     settings.port = port;
     settings.bindAddresses = ipAddresses;
     settings.accessLogToConsole = webConfig.accessLogToConsole;

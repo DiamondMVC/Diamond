@@ -29,6 +29,9 @@ static if (isWeb)
     /// The raw vibe.d smtp settings.
     SMTPClientSettings _settings;
 
+    /// Boolean determining whether the mail should allow sensitive data or not.
+    bool _allowSensitiveData;
+
     public:
     final:
     /// Creates new smtp client settings.
@@ -155,6 +158,15 @@ static if (isWeb)
       {
         _settings.tlsVersion = newVersion;
       }
+
+      /// Gets a boolean determining whether the mail should allow sensitive data or not.
+      bool allowSensitiveData() { return _allowSensitiveData; }
+
+      /// Sets a boolean determining whether the mail should allow sensitive data or not.
+      void allowSensitiveData(bool shouldAllowSensitiveData)
+      {
+        _allowSensitiveData = shouldAllowSensitiveData;
+      }
     }
   }
 
@@ -265,20 +277,25 @@ static if (isWeb)
       _mail.headers[name] = value;
     }
 
-    /// Sends a mail with the mails current settings.
-    void send()
+    /**
+    * Sends a mail with the mails current settings.
+    * Params:
+    *   level =    The security level to use for sensitive data if validation is turned on.
+    */
+    void send(SecurityLevel level = SecurityLevel.maximum)
     {
       enforce(_settings !is null, "The mail has no settings configured.");
 
-      send(_settings);
+      send(_settings, level);
     }
 
     /**
     * Sends a mail using specific settings.
     * Params:
     *   settings = The settings to use.
+    *   level =    The security level to use for sensitive data if validation is turned on.
     */
-    void send(SmtpClientSettings settings)
+    void send(SmtpClientSettings settings, SecurityLevel level = SecurityLevel.maximum)
     {
       enforce(settings !is null, "Cannot send a mail without settings.");
 
@@ -286,6 +303,11 @@ static if (isWeb)
       enforce(_recipient && _recipient.length, "Recipient is missing.");
       enforce(_subject && _subject.length, "Subject is missing.");
       enforce(_message && _message.length, "Message is missing.");
+
+      if (!settings.allowSensitiveData)
+      {
+        validateSensitiveData(_message, level);
+      }
 
       if (_sender && _sender.length)
       {

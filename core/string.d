@@ -58,3 +58,39 @@ if (isSomeString!TString)
 
   return to!string(s[0]).toUpper() ~ s[1 .. $];
 }
+
+/**
+* Splits a string input into grouped words.
+* Params:
+*   input = The input to split into grouped words.
+* Returns:
+*   The string split into grouped words.
+*/
+string[] splitIntoGroupedWords(string input)
+{
+  import std.array : split;
+
+  auto inputs = input.split(" ");
+  string[] words = [];
+
+  foreach (i; 0 .. inputs.length)
+  {
+    string current = inputs[i];
+    string next1 = i < (inputs.length - 1) ? (" " ~ inputs[i + 1]) : null;
+    string next2 = i < (inputs.length - 2) ? (" " ~ inputs[i + 2]) : null;
+
+    words ~= current;
+
+    if (next1)
+    {
+      words ~= current ~ next1;
+    }
+
+    if (next2)
+    {
+      words ~= current ~ next1 ~ next2;
+    }
+  }
+
+  return words;
+}

@@ -20,7 +20,7 @@ static if (isWebServer)
   {
     import diamond.core.webconfig;
 
-    if (webConfig.maintenance)
+    if (webConfig.maintenance && webConfig.maintenance.length)
     {
       import std.algorithm: canFind;
 

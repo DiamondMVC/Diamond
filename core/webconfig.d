@@ -54,6 +54,12 @@ static if (isWeb)
     @optional bool viewOnly;
     /// Configurations for mongo db.
     @optional WebMongoDb mongoDb;
+    /// Configuration to disable privacy logging. When set to true, personal information etc. will be stored in the logging.
+    @optional bool disablePrivacyLogging;
+    /// Configuration for the ssl certificate file.
+    @optional string sslCertificateFile;
+    /// Configuration for the ssl private key file.
+    @optional string sslPrivateKeyFile;
   }
 
   /// A web address.

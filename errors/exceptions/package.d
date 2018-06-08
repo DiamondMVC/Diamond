@@ -11,4 +11,5 @@ public
   import diamond.errors.exceptions.viewexception;
   import diamond.errors.exceptions.routeexception;
   import diamond.errors.exceptions.filesecurityexception;
+  import diamond.errors.exceptions.sensitivedataexception;
 }
