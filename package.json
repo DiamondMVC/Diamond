@@ -1,12 +1,12 @@
 {
 	"name": "diamond",
-	"description": "Powerful Full-stack web-framework using vibe.d",
+	"description": "Powerful Full-stack MVC web-framework using vibe.d",
 	"authors": [
 		"Jacob Jensen"
 	],
 	"homepage": "http://diamondmvc.org/",
 	"license": "The MIT License (MIT)",
-	"copyright": "Copyright © 2016-2017 Jacob Jensen",
+	"copyright": "Copyright © 2016-2018 Jacob Jensen",
 	"targetType": "sourceLibrary",
 	"sourcePaths": [
 		"authentication", "controllers", "core",
