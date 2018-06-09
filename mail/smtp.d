@@ -15,6 +15,7 @@ static if (isWeb)
 
   import diamond.errors.checks;
   import diamond.core.traits;
+  import diamond.security.validation.sensitive;
 
   // Alias to SMTPAuthType.
   mixin(createEnumAlias!SMTPAuthType("SmtpAuthType"));

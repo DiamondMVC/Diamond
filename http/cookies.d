@@ -59,7 +59,7 @@ static if (isWeb)
       ];
     }
 
-    return _cookieInformation
+    return _cookieInformation;
   }
 
   /// Enumeration of http cookie consent types.

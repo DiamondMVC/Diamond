@@ -368,6 +368,8 @@ void validateSensitiveData(string data, SecurityLevel level)
 {
   if (hasSensitiveData(data, level))
   {
+    import diamond.errors.exceptions : SensitiveDataException;
+    
 	  throw new SensitiveDataException("The input contains sensitive data. Try to change security policies or exclude the sensitive data from the input.");
   }
 }
