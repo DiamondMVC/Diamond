@@ -222,7 +222,7 @@ Message:
       bool protectedHeaders = protectedPrivacy || !client.privacy["__D_LOGGING_PROTECT_HEADERS"].adminVisible;
 
       import std.algorithm : canFind;
-      import std.string : format;
+      import std.string : format, indexOf, lastIndexOf;
       import vibe.stream.operations : readAllUTF8;
       import diamond.core.webconfig;
       import diamond.core.senc;
