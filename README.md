@@ -2,7 +2,7 @@
 
 [![DONATE](https://img.shields.io/badge/Support%20Diamond-Donate-brightgreen.svg)](http://diamondmvc.org/donate)
 [![OS](https://img.shields.io/badge/os-windows%20%7C%20linux%20%7C%20macos-ff69b4.svg)](http://code.dlang.org/packages/diamond)
-[![LOC](https://img.shields.io/badge/lines--of--code-11000%2B%20%7C%2018000%2B-yellow.svg)](http://code.dlang.org/packages/diamond)
+[![LOC](https://img.shields.io/badge/lines--of--code-12000%2B%20%7C%2020000%2B-yellow.svg)](http://code.dlang.org/packages/diamond)
 [![Dub version](https://img.shields.io/dub/v/diamond.svg)](http://code.dlang.org/packages/diamond)
 [![Dub downloads](https://img.shields.io/dub/dt/diamond.svg)](http://code.dlang.org/packages/diamond)
 [![License](https://img.shields.io/dub/l/diamond.svg)](http://code.dlang.org/packages/diamond)
@@ -15,7 +15,7 @@ Website: http://diamondmvc.org/
 
 ## Key-Features
 
-[![Key features of Diamond](https://i.imgur.com/45Q3CwD.png)](https://i.imgur.com/45Q3CwD.png)
+[![Key features of Diamond](https://i.imgur.com/5W6sbpR.png)](https://i.imgur.com/5W6sbpR.png)
 
 ## Goals
 
