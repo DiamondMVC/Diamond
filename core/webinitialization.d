@@ -20,11 +20,20 @@ static if (isWebApi)
     import std.string : strip;
     import std.algorithm : filter;
 
-    return import("controllers.config")
-      .replace("\r", "").split("\n").filter!(c => c && c.strip().length).array;
+    string[] controllers;
+
+    import diamond.core.io : handleCTFEFile;
+
+    mixin handleCTFEFile!("controllers.config", q{
+      controllers = __fileResult.replace("\r", "").split("\n").filter!(c => c && c.strip().length).array;
+    });
+    handle();
+
+    return controllers ? controllers : [];
   }
 }
-else
+
+static if (isWebServer)
 {
   /// Mixin template to load view data (name + content)
   mixin template LoadViewData(bool namesOnly = false)
@@ -32,46 +41,49 @@ else
     /// Generates the functon "getViewData()" which gives you an AA like content[viewName]
     private string generateViewData()
     {
-      import std.string : strip;
-      import std.array : split, replace;
-
-      enum viewConfig = import("views.config");
-
       string viewDataString = "string[string] getViewData()
       {
         string[string] viewData;
       ";
 
-      foreach (line; viewConfig.split("\n"))
+      static if (__traits(compiles, { auto s = import("views.config"); }))
       {
-        if (!line)
+        import std.string : strip;
+        import std.array : split, replace;
+
+        enum viewConfig = import("views.config");
+
+        foreach (line; viewConfig.split("\n"))
         {
-          continue;
-        }
+          if (!line)
+          {
+            continue;
+          }
 
-        line = line.strip().replace("\r", "");
+          line = line.strip().replace("\r", "");
 
-        if (!line && line.length)
-        {
-          continue;
-        }
+          if (!line && line.length)
+          {
+            continue;
+          }
 
-        auto data = line.split("|");
+          auto data = line.split("|");
 
-        if (data.length != 2)
-        {
-          continue;
-        }
+          if (data.length != 2)
+          {
+            continue;
+          }
 
-        static if (namesOnly)
-        {
-          auto viewName = data[0].strip();
+          static if (namesOnly)
+          {
+            auto viewName = data[0].strip();
 
-          viewDataString ~= "  viewData[\"" ~ viewName ~ "\"] = \"" ~ viewName  ~ "\";";
-        }
-        else
-        {
-          viewDataString ~= "  viewData[\"" ~ data[0].strip() ~ "\"] = import(\"" ~ data[1].strip() ~ "\");";
+            viewDataString ~= "  viewData[\"" ~ viewName ~ "\"] = \"" ~ viewName  ~ "\";";
+          }
+          else
+          {
+            viewDataString ~= "  viewData[\"" ~ data[0].strip() ~ "\"] = import(\"" ~ data[1].strip() ~ "\");";
+          }
         }
       }
 

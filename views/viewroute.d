@@ -7,7 +7,7 @@ module diamond.views.viewroute;
 
 import diamond.core.apptype;
 
-static if (!isWebApi)
+static if (isWebServer || !isWeb)
 {
   /// Mixin template for generating the getView() function.
   mixin template GenerateGetView()

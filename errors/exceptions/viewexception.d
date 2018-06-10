@@ -7,7 +7,7 @@ module diamond.errors.exceptions.viewexception;
 
 import diamond.core.apptype;
 
-static if (!isWebApi)
+static if (isWebServer)
 {
   /// Exception thrown by a view.
   class ViewException : Exception

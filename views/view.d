@@ -7,7 +7,7 @@ module diamond.views.view;
 
 import diamond.core.apptype;
 
-static if (!isWebApi)
+static if (isWebServer || !isWeb)
 {
   import std.string : format, strip;
   import std.array : join, replace, split, array;

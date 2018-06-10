@@ -7,167 +7,167 @@ module diamond.views.viewformats;
 
 import diamond.core.apptype;
 
-static if (!isWebApi)
+static if (isWebServer)
 {
-  static if (isWebServer)
-  {
-    /// The format for view classes when using web-servers.
-    enum viewClassFormat = q{
-      final class view_%s : View
+  /// The format for view classes when using web-servers.
+  enum viewClassFormat = q{
+    final class view_%s : View
+    {
+      import std.array : replace, split, array, join, split;
+      import std.algorithm : map, filter, countUntil, count, canFind, startsWith, endsWith, splitter;
+      import std.string : strip, stripLeft, stripRight, indexOf, lastIndexOf, isNumeric, format;
+      import std.datetime : Date, DateTime, SysTime, Clock, Month, DayOfWeek;
+      import std.conv : to;
+
+      import diamond.http;
+      import diamond.errors.exceptions;
+      import diamond.controllers;
+      import diamond.markdown;
+      import diamond.core.meta;
+      import i18n = diamond.data.i18n;
+
+      import controllers;
+      import models;
+
+      public:
+      final:
+      // viewClassMembers
+      %s
+
+      this(HttpClient client, string name)
       {
-        import std.array : replace, split, array, join, split;
-        import std.algorithm : map, filter, countUntil, count, canFind, startsWith, endsWith, splitter;
-        import std.string : strip, stripLeft, stripRight, indexOf, lastIndexOf, isNumeric, format;
-        import std.datetime : Date, DateTime, SysTime, Clock, Month, DayOfWeek;
-        import std.conv : to;
+        super(client, name);
 
-        import diamond.http;
-        import diamond.errors.exceptions;
-        import diamond.controllers;
-        import diamond.markdown;
-        import diamond.core.meta;
-        import i18n = diamond.data.i18n;
-
-        import controllers;
-        import models;
-
-        public:
-        final:
-        // viewClassMembers
+        // viewConstructor
         %s
+      }
 
-        this(HttpClient client, string name)
+      // modelGenerate
+      %s
+
+      override string generate(string sectionName = "")
+      {
+        try
         {
-          super(client, name);
+          // controller
+          %s
 
-          // viewConstructor
+          // placeholders
+          %s
+
+          switch (sectionName)
+          {
+            // view code
+            %s
+          }
+
+          // end
           %s
         }
-
-        // modelGenerate
-        %s
-
-        override string generate(string sectionName = "")
+        catch (Exception e)
         {
-          try
-          {
-            // controller
-            %s
-
-            // placeholders
-            %s
-
-            switch (sectionName)
-            {
-              // view code
-              %s
-            }
-
-            // end
-            %s
-          }
-          catch (Exception e)
-          {
-            throw new ViewException(super.name, e);
-          }
-          catch (Throwable t)
-          {
-            throw new ViewError(super.name, t);
-          }
+          throw new ViewException(super.name, e);
+        }
+        catch (Throwable t)
+        {
+          throw new ViewError(super.name, t);
         }
       }
-    };
+    }
+  };
 
-    /// The format for controller handlers.
-    enum controllerHandleFormat = q{
-      if (!super.rawGenerate)
+  /// The format for controller handlers.
+  enum controllerHandleFormat = q{
+    if (!super.rawGenerate)
+    {
+      auto controllerResult = controller.handle();
+
+      if (controllerResult == Status.notFound)
       {
-        auto controllerResult = controller.handle();
-
-        if (controllerResult == Status.notFound)
-        {
-          client.notFound();
-        }
-        else if (controllerResult == Status.unauthorized)
-        {
-          client.unauthorized();
-        }
-        else if (controllerResult == Status.end)
-        {
-          return null;
-        }
+        client.notFound();
       }
-    };
-
-    /// The format for the controller member.
-    enum controllerMemberFormat = "%s!%s controller;\r\n";
-
-    /// The format for controller constructors.
-    enum controllerConstructorFormat = "controller = new %s!%s(this);\r\n";
-
-  }
-  else
-  {
-    /// The format for view classes when using stand-alone.
-    enum viewClassFormat = q{
-      final class view_%s : View
+      else if (controllerResult == Status.unauthorized)
       {
-        import std.array : replace, split, array, join, split;
-        import std.algorithm : map, filter, countUntil, count, canFind, startsWith, endsWith, splitter;
-        import std.string : strip, stripLeft, stripRight, indexOf, lastIndexOf, isNumeric, format;
-        import std.datetime : Date, DateTime, SysTime, Clock, Month, DayOfWeek;
-        import std.conv : to;
+        client.unauthorized();
+      }
+      else if (controllerResult == Status.end)
+      {
+        return null;
+      }
+    }
+  };
 
-        import diamond.errors.exceptions;
-        import diamond.core.meta;
+  /// The format for the controller member.
+  enum controllerMemberFormat = "%s!%s controller;\r\n";
 
-        import models;
+  /// The format for controller constructors.
+  enum controllerConstructorFormat = "controller = new %s!%s(this);\r\n";
 
-        public:
-        final:
-        // viewClassMembers
+}
+else
+{
+  /// The format for view classes when using stand-alone.
+  enum viewClassFormat = q{
+    final class view_%s : View
+    {
+      import std.array : replace, split, array, join, split;
+      import std.algorithm : map, filter, countUntil, count, canFind, startsWith, endsWith, splitter;
+      import std.string : strip, stripLeft, stripRight, indexOf, lastIndexOf, isNumeric, format;
+      import std.datetime : Date, DateTime, SysTime, Clock, Month, DayOfWeek;
+      import std.conv : to;
+
+      import diamond.errors.exceptions;
+      import diamond.core.meta;
+
+      import models;
+
+      public:
+      final:
+      // viewClassMembers
+      %s
+
+      this(string name)
+      {
+        super(name);
+
+        // viewConstructor
         %s
+      }
 
-        this(string name)
+      // modelGenerate
+      %s
+
+      override string generate(string sectionName = "")
+      {
+        try
         {
-          super(name);
+          // placeholders
+          %s
 
-          // viewConstructor
+          switch (sectionName)
+          {
+            // view code
+            %s
+          }
+
+          // end
           %s
         }
-
-        // modelGenerate
-        %s
-
-        override string generate(string sectionName = "")
+        catch (Exception e)
         {
-          try
-          {
-            // placeholders
-            %s
-
-            switch (sectionName)
-            {
-              // view code
-              %s
-            }
-
-            // end
-            %s
-          }
-          catch (Exception e)
-          {
-            throw new ViewException(super.name, e);
-          }
-          catch (Throwable t)
-          {
-            throw new ViewError(super.name, t);
-          }
+          throw new ViewException(super.name, e);
+        }
+        catch (Throwable t)
+        {
+          throw new ViewError(super.name, t);
         }
       }
-    };
-  }
+    }
+  };
+}
 
+static if (isWebServer || !isWeb)
+{
   /// The format for generating the view using a model.
   enum modelGenerateFormat = q{
     string generateModel(%s newModel, string sectionName = "")
