@@ -25,6 +25,7 @@ static if (!isWebApi)
         import diamond.errors.exceptions;
         import diamond.controllers;
         import diamond.markdown;
+        import diamond.core.meta;
         import i18n = diamond.data.i18n;
 
         import controllers;
@@ -118,6 +119,7 @@ static if (!isWebApi)
         import std.conv : to;
 
         import diamond.errors.exceptions;
+        import diamond.core.meta;
 
         import models;
 

@@ -19,4 +19,5 @@ public
   import diamond.core.logging;
   import diamond.core.webinitialization;
   import diamond.core.cache;
+  import diamond.core.meta;
 }
