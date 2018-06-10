@@ -16,6 +16,34 @@ static if (isWeb)
   import diamond.http.client;
   import diamond.http.method;
 
+  static if (isWebServer)
+  {
+    private static __gshared string[string] _routableViews;
+
+    /**
+    * Adds a route to a view.
+    * Params:
+    *   route =    The route.
+    *   viewName = The view name.
+    */
+    void addViewRoute(string route, string viewName)
+    {
+      _routableViews[route] = viewName;
+    }
+
+    /**
+    * Gets the view name from a custom route.
+    * Params:
+    *   route = The route used to retrieve the view name.
+    * Returns:
+    *   The view name if routable, null otherwise.
+    */
+    package(diamond) string getViewNameFromRoute(string route)
+    {
+      return _routableViews.get(route, null);
+    }
+  }
+
   /// Collection of routes.
   private static __gshared RouteEntry[string] _routes;
 

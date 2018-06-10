@@ -35,6 +35,12 @@ static if (!isWebApi)
 
             if (!viewName)
             {
+              import diamond.http.routing;
+              viewName = getViewNameFromRoute(route.name);
+            }
+
+            if (!viewName)
+            {
               return null;
             }
 
