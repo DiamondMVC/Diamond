@@ -151,7 +151,7 @@ static if (isWebServer)
   public import diamond.views.view;
 
   /// Wrapper around a controller.
-  class Controller(TView) : BaseController
+  class WebController(TView) : BaseController
   {
     private:
     /// The view associatedi with the controller.
@@ -447,11 +447,12 @@ static if (isWebServer)
     });
   }
 }
+
 // A webapi will not have a view associated with it, thus all information such as the request etc. is available within the controller
-else static if (isWebApi)
+static if (isWebApi)
 {
   /// Wrapper around a controller.
-  class Controller : BaseController
+  class ApiController : BaseController
   {
     private:
     /// The client.

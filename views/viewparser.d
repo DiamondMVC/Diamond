@@ -7,7 +7,7 @@ module diamond.views.viewparser;
 
 import diamond.core.apptype;
 
-static if (!isWebApi)
+static if (isWebServer || !isWeb)
 {
   import diamond.views.viewformats;
   import diamond.templates;

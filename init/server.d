@@ -15,8 +15,10 @@ static if (isWebServer)
   * The handler for a generic webserver request.
   * Params:
   *   client = The client.
+  * Returns:
+  *   True if the page was found, false otherwise.
   */
-  void handleWebServer(HttpClient client)
+  bool handleWebServer(HttpClient client)
   {
     import diamond.core.webconfig;
 
@@ -45,7 +47,8 @@ static if (isWebServer)
         {
           client.write(readText(webConfig.maintenance));
         }
-        return;
+        
+        return true;
       }
     }
 
@@ -66,7 +69,7 @@ static if (isWebServer)
 
     if (!page)
     {
-      client.notFound();
+      return false;
     }
 
     import diamond.views.viewcache;
@@ -96,7 +99,7 @@ static if (isWebServer)
 
       if (client.redirected || !client.isLastRoute)
       {
-        return;
+        return true;
       }
 
       if (page.staticCache)
@@ -117,5 +120,7 @@ static if (isWebServer)
     {
       client.write("\n");
     }
+
+    return true;
   }
 }

@@ -423,12 +423,27 @@ static if (isWeb)
     static if (isWebServer)
     {
       import diamond.init.server;
-      handleWebServer(client);
+      auto foundPage = handleWebServer(client);
     }
     else
     {
-      import diamond.init.api;
-      handleWebApi(client);
+      auto foundPage = false;
+    }
+
+    static if (isWebApi)
+    {
+      if (!foundPage)
+      {
+        import diamond.init.api;
+        handleWebApi(client);
+      }
+    }
+    else
+    {
+      if (!foundPage)
+      {
+        client.notFound();
+      }
     }
 
     if (webSettings)

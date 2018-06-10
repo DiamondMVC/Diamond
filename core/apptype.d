@@ -7,7 +7,7 @@ module diamond.core.apptype;
 
 public
 {
-  version (Diamond_WebServer)
+  version (Diamond_WebSite)
   {
     /// Boolean determining whether the application is compiled as a webserver or not.
     static const bool isWebServer = true;
@@ -24,9 +24,9 @@ public
   else
   {
     /// Boolean determining whether the application is compiled as a webserver or not.
-    static const bool isWebServer = false;
+    static const bool isWebServer = true;
     /// Boolean determining whether the application is compiled as a webapi or not.
-    static const bool isWebApi = false;
+    static const bool isWebApi = true;
   }
 
   /// Boolean determining whether the application is web related or not.

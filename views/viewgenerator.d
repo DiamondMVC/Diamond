@@ -7,7 +7,7 @@ module diamond.views.viewgenerator;
 
 import diamond.core.apptype;
 
-static if (!isWebApi)
+static if (isWebServer || !isWeb)
 {
   /// Mixin template for the view generator.
   mixin template GenerateViews()
