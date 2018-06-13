@@ -51,7 +51,7 @@ Website: http://diamondmvc.org/
 |Mysql-native|2.2.1|A native wrapper for Mysql. It's a dependency, because of the MySql ORM.|
 |ddbc|X.X.X|A database wrapper in D to a lot of database systems. Diamond will be using it for PostgreSQL, SqlLite and MSSQL.|
 
-## Example
+## Example (2.X.X)
 
 ### View
 
@@ -150,6 +150,106 @@ final class Home
 }
 ```
 
+## Example (3.X.X)
+
+### View
+
+Layout:
+```
+@(doctype)
+<html>
+<head>
+  <title>Website - @(title)</title>
+</head>
+<body>
+  @(view)
+</body>
+</html>
+```
+
+View:
+
+```
+@[
+  layout:
+    layout
+---
+  route:
+    home
+---
+  model:
+    Home
+---
+  controller:
+    HomeController
+---
+  placeholders:
+    [
+      "title": "Home"
+    ]
+]
+
+<p>Hello @=model.name;!</p>
+```
+
+### Controller
+
+```
+module controllers.homecontroller;
+
+import diamond.controllers;
+
+final class HomeController(TView) : WebController!TView
+{
+  this(TView view)
+  {
+    super(view);
+  }
+  
+  /// / || /home
+  @HttpDefault Status defaultAction()
+  {
+    view.model = new Home("World!");
+    
+    return Status.success;
+  }
+  
+  /// /home/setname/{name}
+  @HttpAction(HttpPost) Status setName()
+  {
+    auto name = this.getByIndex!string(0);
+    view.model = new Home(name);
+    
+    return Status.success;
+  }
+}
+```
+
+### Model
+
+```
+module models.home;
+
+final class Home
+{
+  private:
+  string _name;
+  
+  public:
+  final:
+  this(string name)
+  {
+    _name = name;
+  }
+  
+  @property
+  {
+    string name() { return _name; }
+  }
+}
+```
+
+
 ## FAQ
 
 See: http://diamondmvc.org/faq
@@ -185,6 +285,6 @@ If a version is not supported its working branch is deleted.
 
 Anything below 2.7.0 is no longer supported, because 2.7.0 has better compatibility, does not introduce major breaking changes and fixes most major issues.
 
-Currently supported versions: 2.7.0 - 2.9.0
+Currently supported versions: 2.8.0 - 2.10.1
 
-No longer supported (Only available in release.): 2.0.0 - 2.6.1
+No longer supported (Only available in release.): < 2.8.0
