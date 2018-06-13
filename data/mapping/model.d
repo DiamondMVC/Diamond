@@ -26,20 +26,37 @@ abstract class Model : IModel
   public:
   final:
   /// Creates a new model.
-  this
-  (
-    void delegate() reader,
-    void delegate() inserter,
-    void delegate() updater,
-    void delegate() deleter,
-    void delegate() readerRelationship
-  )
+  this()
   {
-    _reader = reader;
-    _inserter = inserter;
-    _updater = updater;
-    _deleter = deleter;
-    _readerRelationship = readerRelationship;
+
+  }
+
+  protected
+  {
+    void setReader(void delegate() reader)
+    {
+      _reader = reader;
+    }
+
+    void setInserter(void delegate() inserter)
+    {
+      _inserter = inserter;
+    }
+
+    void setUpdater(void delegate() updater)
+    {
+      _updater = updater;
+    }
+
+    void setDeleter(void delegate() deleter)
+    {
+      _deleter = deleter;
+    }
+
+    void setReaderRelationship(void delegate() readerRelationship)
+    {
+      _readerRelationship = readerRelationship;
+    }
   }
 
   /// Reads the model from the reader. Called internally from readSingle & readMany

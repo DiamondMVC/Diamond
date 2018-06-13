@@ -439,7 +439,7 @@ Message:
       params["responseStatusCode"] = cast(int)result.responseStatusCode;
       params["message"] = result.message;
 
-      MySql.execute(sql, params, connectionString);
+      MySql.mySqlAdapter.execute(sql, params, connectionString);
 
       if (callback !is null)
       {
