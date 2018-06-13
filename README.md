@@ -264,14 +264,7 @@ See: http://diamondmvc.org/download
 
 ## Installing (Standalone)
 
-Using Diamond stand-alone is a little more tricky than using it for web as there are no specific guide-lines in how to use it.
-
-It's not advised to use Diamond as stand-alone until you have a basic understanding of the Diamond API.
-
-* First get a D compiler here: https://dlang.org/download.html
-* Then download and install DUB: http://code.dlang.org/download
-* After that add the dependency to *Diamond* in your dub.json file
-* Simply import *diamondapp* and use *getView* to retrieve the views you want to render.
+Not supported since 3.0.0
 
 ## Contributing
 
@@ -285,6 +278,6 @@ If a version is not supported its working branch is deleted.
 
 Anything below 2.7.0 is no longer supported, because 2.7.0 has better compatibility, does not introduce major breaking changes and fixes most major issues.
 
-Currently supported versions: 2.8.0 - 2.10.1
+Currently supported versions: 2.10.0 - 3.0.0
 
-No longer supported (Only available in release.): < 2.8.0
+No longer supported (Only available in release.): < 2.10.0
