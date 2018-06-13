@@ -30,7 +30,7 @@ public
   }
 
   /// Boolean determining whether the application is web related or not.
-  static const bool isWeb = isWebServer || isWebApi;
+  static const bool isWeb = true;//isWebServer || isWebApi;
 
   version (Diamond_UnitTesting)
   {
