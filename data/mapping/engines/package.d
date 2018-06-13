@@ -9,5 +9,4 @@ public
 {
   import diamond.data.mapping.engines.sqlshared;
   import diamond.data.mapping.engines.mysql;
-  import diamond.data.mapping.engines.postgresql;
 }

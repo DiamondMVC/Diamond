@@ -25,8 +25,8 @@ private
       ContentMode.metaContent, CharacterIncludeMode.none, false, false
     );
 
-    grammars['<'] = new Grammar(
-      "placeholder", '<', '>',
+    grammars['('] = new Grammar(
+      "placeholder", '(', ')',
       ContentMode.appendContentPlaceholder, CharacterIncludeMode.none, false, false
     );
 
@@ -45,8 +45,8 @@ private
       ContentMode.appendContent, CharacterIncludeMode.none, false, true
     );
 
-    grammars['('] = new Grammar(
-      "escapedValue", '(', ')',
+    grammars['<'] = new Grammar(
+      "escapedValue", '<', '>',
       ContentMode.appendContent, CharacterIncludeMode.none, false, false
     );
 
