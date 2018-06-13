@@ -276,8 +276,12 @@ Diamond only supports up to the 3 latest minor versions of itself, including pre
 
 If a version is not supported its working branch is deleted.
 
-Anything below 2.7.0 is no longer supported, because 2.7.0 has better compatibility, does not introduce major breaking changes and fixes most major issues.
+Anything below 2.10.0 is no longer supported, because earlier versions are not adviced to use unless necessary.
+
+2.10.0+ is generally backward compatible, but 3.0.0 is not.
 
 Currently supported versions: 2.10.0 - 3.0.0
 
 No longer supported (Only available in release.): < 2.10.0
+
+Note: 3.0.0 is not yet supported, but the master branch is 3.0.0
