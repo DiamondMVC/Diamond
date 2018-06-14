@@ -36,29 +36,37 @@ static if (isWeb)
     }
   }
 
+  /// Initializes the Diamond run-time. This function does not initiate the server, tests, tasks, services etc.
+  void initializeDiamond()
+  {
+    loadWebConfig();
+
+    import diamond.data.mapping.engines.mysql : initializeMySql;
+    initializeMySql();
+
+    if (webConfig.mongoDb)
+    {
+      import diamond.database.mongo;
+      initializeMongo(webConfig.mongoDb.host, webConfig.mongoDb.port);
+    }
+
+    setDetaulfPermissions();
+
+    loadWhiteListPaths();
+
+    import diamond.security.validation.sensitive;
+
+    initializeSensitiveDataValidator();
+
+    initializeAuth();
+  }
+
   /// Runs the diamond application.
   private void runDiamond()
   {
     try
     {
-      loadWebConfig();
-
-      import diamond.data.mapping.engines.mysql : initializeMySql;
-      initializeMySql();
-
-      version (Diamond_PostgreSqlDev)
-      {
-        import diamond.data.mapping.engines.postgresql : initializePostgreSql;
-        initializePostgreSql();
-      }
-
-      if (webConfig.mongoDb)
-      {
-        import diamond.database.mongo;
-        initializeMongo(webConfig.mongoDb.host, webConfig.mongoDb.port);
-      }
-
-      setDetaulfPermissions();
+      initializeDiamond();
 
       import diamond.extensions;
       mixin ExtensionEmit!(ExtensionType.applicationStart, q{
@@ -74,22 +82,14 @@ static if (isWeb)
         webSettings.onApplicationStart();
       }
 
-      loadWhiteListPaths();
-
       loadStaticFiles();
 
       loadSpecializedRoutes();
-
-      import diamond.security.validation.sensitive;
-
-      initializeSensitiveDataValidator();
 
       foreach (address; webConfig.addresses)
       {
         loadServer(address.ipAddresses, address.port);
       }
-
-      initializeAuth();
 
       print("The %s %s is now running.",
         isWebServer ? "web-server" : "web-api", webConfig.name);

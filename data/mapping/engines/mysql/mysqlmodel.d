@@ -14,7 +14,6 @@ import vibe.data.serialization : ignore;
 import diamond.data.mapping.engines.mysql.mysqladapter;
 import diamond.data.mapping.engines.mysql.mysqlentityformatter;
 import diamond.data.mapping.engines.mysql : dbConnectionString;
-import diamond.data.mapping.engines.sqlshared.sqlmodel;
 import diamond.data.mapping.attributes;
 
 import diamond.database;
@@ -28,7 +27,7 @@ import diamond.data.mapping.model;
 *  Params:
 *    tableName = The name of the table the model is associated with.
 */
-class MySqlModel(string tableName) : Model, IModel // SqlModel!tableName, IMySqlModel
+class MySqlModel(string tableName) : Model, IMySqlModel
 {
   import models;
   import mysql;

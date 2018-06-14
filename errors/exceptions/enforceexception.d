@@ -5,7 +5,7 @@
 */
 module diamond.errors.exceptions.enforceexception;
 
-import diamond.core.debugging;
+import diamond.core.apptype;
 
 static if (debugging)
 {

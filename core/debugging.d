@@ -5,16 +5,7 @@
 */
 module diamond.core.debugging;
 
-version (Diamond_Debug)
-{
-  /// Boolean determining whether application is being debugged or not.
-  static const bool debugging = true;
-}
-else
-{
-  /// Boolean determining whether application is being debugged or not.
-  static const bool debugging = false;
-}
+import diamond.core.apptype;
 
 static if (debugging)
 {
