@@ -75,4 +75,37 @@ public
     /// Boolean determining whether application is being debugged or not.
     static const bool debugging = false;
   }
+
+  version (Diamond_DDBC_MSSQL)
+  {
+    /// Boolean determining whether the application has support for Microsoft's sql server.
+    static const bool hasMsSql = true;
+  }
+  else
+  {
+    /// Boolean determining whether the application has support for Microsoft's sql server.
+    static const bool hasMsSql = false;
+  }
+
+  version (Diamond_DDBC_PostgreSQL)
+  {
+    /// Boolean determining whether the application has support for postgreSQL.
+    static const bool hasPostgreSql = true;
+  }
+  else
+  {
+    /// Boolean determining whether the application has support for postgreSQL.
+    static const bool hasPostgreSql = false;
+  }
+
+  version (Diamond_DDBC_Sqlite)
+  {
+    /// Boolean determining whether the application has support for sqlite.
+    static const bool hasSqlite = true;
+  }
+  else
+  {
+    /// Boolean determining whether the application has support for sqlite.
+    static const bool hasSqlite = false;
+  }
 }

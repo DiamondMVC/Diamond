@@ -7,6 +7,8 @@ module diamond.database;
 
 import std.variant : Variant;
 
+import diamond.core.apptype;
+
 public
 {
   import std.datetime : Date, DateTime, Clock, SysTime;
@@ -15,6 +17,12 @@ public
 
   import diamond.data.mapping.engines.mysql;
   import MySql = diamond.data.mapping.engines.mysql;
+
+  static if (hasMsSql)
+  {
+    import diamond.data.mapping.engines.mssql;
+    import MsSql = diamond.data.mapping.engines.mssql;
+  }
 
   /// A variant db parameter type.
   alias DbParam = Variant;

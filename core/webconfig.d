@@ -90,7 +90,9 @@ static if (isWeb)
   final class WebDbConnections
   {
     @optional WebDbConnectionConfig[string] mysql;
+    @optional WebDbConnectionConfig[string] mssql;
     @optional WebDbConnectionConfig[string] postgresql;
+    @optional WebDbConnectionConfig[string] sqlite;
   }
 
   /// Wrapper around a db connection configuration.
