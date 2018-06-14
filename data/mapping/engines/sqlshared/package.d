@@ -55,78 +55,86 @@ mixin template CreatePool(TPool, string extraParams = "")
 *   params =         The params.
 *   transformedSql = The newly transformed sql.
 * Returns:
-*   The raw db parameters.
+*   The raw db parameters, iff keepParameters is false.
 */
-package(diamond.data.mapping.engines) DbParam[] prepareSql(string sql, DbParam[string] params, out string transformedSql)
+package(diamond.data.mapping.engines) auto prepareSql(bool keepParameters = false)(string sql, DbParam[string] params, out string transformedSql)
 {
   transformedSql = "";
-  string paramName = "";
-  bool selectParam = false;
-  DbParam[] sqlParams;
 
-  foreach (i; 0 .. sql.length)
+  static if (keepParameters)
   {
-    auto c = sql[i];
+    return params;
+  }
+  else
+  {
+    string paramName = "";
+    bool selectParam = false;
+    DbParam[] sqlParams;
 
-    if (c == 13) continue;
-
-    bool isEnd = i == (sql.length - 1);
-
-    if (c == '@')
+    foreach (i; 0 .. sql.length)
     {
-      paramName = "";
-      selectParam = true;
-    }
-    else if (selectParam && (
-      c == ';' || c == '=' ||
-      c == '+' || c == '-' ||
-      c == 9 || c == 13 ||
-      c == 10 || c == ' ' ||
-      c == 0 || c == '|' ||
-      c == '.' || c == '/' ||
-      c == '*' || c == '(' ||
-      c == ')' || c == '[' ||
-      c == ']' || c == ',' ||
-      c == '`' || c == 39
-    ))
-    {
-      if (paramName == "table")
+      auto c = sql[i];
+
+      if (c == 13) continue;
+
+      bool isEnd = i == (sql.length - 1);
+
+      if (c == '@')
       {
-        transformedSql ~= params[paramName].get!string ~ to!string(c);
-        selectParam = false;
         paramName = "";
+        selectParam = true;
       }
-      else
-      {
-        sqlParams ~= params[paramName];
-        transformedSql ~= "?" ~ c;
-
-        selectParam = false;
-        paramName = "";
-      }
-    }
-    else if (selectParam)
-    {
-      paramName ~= c;
-
-      if (isEnd)
+      else if (selectParam && (
+        c == ';' || c == '=' ||
+        c == '+' || c == '-' ||
+        c == 9 || c == 13 ||
+        c == 10 || c == ' ' ||
+        c == 0 || c == '|' ||
+        c == '.' || c == '/' ||
+        c == '*' || c == '(' ||
+        c == ')' || c == '[' ||
+        c == ']' || c == ',' ||
+        c == '`' || c == 39
+      ))
       {
         if (paramName == "table")
         {
           transformedSql ~= params[paramName].get!string ~ to!string(c);
+          selectParam = false;
+          paramName = "";
         }
         else
         {
           sqlParams ~= params[paramName];
-          transformedSql ~= "?";
+          transformedSql ~= "?" ~ c;
+
+          selectParam = false;
+          paramName = "";
         }
       }
-    }
-    else
-    {
-      transformedSql ~= c;
-    }
-  }
+      else if (selectParam)
+      {
+        paramName ~= c;
 
-  return sqlParams;
+        if (isEnd)
+        {
+          if (paramName == "table")
+          {
+            transformedSql ~= params[paramName].get!string ~ to!string(c);
+          }
+          else
+          {
+            sqlParams ~= params[paramName];
+            transformedSql ~= "?";
+          }
+        }
+      }
+      else
+      {
+        transformedSql ~= c;
+      }
+    }
+
+    return sqlParams;
+  }
 }

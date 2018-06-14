@@ -50,6 +50,12 @@ static if (isWeb)
       initializeMongo(webConfig.mongoDb.host, webConfig.mongoDb.port);
     }
 
+    static if (hasMsSql)
+    {
+      import diamond.data.mapping.engines.mssql : initializeMsSql;
+      initializeMsSql();
+    }
+
     setDetaulfPermissions();
 
     loadWhiteListPaths();
