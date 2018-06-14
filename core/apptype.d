@@ -76,10 +76,21 @@ public
     static const bool debugging = false;
   }
 
+  version (USE_ODBC)
+  {
+    /// Boolean determining whether the application has support for ODBC through DDBC.
+    static const bool hasDDBC_ODBC = true;
+  }
+  else
+  {
+    /// Boolean determining whether the application has support for ODBC through DDBC.
+    static const bool hasDDBC_ODBC = false;
+  }
+
   version (Diamond_DDBC_MSSQL)
   {
     /// Boolean determining whether the application has support for Microsoft's sql server.
-    static const bool hasMsSql = true;
+    static const bool hasMsSql = hasDDBC_ODBC;
   }
   else
   {

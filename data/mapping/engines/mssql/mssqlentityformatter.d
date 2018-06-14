@@ -71,13 +71,13 @@ static if (hasMsSql)
 
         static foreach (memberLocal,memberRemote; relationship.members)
         {
-          mixin("whereClause ~= \"`" ~ memberRemote ~ "` = @" ~ memberLocal ~ "\";");
+          mixin("whereClause ~= \"[" ~ memberRemote ~ "] = ?\";");
           mixin("params[\"" ~ memberLocal ~ "\"] = model." ~ memberLocal ~ ";");
         }
 
         import std.array : join;
 
-        model.%1$s = (getMsSqlAdapter!%3$s).readMany("SELECT * FROM `@table` WHERE " ~ whereClause.join(" AND "), params);
+        model.%1$s = (getMsSqlAdapter!%3$s).readMany("SELECT * FROM [@table] WHERE " ~ whereClause.join(" AND "), params);
       }
     };
 
@@ -263,7 +263,7 @@ static if (hasMsSql)
         return "";
       }
 
-      return s.format(TModel.table, columns.join(","), columns.map!(c => "@" ~ c).array.join(","), columns.length, paramsInserts.join("\r\n"), execution);
+      return s.format(TModel.table, columns.join(","), columns.map!(c => "?").array.join(","), columns.length, paramsInserts.join("\r\n"), execution);
     }
 
     /// Generates the update mixin.
@@ -273,7 +273,7 @@ static if (hasMsSql)
 
       string s = q{
         {
-          static const sql = "UPDATE [%s] SET %s WHERE [%s] = @%s";
+          static const sql = "UPDATE [%s] SET %s WHERE [%s] = ?";
           auto params = getParams(%s);
 
           size_t index;
@@ -366,7 +366,7 @@ static if (hasMsSql)
         return "";
       }
 
-      return s.format(TModel.table, columns.join(","), idName, idName, (columns.length + 1), paramsUpdates.join("\r\n"), idParams);
+      return s.format(TModel.table, columns.join(","), idName, (columns.length + 1), paramsUpdates.join("\r\n"), idParams);
     }
 
     /// Generates the delete mixin.
@@ -376,7 +376,7 @@ static if (hasMsSql)
 
       string s = q{
         {
-          static const sql = "DELETE FROM [%s] WHERE [%s] = @%s";
+          static const sql = "DELETE FROM [%s] WHERE [%s] = ?";
           auto params = getParams(1);
 
           %s
@@ -406,7 +406,7 @@ static if (hasMsSql)
         }
       }
 
-      return s.format(TModel.table, idName, idName, idParams);
+      return s.format(TModel.table, idName, idParams);
     }
 
     /// Generates the read relationship mixin.

@@ -13,6 +13,8 @@ static if (hasMsSql)
   import std.algorithm : map;
   import std.array : array;
 
+  import ddbc;
+
   import diamond.data.mapping.engines.sqlshared;
   import diamond.data.mapping.engines.mssql.mssqlmodel;
   import diamond.database : DbParam;
@@ -22,34 +24,53 @@ static if (hasMsSql)
   private enum MsSqlConnectionNamedParametersSetup = q{
     auto useDbConnectionString = connectionString ? connectionString : super.connectionString;
 
-    // Prepare statement
-    // string newSql;
-    // DbParam[] newParams = null;
-    // if (params)
-    // {
-    //   newParams = prepareSql(query, params, newSql);
-    // }
-    // else
-    // {
-    //   newSql = query;
-    // }
+    string newSql;
+    DbParam[] newParams = null;
+    if (params)
+    {
+      newParams = prepareSql(query, params, newSql);
+    }
+    else
+    {
+      newSql = query;
+    }
 
-    // auto pool = getPool(useDbConnectionString);
-    // auto connection = pool.lockConnection();
-    // auto prepared = connection.prepare(newSql);
-    //
-    // prepared.setArgs(newParams ? newParams : new DbParam[0]);
+    Connection connection = createConnection(useDbConnectionString);
+
+    scope (exit) connection.close();
+
+    PreparedStatement statement = connection.prepareStatement(query);
+
+    scope (exit) statement.close();
+
+    if (newParams)
+    {
+      foreach (i; 0 .. newParams.length)
+      {
+        statement.setVariant(i, newParams[i]);
+      }
+    }
   };
 
   /// CTFE string for mixin MsSql connection setup.
   private enum MsSqlConnectionSetup = q{
     auto useDbConnectionString = connectionString ? connectionString : super.connectionString;
 
-    // auto pool = getPool(useDbConnectionString);
-    // auto connection = pool.lockConnection();
-    // auto prepared = connection.prepare(query);
-    //
-    // prepared.setArgs(params ? params : new DbParam[0]);
+    Connection connection = createConnection(useDbConnectionString);
+
+    scope (exit) connection.close();
+
+    PreparedStatement statement = connection.prepareStatement(query);
+
+    scope (exit) statement.close();
+
+    if (params)
+    {
+      foreach (i; 0 .. params.length)
+      {
+        statement.setVariant(i, params[i]);
+      }
+    }
   };
 
   /// Gets a mssql adapter based on a model.
@@ -65,6 +86,7 @@ static if (hasMsSql)
 
     @ignore static const string table = "";
 
+    ResultSet row;
     void readModel() { }
   }
 
@@ -111,7 +133,7 @@ static if (hasMsSql)
     {
       mixin(MsSqlConnectionNamedParametersSetup);
 
-      throw new Exception("Not implemented ...");
+      return cast(ulong)statement.executeUpdate();
     }
 
     /**
@@ -127,7 +149,7 @@ static if (hasMsSql)
     {
       mixin(MsSqlConnectionSetup);
 
-      throw new Exception("Not implemented ...");
+      return cast(ulong)statement.executeUpdate();
     }
 
     /**
@@ -173,11 +195,24 @@ static if (hasMsSql)
     */
     override TModel[] readMany(string query, DbParam[string] params, string connectionString = null)
     {
+      TModel[] models;
+
       params["table"] = TModel.table;
 
       mixin(MsSqlConnectionNamedParametersSetup);
 
-      throw new Exception("Not implemented ...");
+      auto result = statement.executeQuery();
+
+      while (result.next())
+      {
+        auto model = new TModel;
+        model.row = result;
+        model.readModel();
+
+        models ~= model;
+      }
+
+      return models;
     }
 
     /**
@@ -191,9 +226,22 @@ static if (hasMsSql)
     */
     override TModel[] readManyRaw(string query, DbParam[] params, string connectionString = null)
     {
+      TModel[] models;
+
       mixin(MsSqlConnectionSetup);
 
-      throw new Exception("Not implemented ...");
+      auto result = statement.executeQuery();
+
+      while (result.next())
+      {
+        auto model = new TModel;
+        model.row = result;
+        model.readModel();
+
+        models ~= model;
+      }
+
+      return models;
     }
 
     /**
@@ -211,7 +259,18 @@ static if (hasMsSql)
 
       mixin(MsSqlConnectionNamedParametersSetup);
 
-      throw new Exception("Not implemented ...");
+      auto result = statement.executeQuery();
+
+      auto model = TModel.init;
+
+      if (result.next())
+      {
+        model = new TModel;
+        model.row = result;
+        model.readModel();
+      }
+
+      return model;
     }
 
     /**
@@ -227,7 +286,18 @@ static if (hasMsSql)
     {
       mixin(MsSqlConnectionSetup);
 
-      throw new Exception("Not implemented ...");
+      auto result = statement.executeQuery();
+
+      auto model = TModel.init;
+
+      if (result.next())
+      {
+        model = new TModel;
+        model.row = result;
+        model.readModel();
+      }
+
+      return model;
     }
 
     protected:
@@ -274,7 +344,13 @@ static if (hasMsSql)
     */
     override Variant scalarInsertImpl(string query, DbParam[string] params, string connectionString = null)
     {
-      throw new Exception("Not implemented ...");
+      mixin(MsSqlConnectionNamedParametersSetup);
+
+      Variant id;
+
+      auto success = cast(bool)statement.executeUpdate(id);
+
+      return success ? id : Variant.init;
     }
 
     /**
@@ -288,7 +364,13 @@ static if (hasMsSql)
     */
     override Variant scalarInsertRawImpl(string query, DbParam[] params, string connectionString = null)
     {
-      throw new Exception("Not implemented ...");
+      mixin(MsSqlConnectionSetup);
+
+      Variant id;
+
+      auto success = cast(bool)statement.executeUpdate(id);
+
+      return success ? id : Variant.init;
     }
   }
 }

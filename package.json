@@ -6,7 +6,7 @@
 	],
 	"homepage": "http://diamondmvc.org/",
 	"license": "The MIT License (MIT)",
-	"copyright": "Copyright © 2016-2018 Jacob Jensen",
+	"copyright": "Copyright © 2016-2018 Diamond MVC",
 	"targetType": "sourceLibrary",
 	"sourcePaths": [
 		"authentication", "controllers", "core",
@@ -23,6 +23,10 @@
 		},
 		"mysql-native": {
 			"version": "~>2.2.1"
+		},
+		"ddbc": {
+			"version": "~master",
+			"optional": true
 		}
 	}
 }

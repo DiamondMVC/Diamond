@@ -108,6 +108,11 @@ static if (isWeb)
     string password;
     /// The database.
     @optional string database;
+
+    static if (hasMsSql)
+    {
+      string namedInstance;
+    }
   }
 
   /// Wrapper around a special route.

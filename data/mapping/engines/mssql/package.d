@@ -25,7 +25,7 @@ static if (hasMsSql)
   alias DbParam = Variant;
 
   /// The connection string format.
-  private enum connectionStringFormat = "mssql://%s:%s/%s?user=%s,password=%s,ssl=true";
+  private enum connectionStringFormat = "odbc://%s/%s/?user=%s,password=%s,driver=FreeTDS,database=%s";
 
   /// The db connection string.
   private static __gshared string _dbConnectionString;
@@ -61,9 +61,9 @@ static if (hasMsSql)
     }
 
     _dbConnectionString = connectionStringFormat.format(
-      dbConfig.host, dbConfig.port ? dbConfig.port : 1433,
-      dbConfig.database,
-      dbConfig.user, dbConfig.password
+      dbConfig.host, dbConfig.namedInstance,
+      dbConfig.user, dbConfig.password,
+      dbConfig.database
     );
 
     // _pools[_dbConnectionString] = new POOL_NAME(_dbConnectionString);
