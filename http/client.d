@@ -23,6 +23,7 @@ static if (isWeb)
   {
     import std.conv : to;
     import std.typecons : Nullable;
+    import std.array : Appender, appender;
 
     import vibe.d : HTTPServerRequest, HTTPServerResponse,
                     HTTPStatusException;
@@ -35,6 +36,7 @@ static if (isWeb)
     import diamond.http.routing;
     import diamond.http.privacy;
     import diamond.errors.checks;
+    import diamond.core.webconfig;
 
     private:
     /// The request.
@@ -64,8 +66,11 @@ static if (isWeb)
     /// Boolean determnining whether the client has been redirected or not.
     bool _redirected;
 
-    /// The data written to the response.
-    ubyte[] _data;
+    static if (loggingEnabled)
+    {
+      /// The data written to the response.
+      Appender!(ubyte[]) _data;
+    }
 
     /// the status code for the response.
     HttpStatus _statusCode;
@@ -99,6 +104,8 @@ static if (isWeb)
         addContext("__D_RAW_HTTP_CLIENT", this);
 
         _path = request.requestPath.toString();
+
+        _data = appender!(ubyte[]);
       }
     }
 
@@ -190,12 +197,17 @@ static if (isWeb)
       /// Gets the ip address.
       string ipAddress()
       {
-        if (_ipAddress)
+        if (!_ipAddress)
         {
-          return _ipAddress;
+          if (webConfig.ipHeader && webConfig.ipHeader.length)
+          {
+            _ipAddress = _response.headers[webConfig.ipHeader];
+          }
+          else
+          {
+            _ipAddress = _request.clientAddress.toAddressString();
+          }
         }
-
-        _ipAddress = _request.clientAddress.toAddressString();
 
         return _ipAddress;
       }
@@ -505,7 +517,7 @@ static if (isWeb)
       /// Gets the body data from the response stream.
       package(diamond) ubyte[] getBody()
       {
-        return _data;
+        return _data.data;
       }
     }
   }

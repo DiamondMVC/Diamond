@@ -60,6 +60,8 @@ static if (isWeb)
     @optional string sslCertificateFile;
     /// Configuration for the ssl private key file.
     @optional string sslPrivateKeyFile;
+    /// The http header that contains the client's ip. Useful when using reverse proxies.
+    @optional string ipHeader;
   }
 
   /// A web address.

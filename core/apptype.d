@@ -64,4 +64,15 @@ public
     /// Boolean determining whether the application uses a custom main or not.
     static const bool isCustomMain = false;
   }
+
+  version (Diamond_Debug)
+  {
+    /// Boolean determining whether application is being debugged or not.
+    static const bool debugging = true;
+  }
+  else
+  {
+    /// Boolean determining whether application is being debugged or not.
+    static const bool debugging = false;
+  }
 }

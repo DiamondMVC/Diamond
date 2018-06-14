@@ -223,6 +223,7 @@ static if (isWebServer || !isWeb)
       }
     }
 
+    /// Copies the view data.
     protected void copyViewData()
     {
       static if (isWebServer)
@@ -698,14 +699,27 @@ static if (isWebServer || !isWeb)
           );
         }
 
+        /// Enumeration of flash messages.
         enum FlashMessageType
         {
+          /// The flash message will always be displayed.
           always,
+          /// The flash message is shown once.
           showOnce,
+          /// THe flash message is shown once per guest.
           showOnceGuest,
+          /// The flash message is custom.
           custom
         }
 
+        /**
+        * Creates a flash message.
+        * Params:
+        *   identifier = The identifier of the flash message.
+        *   message =    The message to display.
+        *   type = The type of the flash message.
+        *   dispalyTime = The time to display the flash message. If the value is 0 then it's always shown.
+        */
         void flashMessage(string identifier, string message, FlashMessageType type, size_t displayTime = 0)
         {
           enforce(identifier && identifier.length, "No identifier specified.");
