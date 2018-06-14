@@ -199,19 +199,22 @@ static if (isWeb)
   /// Loads the static file handlers.
   void loadStaticFiles()
   {
-    foreach (staticFileRoute; webConfig.staticFileRoutes)
+    if (webConfig.staticFileRoutes && webConfig.staticFileRoutes.length)
     {
-      import std.algorithm : map, filter;
-      import std.path : baseName;
-      import std.file : dirEntries, SpanMode;
-
-      auto directoryNames = dirEntries(staticFileRoute, SpanMode.shallow)
-        .filter!(entry => !entry.isFile)
-        .map!(entry => baseName(entry.name));
-
-      foreach (directoryName; directoryNames)
+      foreach (staticFileRoute; webConfig.staticFileRoutes)
       {
-        _staticFiles[directoryName] = serveStaticFiles(staticFileRoute);
+        import std.algorithm : map, filter;
+        import std.path : baseName;
+        import std.file : dirEntries, SpanMode;
+
+        auto directoryNames = dirEntries(staticFileRoute, SpanMode.shallow)
+          .filter!(entry => !entry.isFile)
+          .map!(entry => baseName(entry.name));
+
+        foreach (directoryName; directoryNames)
+        {
+          _staticFiles[directoryName] = serveStaticFiles(staticFileRoute);
+        }
       }
     }
   }
@@ -410,20 +413,23 @@ static if (isWeb)
 
     handleHTTPPermissions(client);
 
-    auto staticFile = _staticFiles.get(client.route.name, null);
-
-    if (staticFile)
+    if (_staticFiles)
     {
-      import diamond.init.files;
-      handleStaticFiles(client, staticFile);
+      auto staticFile = _staticFiles.get(client.route.name, null);
 
-      static if (loggingEnabled)
+      if (staticFile)
       {
-        import diamond.core.logging;
+        import diamond.init.files;
+        handleStaticFiles(client, staticFile);
 
-        executeLog(LogType.staticFile, client);
+        static if (loggingEnabled)
+        {
+          import diamond.core.logging;
+
+          executeLog(LogType.staticFile, client);
+        }
+        return;
       }
-      return;
     }
 
     static if (isWebServer)

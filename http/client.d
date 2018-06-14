@@ -105,7 +105,10 @@ static if (isWeb)
 
         _path = request.requestPath.toString();
 
-        _data = appender!(ubyte[]);
+        static if (loggingEnabled)
+        {
+          _data = appender!(ubyte[]);
+        }
       }
     }
 
