@@ -1,11 +1,12 @@
 {
 	"name": "diamond",
-	"description": "Powerful MVC / Template Framework inspired by ASP.NET MVC using vibe.d as backend.",
+	"description": "Powerful Full-stack MVC web-framework using vibe.d",
 	"authors": [
 		"Jacob Jensen"
 	],
+	"homepage": "http://diamondmvc.org/",
 	"license": "The MIT License (MIT)",
-	"copyright": "Copyright © 2016-2017 Jacob Jensen",
+	"copyright": "Copyright © 2016-2018 Diamond MVC",
 	"targetType": "sourceLibrary",
 	"sourcePaths": [
 		"authentication", "controllers", "core",
@@ -18,10 +19,14 @@
 	],
 	"dependencies": {
 		"vibe-d": {
-			"version": "~>0.8.2"
+			"version": "~>0.8.3"
 		},
 		"mysql-native": {
-			"version": "~>2.1.0"
+			"version": "~>2.2.1"
+		},
+		"ddbc": {
+			"version": "~master",
+			"optional": true
 		}
 	}
 }

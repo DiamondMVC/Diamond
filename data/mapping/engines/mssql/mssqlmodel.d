@@ -34,8 +34,13 @@ static if (hasMsSql)
   class MsSqlModel(string tableName) : Model, IMsSqlModel
   {
     import models;
+    import ddbc;
 
     private:
+    /// The row.
+    ResultSet _row;
+    /// The index.
+    size_t _index;
 
     public:
     /// The name of the table associated with the mssql model.
@@ -69,7 +74,7 @@ static if (hasMsSql)
       T retrieve(T, bool nullable = false, bool isEnum = false)()
       {
         alias Column = Variant;
-        
+
         Column value = Column.init;
 
         static if (nullable && isEnum)
@@ -123,7 +128,14 @@ static if (hasMsSql)
 
       @property
       {
+        /// Gets the raw mssql row.
+        @ignore ResultSet row() @system { return _row; }
 
+        /// Sets the raw mssql row.
+        @ignore void row(ResultSet newRow)  @system
+        {
+          _row = newRow;
+        }
       }
     }
 
@@ -137,37 +149,61 @@ static if (hasMsSql)
     /// Retrieves a nullable enum value.
     Variant retrieveNullableEnumImpl()
     {
-      throw new Exception("Not implemented ...");
+      Variant value = void;
+
+      if (_row.isNull(_index))
+      {
+        value = Variant.init;
+      }
+      else
+      {
+        value = retrieveTextImpl();
+      }
+
+      return value;
     }
 
     /// Retrieves an enum value.
     Variant retrieveEnumImpl()
     {
-      throw new Exception("Not implemented ...");
+      Variant text = retrieveTextImpl();
+
+      return text;
     }
 
     /// Retrieves a nullable value.
     Variant retrieveNullableImpl()
     {
-      throw new Exception("Not implemented ...");
+      Variant value = void;
+
+      if (_row.isNull(_index))
+      {
+        value = Variant.init;
+      }
+      else
+      {
+        value = retrieveDefaultImpl();
+      }
+
+      return value;
     }
 
     /// Retrieves a boolean value.
     bool retrieveBoolImpl()
     {
-      throw new Exception("Not implemented ...");
+      return _row.getBoolean(_index);
     }
 
     /// Retrieves a text value.
     string retrieveTextImpl()
     {
-      throw new Exception("Not implemented ...");
+      return _row.getString(_index);
     }
 
     /// Retrieves any kind of value.
     Variant retrieveDefaultImpl()
     {
-      throw new Exception("Not implemented ...");
+      return _row.getVariant(_index);
     }
   }
 }
