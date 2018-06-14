@@ -17,7 +17,7 @@ static if (isWeb)
     /// The name of the web application.
     string name;
     /// The routes that are mapped to static files.
-    string[] staticFileRoutes;
+    @optional string[] staticFileRoutes;
     /// The paths to white-list for file-access/directory-access.
     @optional string[] whiteListPaths;
     /// A list of hosts that the server accepts.
@@ -25,7 +25,7 @@ static if (isWeb)
     /// The route that's mapped to the home page.
     string homeRoute;
     /// Boolean determining whether views can be accessed by their file name.
-    bool allowFileRoute;
+    @optional bool allowFileRoute;
     /// An array of addresses the web application is accessible by.
     WebAddress[] addresses;
     /// The default headers the web application uses.
