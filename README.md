@@ -49,7 +49,7 @@ Website: http://diamondmvc.org/
 |vibe.d|0.8.3|Used as the backend for Diamond's web applications.|
 |DMD/Phobos|2.072.2 - 2.077.0|The standard library of D and thus a required dependency.|
 |Mysql-native|2.2.1|A native wrapper for Mysql. It's a dependency, because of the MySql ORM.|
-|ddbc|X.X.X|A database wrapper in D to a lot of database systems. Diamond will be using it for PostgreSQL, SqlLite and MSSQL.|
+|ddbc|X.X.X|A database wrapper in D to a lot of database systems. Diamond will be using it for PostgreSQL, Sqlite and MSSQL.|
 
 ## Example (2.X.X)
 
