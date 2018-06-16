@@ -9,7 +9,7 @@ import diamond.core.apptype;
 
 static if (isWeb)
 {
-  class RouteException : Exception
+  final class RouteException : Exception
   {
     public:
     /**

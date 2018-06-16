@@ -10,7 +10,7 @@ import diamond.core.apptype;
 static if (isWebServer)
 {
   /// Exception thrown by a view.
-  class ViewException : Exception
+  final class ViewException : Exception
   {
     private:
     /// The view name.
@@ -47,7 +47,7 @@ static if (isWebServer)
   }
 
   /// Error thrown by a view.
-  class ViewError : Error
+  final class ViewError : Error
   {
     private:
     /// The view name.

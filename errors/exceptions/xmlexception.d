@@ -3,13 +3,13 @@
 * License: MIT (https://github.com/DiamondMVC/Diamond/blob/master/LICENSE)
 * Author: Jacob Jensen (bausshf)
 */
-module diamond.errors.exceptions.sensitivedataexception;
+module diamond.errors.exceptions.xmlexception;
 
-final class SensitiveDataException : Exception
+final class XmlException : Exception
 {
   public:
   /**
-  * Creates a new sensitive data exception.
+  * Creates a new xml exception.
   * Params:
   *   message =   The message.
   *   fn =        The file.
