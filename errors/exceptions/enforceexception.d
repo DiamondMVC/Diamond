@@ -10,7 +10,7 @@ import diamond.core.apptype;
 static if (debugging)
 {
   /// Error wrapper for enforcements.
-  class EnforceError : Error
+  final class EnforceError : Error
   {
     /**
     * Creates a new enforcement error.
@@ -29,7 +29,7 @@ static if (debugging)
 else
 {
     /// Exception wrapper for enforcements.
-    class EnforceException : Exception
+    final class EnforceException : Exception
     {
       /**
       * Creates a new enforcement exception.

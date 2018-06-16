@@ -9,7 +9,7 @@ import diamond.core.apptype;
 
 static if (isWeb)
 {
-  class FileSecurityException : Exception
+  final class FileSecurityException : Exception
   {
     public:
     /**
