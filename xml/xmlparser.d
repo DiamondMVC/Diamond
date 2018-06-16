@@ -172,6 +172,21 @@ package(diamond.xml) XmlNode[] parseXmlElements(string xml, XmlDocument document
     {
       continue;
     }
+    else if (currentNode && current == '/' && next == '>')
+    {
+      i++;
+
+      if (currentNode.parent)
+      {
+        currentNode.parent.addChild(currentNode);
+      }
+      else
+      {
+        elements ~= currentNode;
+      }
+
+      currentNode = currentNode.parent;
+    }
     else if (current == '>')
     {
       if (currentNode && last == '/')
@@ -219,11 +234,17 @@ package(diamond.xml) XmlNode[] parseXmlElements(string xml, XmlDocument document
           next =  i < (xml.length - 1) ? xml[i + 1] : '\0';
         }
 
-        if (current.isWhite || current == '>')
+        if (current.isWhite || current == '>' || current == '/')
         {
           if (current == '>')
           {
             evaluated = true;
+          }
+
+          if (current == '/')
+          {
+            evaluated = true;
+            i--;
           }
           break;
         }

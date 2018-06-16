@@ -15,7 +15,7 @@ final class XmlException : Exception
   *   fn =        The file.
   *   ln =        The line.
   */
-  this(string message, string fn = __FILE__, size_t ln = __LINE__)
+  this(string message, string fn = __FILE__, size_t ln = __LINE__) @safe
   {
     super(message, fn, ln);
   }

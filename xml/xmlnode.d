@@ -7,6 +7,7 @@ module diamond.xml.xmlnode;
 
 import std.string : strip;
 
+import diamond.errors.checks;
 import diamond.xml.xmlattribute;
 import diamond.xml.xmldocument;
 import diamond.xml.xmlexception;
@@ -57,6 +58,8 @@ final class XmlNode
     /// Sets the name of the node.
     void name(string newName) @safe
     {
+      enforce(newName !is null, "The name cannot be null.");
+
       _name = newName.strip();
     }
 
@@ -79,7 +82,7 @@ final class XmlNode
 
         _children = elements;
       }
-      else
+      else if (newText)
       {
         _text = newText.strip();
         _children = null;
@@ -89,6 +92,8 @@ final class XmlNode
     /// Sets the raw text of the node.
     package(diamond.xml) void rawText(string text) @safe
     {
+      enforce(text !is null, "There must be a text specified.");
+
       _text = text.strip();
     }
 
@@ -122,6 +127,8 @@ final class XmlNode
   */
   void addAttribute(string name, string value) @safe
   {
+    enforce(name !is null, "The name cannot be null.");
+
     name = name.strip();
 
     _attributes[name] = new XmlAttribute(name, value);
@@ -134,6 +141,11 @@ final class XmlNode
   */
   void removeAttribute(string name) @safe
   {
+    if (!name)
+    {
+      return;
+    }
+
     name = name.strip();
 
     _attributes.remove(name);
@@ -148,6 +160,11 @@ final class XmlNode
   */
   XmlAttribute getAttribute(string name) @safe
   {
+    if (!name)
+    {
+      return null;
+    }
+
     name = name.strip();
 
     return _attributes.get(name, null);
@@ -162,6 +179,11 @@ final class XmlNode
   */
   bool hasAttribute(string name) @trusted
   {
+    if (!name)
+    {
+      return false;
+    }
+
     name = name.strip();
 
     return cast(bool)(name in _attributes);
@@ -201,6 +223,8 @@ final class XmlNode
   */
   XmlNode[] getByTagName(string tagName, bool searchChildren = false) @safe
   {
+    enforce(tagName !is null, "The tag cannot be null.");
+
     XmlNode[] elements;
 
     tagName = tagName.strip();
@@ -232,6 +256,9 @@ final class XmlNode
   */
   XmlNode[] getByAttribute(string name, string value, bool searchChildren = false) @safe
   {
+    enforce(name !is null, "The name cannot be null.");
+    enforce(value !is null, "The value cannot be null.");
+
     XmlNode[] elements;
 
     name = name.strip();
@@ -265,6 +292,8 @@ final class XmlNode
   */
   XmlNode[] getByAttributeName(string name, bool searchChildren = false) @safe
   {
+    enforce(name !is null, "The name cannot be null.");
+
     XmlNode[] elements;
 
     name = name.strip();
@@ -326,9 +355,13 @@ final class XmlNode
 
       return result;
     }
+    else if (_text)
+    {
+      return "%s<%s%s>%s</%s>\r\n".format(tabs, _name, attributes, _text, _name);
+    }
     else
     {
-      return "%s<%s%s>%s</%s>\r\n".format(tabs, _name, attributes, _text ? _text : "", _name);
+      return "%s<%s%s />\r\n".format(tabs, _name, attributes);
     }
   }
 
