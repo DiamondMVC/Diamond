@@ -7,6 +7,8 @@ module diamond.xml.xmlattribute;
 
 import std.string : strip;
 
+import diamond.errors.checks;
+
 /// An XML attribute.
 final class XmlAttribute
 {
@@ -25,8 +27,10 @@ final class XmlAttribute
   */
   this(string name, string value) @safe
   {
-    _name = name;
-    _value = value;
+    enforce(name !is null, "The name cannot be null.");
+
+    _name = name.strip();
+    _value = value ? value.strip() : null;
   }
 
   @property
@@ -37,6 +41,8 @@ final class XmlAttribute
     /// Sets the name of the attribute.
     void name(string newName) @safe
     {
+      enforce(name !is null, "The name cannot be null.");
+
       _name = newName.strip();
     }
 
@@ -46,7 +52,7 @@ final class XmlAttribute
     /// Sets the value of the attribute.
     void value(string newValue) @safe
     {
-      _value = newValue.strip();
+      _value = newValue ? newValue.strip() : null;
     }
   }
 }
