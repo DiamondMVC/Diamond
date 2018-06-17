@@ -15,7 +15,7 @@ import diamond.errors.exceptions : EnforceException;
 * Returns:
 *   The value of the input.
 */
-T enforceInput(T)(T value, lazy string message = null)
+T enforceInput(T)(T value, lazy string message = null) @trusted
 if (is(typeof({ if (!value) {} })))
 {
   if (!value)
@@ -32,7 +32,7 @@ if (is(typeof({ if (!value) {} })))
 *   value =    The value.
 *   message =  A given message when the value is undefined.
 */
-void enforce(T)(T value, lazy string message = null)
+void enforce(T)(T value, lazy string message = null) @trusted
 if (is(typeof({ if (!value) {} })))
 {
   if (!value)

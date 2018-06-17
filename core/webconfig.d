@@ -62,6 +62,21 @@ static if (isWeb)
     @optional string sslPrivateKeyFile;
     /// The http header that contains the client's ip. Useful when using reverse proxies.
     @optional string ipHeader;
+    /// Collection of webservices.
+    @optional WebService[] webservices;
+  }
+
+  /// Wrapper around a webservice.
+  final class WebService
+  {
+    /// The name of the webservice.
+    string name;
+
+    /// The wsdl of the webservice.
+    string wsdl;
+
+    /// The module name of the webservice.
+    string moduleName;
   }
 
   /// A web address.
