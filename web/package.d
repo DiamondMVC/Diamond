@@ -9,4 +9,5 @@ public
 {
   import diamond.web.elements;
   import diamond.web.file;
+  import diamond.web.soap;
 }

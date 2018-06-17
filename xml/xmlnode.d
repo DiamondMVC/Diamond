@@ -6,6 +6,8 @@
 module diamond.xml.xmlnode;
 
 import std.string : strip;
+import std.algorithm : filter;
+import std.array : array;
 
 import diamond.errors.checks;
 import diamond.xml.xmlattribute;
@@ -225,6 +227,11 @@ final class XmlNode
   {
     enforce(tagName !is null, "The tag cannot be null.");
 
+    if (!searchChildren)
+    {
+      return _children ? (() @trusted { return _children.filter!(c => c.name == tagName).array; })() : [];
+    }
+
     XmlNode[] elements;
 
     tagName = tagName.strip();
@@ -242,7 +249,7 @@ final class XmlNode
       }
     }
 
-    return elements;
+    return elements ? elements : [];
   }
 
   /**

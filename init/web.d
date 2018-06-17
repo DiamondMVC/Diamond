@@ -41,6 +41,31 @@ static if (isWeb)
   {
     loadWebConfig();
 
+    if (webConfig.webservices && webConfig.webservices.length)
+    {
+      bool missingSoapDefinitions;
+
+      foreach (service; webConfig.webservices)
+      {
+        import std.file : exists;
+
+        if (!exists("__services/" ~ service.name ~ ".d"))
+        {
+          missingSoapDefinitions = true;
+
+          import diamond.web.soap;
+          loadSoapDefinition(service.name, service.wsdl, service.moduleName);
+        }
+      }
+
+      if (missingSoapDefinitions)
+      {
+        import diamond.io;
+        print("Must recompile the project, because of missing soap definitions.");
+      //  throw new InitializationError("Must recompile the project, because of missing soap definitions.");
+      }
+    }
+
     import diamond.data.mapping.engines.mysql : initializeMySql;
     initializeMySql();
 
