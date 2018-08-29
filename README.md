@@ -1,6 +1,6 @@
 # Diamond
 
-[![DONATE](https://img.shields.io/badge/Support%20Diamond-Donate-brightgreen.svg)](http://diamondmvc.org/donate)
+[![DONATE](https://img.shields.io/badge/Support%20Diamond-Donate-brightgreen.svg)](https://diamondmvc.org/donate)
 [![OS](https://img.shields.io/badge/os-windows%20%7C%20linux%20%7C%20macos-ff69b4.svg)](http://code.dlang.org/packages/diamond)
 [![LOC](https://img.shields.io/badge/lines--of--code-12000%2B%20%7C%2020000%2B-yellow.svg)](http://code.dlang.org/packages/diamond)
 [![Dub version](https://img.shields.io/dub/v/diamond.svg)](http://code.dlang.org/packages/diamond)
@@ -11,7 +11,7 @@ Diamond is a powerful full-stack web-framework written in the [D Programming Lan
 
 Diamond can be used to write powerful websites, webapis or as stand-alone as a template parser.
 
-Website: http://diamondmvc.org/
+Website: https://diamondmvc.org/
 
 ## Key-Features
 
@@ -260,7 +260,7 @@ See: http://diamondmvc.org/docs/views/#syntax
 
 ## Installing (Web)
 
-See: http://diamondmvc.org/download
+See: https://diamondmvc.org/download
 
 ## Installing (Standalone)
 
@@ -268,7 +268,7 @@ Not supported since 3.0.0
 
 ## Contributing
 
-See: http://diamondmvc.org/contribute
+See: https://diamondmvc.org/contribute
 
 ## Version & Branch Support
 
