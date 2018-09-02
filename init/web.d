@@ -260,7 +260,7 @@ static if (isWeb)
       {
         loadServer(ipAddresses, 443);
       }
-      else
+      else if (port == 443)
       {
         settings.tlsContext = createTLSContext(TLSContextKind.server);
         settings.tlsContext.useCertificateChainFile(webConfig.sslCertificateFile);
@@ -309,7 +309,14 @@ static if (isWeb)
 
     handleWebSockets(router);
 
-    router.any("*", &handleHTTPListen);
+    if (port == 443)
+    {
+      router.any("*", &handleHTTPSListen);
+    }
+    else
+    {
+      router.any("*", &handleHTTPListen);
+    }
 
     listenHTTP(settings, router);
   }
@@ -322,10 +329,38 @@ static if (isWeb)
   */
   void handleHTTPListen(HTTPServerRequest request, HTTPServerResponse response)
   {
+    handleHTTPListenWorker(request, response, false);
+  }
+
+  /**
+  * Handler for https requests.
+  * Params:
+  *   request =   The http request.
+  *   response =  The http response.
+  */
+  void handleHTTPSListen(HTTPServerRequest request, HTTPServerResponse response)
+  {
+    handleHTTPListenWorker(request, response, true);
+  }
+
+  /**
+  * Handler for http requests.
+  * Params:
+  *   request =   The http request.
+  *   response =  The http response.
+  */
+  void handleHTTPListenWorker(HTTPServerRequest request, HTTPServerResponse response, bool isSSL)
+  {
     auto client = new HttpClient(request, response);
 
     try
     {
+      if (!isSSL && webConfig.forceSSLUrl && webConfig.forceSSLUrl.length)
+      {
+        client.redirect(webConfig.forceSSLUrl);
+        return;
+      }
+
       import std.algorithm : canFind;
 
       if (webConfig.hostWhiteList && !webConfig.hostWhiteList.canFind(client.host))
