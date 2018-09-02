@@ -59,8 +59,9 @@ void remoteJson(T, CTORARGS...)
 (
   string url,
   HttpMethod method,
-  scope void delegate(T) responder = null,
-  scope void delegate(scope HTTPClientRequest) requester = null,
+  scope void delegate(T) responder,
+  scope void delegate(scope HTTPClientRequest) requester,
+  CTORARGS args
 )
 {
   return fetchRemote

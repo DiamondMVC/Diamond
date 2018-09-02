@@ -64,6 +64,10 @@ static if (isWeb)
     @optional string ipHeader;
     /// Collection of webservices.
     @optional WebService[] webservices;
+    /// An associative array of custom configurations;
+    @optional string[string] customConfig;
+    /// String of an url to redirect all connections that aren't ssl to.
+    @optional string forceSSLUrl;
   }
 
   /// Wrapper around a webservice.
