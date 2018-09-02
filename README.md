@@ -252,11 +252,11 @@ final class Home
 
 ## FAQ
 
-See: http://diamondmvc.org/faq
+See: https://diamondmvc.org/faq
 
 ### Are there any syntax guide-lines?
 
-See: http://diamondmvc.org/docs/views/#syntax
+See: https://diamondmvc.org/docs/views/#syntax
 
 ## Installing (Web)
 
