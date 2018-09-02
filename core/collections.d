@@ -18,6 +18,20 @@ final class HashSet(T)
   this() { }
 
   /**
+  * Creates a new hash set from a sequence of elements.
+  */
+  this(T[] elements)
+  {
+    if (elements && elements.length)
+    {
+      foreach (element; elements)
+      {
+        _set[element] = 0;
+      }
+    }
+  }
+
+  /**
   * Adds a value to the hash set.
   * Params:
   *   value = The value added to the hash set.
