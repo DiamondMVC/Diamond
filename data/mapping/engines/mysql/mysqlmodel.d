@@ -6,6 +6,8 @@
 module diamond.data.mapping.engines.mysql.mysqlmodel;
 
 import std.variant : Variant;
+alias Column = Variant;
+
 import std.traits : hasUDA, isSomeString, OriginalType;
 import std.string : format;
 

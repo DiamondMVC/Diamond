@@ -217,7 +217,7 @@ final class MySqlEntityFormatter(TModel) : SqlEntityFormatter!TModel
 
     if (!columns || !columns.length)
     {
-      return "";
+      return "null";
     }
 
     {
@@ -256,7 +256,7 @@ final class MySqlEntityFormatter(TModel) : SqlEntityFormatter!TModel
 
     if (!paramsInserts || !paramsInserts.length)
     {
-      return "";
+      return "null";
     }
 
     return s.format(TModel.table, columns.join(","), columns.map!(c => "?").array.join(","), columns.length, paramsInserts.join("\r\n"), execution);
@@ -302,7 +302,7 @@ final class MySqlEntityFormatter(TModel) : SqlEntityFormatter!TModel
 
     if (!columns || !columns.length)
     {
-      return "";
+      return "null";
     }
 
     {
@@ -319,7 +319,7 @@ final class MySqlEntityFormatter(TModel) : SqlEntityFormatter!TModel
 
       if (!idName)
       {
-        return "";
+        return "null";
       }
     }
 
@@ -359,7 +359,7 @@ final class MySqlEntityFormatter(TModel) : SqlEntityFormatter!TModel
 
     if (!paramsUpdates || !paramsUpdates.length)
     {
-      return "";
+      return "null";
     }
 
     return s.format(TModel.table, columns.join(","), idName, (columns.length + 1), paramsUpdates.join("\r\n"), idParams);
@@ -398,7 +398,7 @@ final class MySqlEntityFormatter(TModel) : SqlEntityFormatter!TModel
 
       if (!idName)
       {
-        return "";
+        return "null";
       }
     }
 
