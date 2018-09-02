@@ -5,7 +5,7 @@
 */
 module diamond.xml.xmlattribute;
 
-import std.string : strip;
+import std.string : strip, toLower;
 
 import diamond.errors.checks;
 
@@ -29,7 +29,7 @@ final class XmlAttribute
   {
     enforce(name !is null, "The name cannot be null.");
 
-    _name = name.strip();
+    _name = name.strip().toLower();
     _value = value ? value.strip() : null;
   }
 
@@ -43,7 +43,7 @@ final class XmlAttribute
     {
       enforce(name !is null, "The name cannot be null.");
 
-      _name = newName.strip();
+      _name = newName.strip().toLower();
     }
 
     /// Gets the value of the attribute.

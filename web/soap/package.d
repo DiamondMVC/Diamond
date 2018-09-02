@@ -14,4 +14,8 @@ public
   import diamond.web.soap.element;
   import diamond.web.soap.simpletype;
   import diamond.web.soap.envelopetype;
+  import diamond.web.soap.aliastype;
+  import diamond.web.soap.message;
+  import diamond.web.soap.parameter;
+  import diamond.web.soap.binding;
 }

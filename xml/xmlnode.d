@@ -5,7 +5,7 @@
 */
 module diamond.xml.xmlnode;
 
-import std.string : strip;
+import std.string : strip, toLower;
 import std.algorithm : filter;
 import std.array : array;
 
@@ -131,7 +131,7 @@ final class XmlNode
   {
     enforce(name !is null, "The name cannot be null.");
 
-    name = name.strip();
+    name = name.strip().toLower();
 
     _attributes[name] = new XmlAttribute(name, value);
   }
@@ -148,7 +148,7 @@ final class XmlNode
       return;
     }
 
-    name = name.strip();
+    name = name.strip().toLower();
 
     _attributes.remove(name);
   }
@@ -167,7 +167,7 @@ final class XmlNode
       return null;
     }
 
-    name = name.strip();
+    name = name.strip().toLower();
 
     return _attributes.get(name, null);
   }
@@ -186,7 +186,7 @@ final class XmlNode
       return false;
     }
 
-    name = name.strip();
+    name = name.strip().toLower();
 
     return cast(bool)(name in _attributes);
   }
@@ -229,16 +229,16 @@ final class XmlNode
 
     if (!searchChildren)
     {
-      return _children ? (() @trusted { return _children.filter!(c => c.name == tagName).array; })() : [];
+      return _children ? (() @trusted { return _children.filter!(c => c.name.toLower() == tagName.toLower()).array; })() : [];
     }
 
     XmlNode[] elements;
 
-    tagName = tagName.strip();
+    tagName = tagName.strip().toLower();
 
     foreach (child; _children)
     {
-      if (child.name == tagName)
+      if (child.name.toLower() == tagName)
       {
         elements ~= child;
       }
@@ -268,7 +268,7 @@ final class XmlNode
 
     XmlNode[] elements;
 
-    name = name.strip();
+    name = name.strip().toLower();
     value = value.strip();
 
     foreach (child; _children)
@@ -303,7 +303,7 @@ final class XmlNode
 
     XmlNode[] elements;
 
-    name = name.strip();
+    name = name.strip().toLower();
 
     foreach (child; _children)
     {

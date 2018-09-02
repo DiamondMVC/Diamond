@@ -85,4 +85,5 @@ public
     alias unsignedByte = ubyte;
 
   import diamond.web.soap.envelopetype;
+  import diamond.web.soap.binding;
 }
