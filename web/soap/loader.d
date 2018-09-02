@@ -41,7 +41,7 @@ package(diamond) void loadSoapDefinition(string name, string wsdl, string module
 
   auto document = parseXml(wsdl);
 
-  if (document.root.name != "definitions")
+  if (document.root.name != "definitions" && document.root.name != "wsdl:definitions" && document.root.name != "xs:definitions" && document.root.name != "xsd:definitions")
   {
     throw new SoapException("The wsdl file does not contain 'definitions' as root element.");
   }
