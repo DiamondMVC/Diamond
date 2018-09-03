@@ -24,6 +24,7 @@ package(diamond.web.soap) void parseWsdl(string name, string wsdl, XmlDocument d
   import diamond.web.soap.parser.messageparser;
   import diamond.web.soap.parser.porttypeparser;
   import diamond.web.soap.parser.bindingparser;
+  import diamond.web.soap.parser.serviceparser;
 
   auto types = document.root.getByTagName("types");
 
@@ -104,9 +105,14 @@ import diamond.web.soap.datatypes;
   SoapMessage[string] outputs;
   parseMessages(moduleName, new HashSet!string(typeNames), document.root, inputs, outputs);
 
-  wsdlResult ~= parsePortTypes(document.root, inputs, outputs);
+  import diamond.web.soap.messageoperation;
 
-  wsdlResult ~= parseBinding(document.root, inputs, outputs);
+  SoapMessageOperation[][string] messageOperations;
+  wsdlResult ~= parsePortTypes(document.root, inputs, outputs, messageOperations);
+
+  wsdlResult ~= parseBinding(document.root, messageOperations);
+
+  wsdlResult ~= parseServices(document.root);
 
   if (!exists("__services"))
   {
@@ -114,4 +120,5 @@ import diamond.web.soap.datatypes;
   }
 
   write("__services/" ~ name ~ ".d", wsdlResult);
+  write("__services/" ~ name ~ ".wsdl.xml", document.toString());
 }

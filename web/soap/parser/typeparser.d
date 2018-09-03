@@ -294,7 +294,7 @@ SoapElement parseElement(XmlNode elementNode)
 
   type = type.split(":")[1];
 
-  if ((elementNode.hasAttribute("minOccurs") || elementNode.hasAttribute("maxOccurs")) && type != "string")
+  if (elementNode.hasAttribute("maxOccurs") && elementNode.getAttribute("maxOccurs").value.strip().toLower() == "unbounded" && type != "string")
   {
     type ~= "[]";
   }

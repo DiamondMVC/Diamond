@@ -10,6 +10,7 @@ import std.string : format;
 
 import diamond.xml;
 import diamond.web.soap.message;
+import diamond.web.soap.messageoperation;
 import diamond.errors.exceptions.soapexception;
 
 package(diamond.web.soap.parser):
@@ -17,10 +18,9 @@ package(diamond.web.soap.parser):
 * Parses the bindings of the wsdl file.
 * Params:
 *   root =       The root node of the wsdl file.
-*   inputs =     The input messages.
-*   outputs =    The output messages.
+*   operations = The message operations.
 */
-string parseBinding(XmlNode root, SoapMessage[string] inputs, SoapMessage[string] outputs)
+string parseBinding(XmlNode root, SoapMessageOperation[][string] operations)
 {
   // TODO:
   /*
@@ -41,27 +41,13 @@ final class %s : SoapBinding, I%s
     super();
   }
 
-  import __stdtraits = std.traits;
-
-  static foreach (member; __traits(derivedMembers, I%s))
-  {
-    mixin
-    (
-      mixin("(__stdtraits.ReturnType!" ~ member ~ ").stringof") ~
-      " " ~
-      member ~
-      "(" ~
-        mixin("parameters!" ~ member) ~
-      ") { mixin SoapBindingMethod!(); mixin(executeSoapBinding()); }"
-    );
-  }
+%s
 }
   };
 
-  static const bindingOperationFormat = "\t%s %s(%s);";
+  static const bindingOperationFormat = "\t@SoapOperation(\"%s\") %s %s(%s) { mixin SoapBindingMethod!(); mixin(executeSoapBinding()); }\r\n";
 
-  string result = q{
-private string parameters(alias T)()
+/*private string parameters(alias T)()
 {
   import __stdtraits = std.traits;
   import std.array : join;
@@ -75,8 +61,9 @@ private string parameters(alias T)()
   }
 
   return result.join(",");
-}
+}*/
 
+  string result = q{
 private mixin template SoapBindingMethod()
 {
   string executeSoapBinding()
@@ -126,7 +113,35 @@ private mixin template SoapBindingMethod()
 
       auto typeName = type.value.split(":").length == 2 ? type.value.split(":")[1] : type.value;
 
-      result ~= bindingClassFormat.format(name.value, typeName, typeName);
+      auto bindingOperations = operations.get(typeName, null);
+
+      string operationsResult = "";
+
+      if (bindingOperations && bindingOperations.length)
+      {
+        foreach (bindingOperation; bindingOperations)
+        {
+          auto bindingOperationNodes = bindingType.getByAttribute("name", bindingOperation.name);
+          auto bindingOperationNode = bindingOperationNodes && bindingOperationNodes.length ? bindingOperationNodes[0] : null;
+
+          if (bindingOperationNode && (bindingOperationNode.name == "wsdl:operation" || bindingOperationNode.name == "xs:operation" || bindingOperationNode.name == "xsd:operation" || bindingOperationNode.name == "operation"))
+          {
+            auto soapOperations = bindingOperationNode.getByTagName("soap:operation");
+            auto soapOperation = soapOperations && soapOperations.length ? soapOperations[0] : null;
+
+            auto action = soapOperation && soapOperation.hasAttribute("soapAction") ? soapOperation.getAttribute("soapAction").value : bindingOperation.action;
+
+            if (!action)
+            {
+              action = "";
+            }
+
+            operationsResult ~= bindingOperationFormat.format(action, bindingOperation.returnType, bindingOperation.name, bindingOperation.parameters);
+          }
+        }
+      }
+
+      result ~= bindingClassFormat.format(name.value, typeName, operationsResult);
     }
   }
 
