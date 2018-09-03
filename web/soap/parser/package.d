@@ -12,4 +12,5 @@ public
   import diamond.web.soap.parser.messageparser;
   import diamond.web.soap.parser.porttypeparser;
   import diamond.web.soap.parser.bindingparser;
+  import diamond.web.soap.parser.serviceparser;
 }

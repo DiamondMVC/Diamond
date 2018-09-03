@@ -10,17 +10,19 @@ import std.string : format;
 
 import diamond.xml;
 import diamond.web.soap.message;
+import diamond.web.soap.messageoperation;
 import diamond.errors.exceptions.soapexception;
 
 package(diamond.web.soap.parser):
 /**
 * Parses the port types of the wsdl file.
 * Params:
-*   root =       The root node of the wsdl file.
-*   inputs =     The input messages.
-*   outputs =    The output messages.
+*   root =              The root node of the wsdl file.
+*   inputs =            The input messages.
+*   outputs =           The output messages.
+*   messageOperations = The message operations.
 */
-string parsePortTypes(XmlNode root, SoapMessage[string] inputs, SoapMessage[string] outputs)
+string parsePortTypes(XmlNode root, SoapMessage[string] inputs, SoapMessage[string] outputs, out SoapMessageOperation[][string] messageOperations)
 {
   static const portTypeInterfaceFormat = q{
 interface I%s
@@ -30,8 +32,8 @@ interface I%s
 }
   };
 
-  static const portTypeOperationFormat = "\t%s %s(%s);";
-  
+  static const portTypeOperationFormat = "\t@SoapAction(\"%s\") %s %s(%s);\r\n";
+
   string result = "";
 
   auto portTypes = root.getByTagName("wsdl:portType");
@@ -61,6 +63,8 @@ interface I%s
       {
         throw new SoapException("Missing name for portType.");
       }
+
+      SoapMessageOperation[] portMessageOperations;
 
       auto operations = portType.getByTagName("wsdl:operation");
 
@@ -162,29 +166,52 @@ interface I%s
             throw new SoapException("Missing output parameters.");
           }
 
-          auto outputAction = output.getAttribute("wsaw:action");
+          auto action = input.getAttribute("wsaw:action");
 
-          if (!outputAction)
+          if (!action)
           {
-            outputAction = output.getAttribute("wsdl:action");
+            action = input.getAttribute("wsdl:action");
           }
 
-          if (!outputAction)
+          if (!action)
           {
-            outputAction = output.getAttribute("xs:action");
+            action = input.getAttribute("xs:action");
           }
 
-          if (!outputAction)
+          if (!action)
           {
-            outputAction = output.getAttribute("xsd:action");
+            action = input.getAttribute("xsd:action");
           }
 
-          if (!outputAction)
+          if (!action)
           {
-            outputAction = output.getAttribute("action");
+            action = input.getAttribute("action");
           }
 
-          // TODO: something with the action which is the url to execute the method at.
+          if (!action)
+          {
+            action = output.getAttribute("wsaw:action");
+          }
+
+          if (!action)
+          {
+            action = output.getAttribute("wsdl:action");
+          }
+
+          if (!action)
+          {
+            action = output.getAttribute("xs:action");
+          }
+
+          if (!action)
+          {
+            action = output.getAttribute("xsd:action");
+          }
+
+          if (!action)
+          {
+            action = output.getAttribute("action");
+          }
 
           auto returnType = outputParameters.output.type;
 
@@ -198,8 +225,17 @@ interface I%s
             }
           }
 
-          operationsResult ~= portTypeOperationFormat.format(returnType, operationName.value, parameters ? parameters.join(",") : "");
+          auto portMessageOperation = new SoapMessageOperation(action ? action.value : "", operationName.value, returnType,  parameters ? parameters.join(",") : "");
+
+          portMessageOperations ~= portMessageOperation;
+
+          operationsResult ~= portTypeOperationFormat.format(portMessageOperation.action, portMessageOperation.returnType, portMessageOperation.name, portMessageOperation.parameters);
         }
+      }
+
+      if (portMessageOperations)
+      {
+        messageOperations[name.value] = portMessageOperations;
       }
 
       result ~= portTypeInterfaceFormat.format(name.value, operationsResult ? operationsResult.join("\r\n") : "");

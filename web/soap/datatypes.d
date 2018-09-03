@@ -86,4 +86,5 @@ public
 
   import diamond.web.soap.envelopetype;
   import diamond.web.soap.binding;
+  import diamond.web.soap.attributes;
 }

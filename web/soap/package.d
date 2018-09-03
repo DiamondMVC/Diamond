@@ -18,4 +18,6 @@ public
   import diamond.web.soap.message;
   import diamond.web.soap.parameter;
   import diamond.web.soap.binding;
+  import diamond.web.soap.messageoperation;
+  import diamond.web.soap.attributes;
 }
