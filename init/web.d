@@ -373,6 +373,38 @@ static if (isWeb)
         return;
       }
 
+      static if (loggingEnabled)
+      {
+        import diamond.core.logging;
+        executeLog(LogType.before, client);
+      }
+
+      static if (isTesting)
+      {
+        if (!testsPassed || client.ipAddress != "127.0.0.1")
+        {
+          client.error(HttpStatus.serviceUnavailable);
+        }
+      }
+
+      validateGlobalRestrictedIPs(client);
+
+      import diamond.extensions;
+      mixin ExtensionEmit!(ExtensionType.httpRequest, q{
+        if (!{{extensionEntry}}.handleRequest(client))
+        {
+          return;
+        }
+      });
+      emitExtension();
+
+      if (webSettings && !webSettings.onBeforeRequest(client))
+      {
+        client.error(HttpStatus.badRequest);
+      }
+
+      client.handlingRequest = true;
+
       auto routes = hasRoutes ?
         handleRoute(client.ipAddress == "127.0.0.1", client.path) :
         [client.path];
@@ -441,36 +473,6 @@ static if (isWeb)
   */
   private void handleHTTPListenInternal(HttpClient client)
   {
-    static if (loggingEnabled)
-    {
-      import diamond.core.logging;
-      executeLog(LogType.before, client);
-    }
-
-    static if (isTesting)
-    {
-      if (!testsPassed || client.ipAddress != "127.0.0.1")
-      {
-        client.error(HttpStatus.serviceUnavailable);
-      }
-    }
-
-    validateGlobalRestrictedIPs(client);
-
-    import diamond.extensions;
-    mixin ExtensionEmit!(ExtensionType.httpRequest, q{
-      if (!{{extensionEntry}}.handleRequest(client))
-      {
-        return;
-      }
-    });
-    emitExtension();
-
-    if (webSettings && !webSettings.onBeforeRequest(client))
-    {
-      client.error(HttpStatus.badRequest);
-    }
-
     handleHTTPPermissions(client);
 
     if (_staticFiles)

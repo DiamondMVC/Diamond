@@ -87,6 +87,9 @@ static if (isWeb)
     /// The privacy collection.
     PrivacyCollection _privacyCollection;
 
+    /// Boolean determining whether the client is handling the request or not.
+    bool _handlingRequest;
+
     final:
     package(diamond)
     {
@@ -339,6 +342,12 @@ static if (isWeb)
 
         return _privacyCollection;
       }
+
+      /// Sets a boolean determining whether the client is handling the request or not.
+      package(diamond) void handlingRequest(bool isHandlingRequest)
+      {
+        _handlingRequest = isHandlingRequest;
+      }
     }
 
     /// Gets a model from the request's json.
@@ -431,6 +440,21 @@ static if (isWeb)
       }
 
       _redirected = true;
+    }
+
+    /**
+    * Does an internal redirect.
+    * Params:
+    *   path = The path.
+    */
+    void internalRedirect(string path)
+    {
+      if (_handlingRequest)
+      {
+        return;
+      }
+
+      _path = path;
     }
 
     /**
