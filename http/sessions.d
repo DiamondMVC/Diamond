@@ -88,6 +88,9 @@ static if (isWeb)
     {
       /// Gets the session id.
       string id() { return _session.id; }
+
+      /// Gets the time the session ends.
+      SysTime endTime() { return _session.endTime; }
     }
 
     /**
