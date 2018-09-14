@@ -77,7 +77,11 @@ package(diamond.web.soap) void parseWsdl(string name, string wsdl, XmlDocument d
 * Wsdl: %s
 */
 module %s;
+
+import __stdtraits = std.traits;
+
 import diamond.web.soap.datatypes;
+import diamond.web.soap.client;
 
 }.format(name, moduleName, wsdl, moduleName);
 
