@@ -497,7 +497,7 @@ static if (isWeb)
     static if (isWebServer)
     {
       import diamond.init.server;
-      auto foundPage = handleWebServer(client);
+      auto foundPage = client.forceApi ? false : handleWebServer(client);
     }
     else
     {
