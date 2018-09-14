@@ -45,7 +45,7 @@ final class %s : SoapBinding, I%s
 }
   };
 
-  static const bindingOperationFormat = "\t@SoapOperation(\"%s\") %s %s(%s) { mixin SoapBindingMethod!(); mixin(executeSoapBinding()); }\r\n";
+  static const bindingOperationFormat = "\t@SoapOperation(\"%s\") %s %s(%s) { mixin SoapBindingMethod!(%s); mixin(executeSoapBinding()); }\r\n";
 
 /*private string parameters(alias T)()
 {
@@ -64,14 +64,11 @@ final class %s : SoapBinding, I%s
 }*/
 
   string result = q{
-private mixin template SoapBindingMethod()
+private mixin template SoapBindingMethod(alias f)
 {
   string executeSoapBinding()
   {
-    // TODO: Execute the soap binding ...
-    // TODO: Requires the soap client to be implemented.
-
-    return "return null;";
+    return "return new SoapClient.sendRequestFromFunctionDefinition!(" ~ __stdtraits.fullyQualifiedName!f ~ ")(" ~ __stdtraits.ParameterIdentifierTuple!f ~ ");";
   }
 }
   };
@@ -136,7 +133,7 @@ private mixin template SoapBindingMethod()
               action = "";
             }
 
-            operationsResult ~= bindingOperationFormat.format(action, bindingOperation.returnType, bindingOperation.name, bindingOperation.parameters);
+            operationsResult ~= bindingOperationFormat.format(action, bindingOperation.returnType, bindingOperation.name, bindingOperation.parameters, "I" ~ typeName ~ "." ~ bindingOperation.name);
           }
         }
       }

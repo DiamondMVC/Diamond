@@ -15,24 +15,21 @@ static if (isWebServer)
     private:
     /// The view name.
     string _viewName;
-    /// The actual exception thrown.
-    Exception _exception;
 
     public:
     /**
     * Creates a new view exception.
     * Params:
     *   viewName =  The name of the view that threw the error.
-    *   exception =     The exception.
+    *   throwable =     The throwable.
     *   fn =        The file.
     *   ln =        The line.
     */
-    this(string viewName, Exception exception, string fn = __FILE__, size_t ln = __LINE__)
+    this(string viewName, Throwable throwable, string fn = __FILE__, size_t ln = __LINE__)
     {
       _viewName = viewName;
-      _exception = exception;
 
-      super("...", fn, ln);
+      super("...", fn, ln, throwable);
     }
 
     /**
@@ -42,7 +39,7 @@ static if (isWebServer)
     */
     override string toString()
     {
-      return "view: " ~ _viewName ~ "\r\n\r\n" ~ _exception.toString();
+      return "view: " ~ _viewName ~ "\r\n\r\n" ~ super.toString();
     }
   }
 
@@ -52,24 +49,21 @@ static if (isWebServer)
     private:
     /// The view name.
     string _viewName;
-    /// The actual error thrown.
-    Throwable _error;
 
     public:
     /**
     * Creates a new view error.
     * Params:
     *   viewName =  The name of the view that threw the error.
-    *   error =     The error.
+    *   throwable =     The throwable.
     *   fn =        The file.
     *   ln =        The line.
     */
-    this(string viewName, Throwable error, string fn = __FILE__, size_t ln = __LINE__)
+    this(string viewName, Throwable throwable, string fn = __FILE__, size_t ln = __LINE__)
     {
       _viewName = viewName;
-      _error = error;
 
-      super("...", fn, ln);
+      super("...", fn, ln, throwable);
     }
 
     /**
@@ -79,7 +73,7 @@ static if (isWebServer)
     */
     override string toString()
     {
-      return "view: " ~ _viewName ~ "\r\n\r\n" ~ _error.toString();
+      return "view: " ~ _viewName ~ "\r\n\r\n" ~ super.toString();
     }
   }
 }

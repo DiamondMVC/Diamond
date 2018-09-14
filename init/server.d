@@ -47,7 +47,7 @@ static if (isWebServer)
         {
           client.write(readText(webConfig.maintenance));
         }
-        
+
         return true;
       }
     }

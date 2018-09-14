@@ -90,6 +90,9 @@ static if (isWeb)
     /// Boolean determining whether the client is handling the request or not.
     bool _handlingRequest;
 
+    /// Force the request as a web-api request.
+    bool _forceApi;
+
     final:
     package(diamond)
     {
@@ -348,6 +351,15 @@ static if (isWeb)
       {
         _handlingRequest = isHandlingRequest;
       }
+
+      /// Sets a boolean determining whether the request should be forced as an api request or not.
+      void forceApi(bool shouldForceApi)
+      {
+        _forceApi = shouldForceApi;
+      }
+
+      /// Gets a boolean determining whether the request should be forced as an api request or not.
+      bool forceApi() { return _forceApi; }
     }
 
     /// Gets a model from the request's json.

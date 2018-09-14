@@ -5,6 +5,10 @@
 */
 module diamond.web.soap.client;
 
+import std.traits : Parameters;
+
+import diamond.http;
+
 /// Wrapper around a soap client.
 final class SoapClient
 {
@@ -12,4 +16,26 @@ final class SoapClient
   final:
   /// Creates a new soap client.
   this() { }
+
+  ReturnType!f sendRequestFromFunctionDefinition(alias f)(Parameters!f)
+  {
+    // TODO: Construct request ...
+    return null;
+  }
+
+  void sendRawRequest(string url, string soapAction, string soapEnvelope)
+  {
+    remoteRequest(url, HttpMethod.POST,
+      (scope responder)
+      {
+        /// ...
+      },
+      (scope requester)
+      {
+        requester.headers["SOAPAction"] = soapAction;
+
+        requester.bodyWriter.write(soapEnvelope);
+      }
+    );
+  }
 }
