@@ -10,7 +10,7 @@ import diamond.core.apptype;
 static if (isWeb)
 {
   import std.string : strip, format;
-  import std.traits : fullyQualifiedName, hasUDA, getUDAs;
+  import std.traits : fullyQualifiedName, hasUDA, getUDAs, Parameters, ParameterIdentifierTuple;
   import std.array : split, array;
 
   public import diamond.http;
@@ -93,14 +93,69 @@ static if (isWeb)
         }
       }
 
-      mapAction(
-        action_%2$s.method,
-        (
-          action_%2$s.action && action_%2$s.action.strip().length ?
-          action_%2$s.action : "%2$s"
-        ).firstToLower(),
-        &controller.%2$s
-      );
+      enum parameterTypes_%2$s = Parameters!(controller.%2$s).stringof[1..$-1].split(", ");
+
+      static if (parameterTypes_%2$s.length)
+      {
+        template isJsonObject(T)
+        {
+          static if (is(T == struct) || is(T == class))
+          {
+            enum isJsonObject = true;
+          }
+          else
+          {
+            enum isJsonObject = false;
+          }
+        }
+
+        mixin("enum isJson_%2$s = isJsonObject!" ~ parameterTypes_%2$s[0] ~ ";");
+
+        static if (isJson_%2$s)
+        {
+          mapAction(
+            action_%2$s.method,
+            (
+              action_%2$s.action && action_%2$s.action.strip().length ?
+              action_%2$s.action : "%2$s"
+            ).firstToLower(),
+            () {
+              mixin("return controller.%2$s(client.getModelFromJson!" ~ (parameterTypes_%2$s[0]) ~ ");");
+            }
+          );
+        }
+        else
+        {
+          enum parameterNames_%2$s = [ParameterIdentifierTuple!(controller.%2$s)];
+
+          mapAction(
+            action_%2$s.method,
+            (
+              action_%2$s.action && action_%2$s.action.strip().length ?
+              action_%2$s.action : "%2$s"
+            ).firstToLower(),
+            () {
+              static foreach (i; 0 .. parameterNames_%2$s.length)
+              {
+                mixin("auto " ~ parameterNames_%2$s[i] ~ " = " ~ (action_%2$s.action && action_%2$s.action.length ? ("get!" ~ (parameterTypes_%2$s[i].stringof) ~ "(\" ~ parameterNames_%2$s[i] ~ \")") : ("getByIndex(" ~ to!string(i) ~ ")")) ~ ";");
+              }
+
+              mixin("return controller.%2$s(" ~ (parameterNames_%2$s.join(",")) ~ ");");
+            }
+          );
+        }
+      }
+      else
+      {
+        mapAction(
+          action_%2$s.method,
+          (
+            action_%2$s.action && action_%2$s.action.strip().length ?
+            action_%2$s.action : "%2$s"
+          ).firstToLower(),
+          &controller.%2$s
+        );
+      }
     }
   };
 
