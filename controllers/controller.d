@@ -36,6 +36,8 @@ static if (isWeb)
     HashSet!string _mappedControllers;
   }
 
+  import models;
+
   /// The format used for default mappings.
   enum defaultMappingFormat = q{
     static if (hasUDA!(%1$s.%2$s, HttpDefault))
@@ -114,16 +116,23 @@ static if (isWeb)
 
         static if (isJson_%2$s)
         {
-          mapAction(
-            action_%2$s.method,
-            (
-              action_%2$s.action && action_%2$s.action.strip().length ?
-              action_%2$s.action : "%2$s"
-            ).firstToLower(),
-            () {
-              mixin("return controller.%2$s(client.getModelFromJson!" ~ (parameterTypes_%2$s[0]) ~ ");");
-            }
-          );
+          static if(parameterTypes_%2$s.length == 1)
+          {
+            mapAction(
+              action_%2$s.method,
+              (
+                action_%2$s.action && action_%2$s.action.strip().length ?
+                action_%2$s.action : "%2$s"
+              ).firstToLower(),
+              () {
+                mixin("return controller.%2$s(client.getModelFromJson!" ~ (parameterTypes_%2$s[0]) ~ ");");
+              }
+            );
+          }
+          else
+          {
+            static assert(0, "Can only map a single json object.");
+          }
         }
         else
         {
