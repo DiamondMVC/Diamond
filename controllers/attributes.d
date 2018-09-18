@@ -85,4 +85,10 @@ static if (isWeb)
       @disable this();
     }
   }
+
+  /// Attribute for retrieving controller data from the form body.
+  struct HttpForm { }
+
+  /// Attribute for retrieving controller data from the query string.
+  struct HttpQuery { }
 }
