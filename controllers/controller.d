@@ -11,7 +11,8 @@ static if (isWeb)
 {
   import std.string : strip, format;
   import std.traits : fullyQualifiedName, hasUDA, getUDAs, Parameters, ParameterIdentifierTuple;
-  import std.array : split, array;
+  import std.array : split, array, join;
+  import std.conv : to;
 
   public import diamond.http;
   public import diamond.controllers.authentication;
@@ -137,7 +138,27 @@ static if (isWeb)
             () {
               static foreach (i; 0 .. parameterNames_%2$s.length)
               {
-                mixin("auto " ~ parameterNames_%2$s[i] ~ " = " ~ (action_%2$s.action && action_%2$s.action.length ? ("get!" ~ (parameterTypes_%2$s[i].stringof) ~ "(\" ~ parameterNames_%2$s[i] ~ \")") : ("getByIndex(" ~ to!string(i) ~ ")")) ~ ";");
+                static if (hasUDA!(%1$s.%2$s, HttpQuery))
+                {
+                  mixin("auto " ~ parameterNames_%2$s[i] ~ " = to!(" ~ (parameterTypes_%2$s[i]) ~ ")(client.query.get(\"" ~ parameterNames_%2$s[i] ~ "\"));");
+                }
+                else static if (hasUDA!(%1$s.%2$s, HttpForm))
+                {
+                  mixin("auto " ~ parameterNames_%2$s[i] ~ " = to!(" ~ (parameterTypes_%2$s[i]) ~ ")(client.form.get(\"" ~ parameterNames_%2$s[i] ~ "\"));");
+                }
+                else
+                {
+                  mixin(parameterTypes_%2$s[i] ~ " " ~ parameterNames_%2$s[i] ~ ";");
+
+                  if (action_%2$s.action && action_%2$s.action.length)
+                  {
+                    mixin(parameterNames_%2$s[i] ~ " = get!(" ~ (parameterTypes_%2$s[i]) ~ ")(\"" ~ parameterNames_%2$s[i] ~ "\");");
+                  }
+                  else
+                  {
+                    mixin(parameterNames_%2$s[i] ~ " = getByIndex!(" ~ (parameterTypes_%2$s[i]) ~ ")(\"" ~ to!string(i) ~ "\");");
+                  }
+                }
               }
 
               mixin("return controller.%2$s(" ~ (parameterNames_%2$s.join(",")) ~ ");");
