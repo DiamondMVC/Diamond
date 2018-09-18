@@ -233,6 +233,9 @@ static if (isWebServer)
     /// The view associatedi with the controller.
     TView _view;
 
+    /// The client associated with the controller.
+    HttpClient _client;
+
     /// The authentication used for the controller.
     IControllerAuth _auth;
 
@@ -259,6 +262,7 @@ static if (isWebServer)
       super();
 
       _view = view;
+      _client = _view.client;
 
       mixin("import diamondapp : " ~ TController.stringof.split("!")[1][1 .. $-1] ~ ";");
 
@@ -322,6 +326,9 @@ static if (isWebServer)
     {
       /// Gets the view.
       TView view() { return _view; }
+
+      /// Gets the client.
+      HttpClient client() { return _client; }
     }
 
     /**
