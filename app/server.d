@@ -103,7 +103,7 @@ static if (isWebServer)
 
       if (page.staticCache)
       {
-        cacheView(routeName, pageResult, page.cacheTime);
+        cacheView(client, pageResult, page.cacheTime);
       }
       else if (webConfig.shouldCacheViews && pageResult && pageResult.length && page.cached)
       {
