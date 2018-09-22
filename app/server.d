@@ -52,7 +52,7 @@ static if (isWebServer)
       }
     }
 
-    import diamond.init.web : getView;
+    import diamond.app.web : getView;
 
     import diamond.views.view : View;
 

@@ -18,7 +18,7 @@ static if (isWebApi)
   */
   void handleWebApi(HttpClient client)
   {
-    import diamond.init.web : getControllerAction;
+    import diamond.app.web : getControllerAction;
 
     auto controllerAction = getControllerAction(client.route.name);
 

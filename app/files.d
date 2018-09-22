@@ -19,7 +19,7 @@ static if (isWeb)
   *   client =     The client.
   *   staticFile =  The static file handler.
   */
-  package(diamond.init) void handleStaticFiles
+  package(diamond.app) void handleStaticFiles
   (
     HttpClient client,
     HTTPServerRequestDelegateS staticFile
