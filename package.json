@@ -9,9 +9,9 @@
 	"copyright": "Copyright © 2016-2018 Diamond MVC",
 	"targetType": "sourceLibrary",
 	"sourcePaths": [
-		"authentication", "controllers", "core",
-		"data", "database", "errors",
-		"extensions", "http", "init",
+		"app", "authentication", "controllers",
+		"core", "data", "database",
+		"errors","extensions", "http",
 		"io", "mail", "markdown",
 		"security", "seo", "tasks",
 		"templates", "unittesting", "views",

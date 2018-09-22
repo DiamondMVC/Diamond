@@ -3,7 +3,7 @@
 * License: MIT (https://github.com/DiamondMVC/Diamond/blob/master/LICENSE)
 * Author: Jacob Jensen (bausshf)
 */
-module diamond.init.server;
+module diamond.app.server;
 
 import diamond.core.apptype;
 
@@ -52,7 +52,7 @@ static if (isWebServer)
       }
     }
 
-    import diamond.init.web : getView;
+    import diamond.app.web : getView;
 
     import diamond.views.view : View;
 

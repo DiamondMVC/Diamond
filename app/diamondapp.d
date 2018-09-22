@@ -7,7 +7,7 @@ module diamondapp;
 
 import diamond.core : isWeb;
 
-public import diamond.init.web;
+public import diamond.app.web;
 
 // static if (isWeb)
 // {

@@ -3,7 +3,7 @@
 * License: MIT (https://github.com/DiamondMVC/Diamond/blob/master/LICENSE)
 * Author: Jacob Jensen (bausshf)
 */
-module diamond.init.web;
+module diamond.app.web;
 
 import diamond.core.apptype;
 
@@ -481,7 +481,7 @@ static if (isWeb)
 
       if (staticFile)
       {
-        import diamond.init.files;
+        import diamond.app.files;
         handleStaticFiles(client, staticFile);
 
         static if (loggingEnabled)
@@ -496,7 +496,7 @@ static if (isWeb)
 
     static if (isWebServer)
     {
-      import diamond.init.server;
+      import diamond.app.server;
       auto foundPage = client.forceApi ? false : handleWebServer(client);
     }
     else
@@ -508,7 +508,7 @@ static if (isWeb)
     {
       if (!foundPage)
       {
-        import diamond.init.api;
+        import diamond.app.api;
         handleWebApi(client);
       }
     }

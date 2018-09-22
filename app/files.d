@@ -3,7 +3,7 @@
 * License: MIT (https://github.com/DiamondMVC/Diamond/blob/master/LICENSE)
 * Author: Jacob Jensen (bausshf)
 */
-module diamond.init.files;
+module diamond.app.files;
 
 import diamond.core.apptype;
 
@@ -19,7 +19,7 @@ static if (isWeb)
   *   client =     The client.
   *   staticFile =  The static file handler.
   */
-  package(diamond.init) void handleStaticFiles
+  package(diamond.app) void handleStaticFiles
   (
     HttpClient client,
     HTTPServerRequestDelegateS staticFile

@@ -3,7 +3,7 @@
 * License: MIT (https://github.com/DiamondMVC/Diamond/blob/master/LICENSE)
 * Author: Jacob Jensen (bausshf)
 */
-module diamond.init.api;
+module diamond.app.api;
 
 import diamond.core.apptype;
 
@@ -18,7 +18,7 @@ static if (isWebApi)
   */
   void handleWebApi(HttpClient client)
   {
-    import diamond.init.web : getControllerAction;
+    import diamond.app.web : getControllerAction;
 
     auto controllerAction = getControllerAction(client.route.name);
 
@@ -28,7 +28,7 @@ static if (isWebApi)
     }
 
     import diamond.controllers.status;
-    
+
     auto status = controllerAction(client).handle();
 
     if (status == Status.notFound)
