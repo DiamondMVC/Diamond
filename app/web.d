@@ -15,6 +15,7 @@ static if (isWeb)
   import diamond.authentication;
   import diamond.security;
   import diamond.unittesting;
+  import diamond.app.appcache;
 
   static if (isWebServer)
   {
@@ -39,6 +40,8 @@ static if (isWeb)
   /// Initializes the Diamond run-time. This function does not initiate the server, tests, tasks, services etc.
   void initializeDiamond()
   {
+    setAppCache(new DiamondAppCache);
+
     loadWebConfig();
 
     if (webConfig.webservices && webConfig.webservices.length)
