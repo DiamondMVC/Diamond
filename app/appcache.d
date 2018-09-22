@@ -5,6 +5,8 @@
 */
 module diamond.app.appcache;
 
+import diamond.http.client : HttpClient;
+
 /// Interface for an app cache.
 interface IAppCache
 {
