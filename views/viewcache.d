@@ -5,18 +5,20 @@
 */
 module diamond.views.viewcache;
 
-private __gshared string[string] _cache;
+import diamond.http.client : HttpClient;
 
 /**
 * Caches a view.
 * Params:
-*   route =       The route to cache.
+*   client =       The client to cache from.
 *   result =    The result to cache.
 *   cacheTime = The time to cache the view. 0 equals process-lifetime.
 */
-package(diamond) void cacheView(string route, string result, size_t cacheTime)
+package(diamond) void cacheView(HttpClient client, string result, size_t cacheTime)
 {
-  _cache[route] = result;
+  import diamond.app.appcache;
+
+  cache.updateCache(client, result);
 
   if (cacheTime)
   {
@@ -26,7 +28,7 @@ package(diamond) void cacheView(string route, string result, size_t cacheTime)
     {
       sleep(cacheTime.msecs);
 
-      _cache.remove(route);
+      cache.removeCache(client);
     });
   }
 }
@@ -34,9 +36,13 @@ package(diamond) void cacheView(string route, string result, size_t cacheTime)
 /**
 * Gets the result of a cached view.
 * Params:
-*   route = The route of the view to retrieve.
+*   client = The client to get the cached view from.
+* Returns:
+*   The cached view result if present.
 */
-string getCachedView(string route)
+string getCachedView(HttpClient client)
 {
-  return _cache.get(route, null);
+  import diamond.app.appcache;
+
+  return cache.retrieveCache(client);
 }

@@ -75,11 +75,10 @@ static if (isWebServer)
     import diamond.views.viewcache;
 
     string pageResult;
-    auto routeName = client.route.name;
 
     if (page.staticCache)
     {
-      pageResult = getCachedView(routeName);
+      pageResult = getCachedView(client);
     }
     else if (webConfig.shouldCacheViews && page.cached)
     {
