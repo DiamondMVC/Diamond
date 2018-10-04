@@ -68,6 +68,8 @@ static if (isWeb)
     @optional string[string] customConfig;
     /// String of an url to redirect all connections that aren't ssl to.
     @optional string forceSSLUrl;
+    /// An array of routes that shouldn't have logging for headers.
+    @optional string[] disableHeaderLoggingRoutes;
   }
 
   /// Wrapper around a webservice.

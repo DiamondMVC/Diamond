@@ -210,11 +210,18 @@ static if (isWeb)
         {
           if (webConfig.ipHeader && webConfig.ipHeader.length)
           {
-            _ipAddress = _response.headers[webConfig.ipHeader];
+            _ipAddress = _request.headers[webConfig.ipHeader];
           }
           else
           {
-            _ipAddress = _request.clientAddress.toAddressString();
+             auto ip = _request.headers.get("X-Real-IP", null);
+
+             if (!ip || !ip.length)
+             {
+               ip = _request.headers.get("X-Forwarded-For", null);
+             }
+
+            _ipAddress = ip && ip.length ? ip : _request.clientAddress.toAddressString();
           }
         }
 
