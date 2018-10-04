@@ -216,31 +216,68 @@ Message:
         return;
       }
 
+      import std.algorithm : canFind;
+
       bool protectedPrivacy = !webConfig.disablePrivacyLogging;
       bool protectedIP = protectedPrivacy || !client.privacy["__D_LOGGING_PROTECT_IP"].adminVisible;
       bool protectedBody = protectedPrivacy || !client.privacy["__D_LOGGING_PROTECT_BODY"].adminVisible;
-      bool protectedHeaders = protectedPrivacy || !client.privacy["__D_LOGGING_PROTECT_HEADERS"].adminVisible;
+      bool protectedHeaders = client.route && webConfig.disableHeaderLoggingRoutes && webConfig.disableHeaderLoggingRoutes.length && webConfig.disableHeaderLoggingRoutes.canFind(client.route.name);
 
-      import std.algorithm : canFind;
-      import std.string : format, indexOf, lastIndexOf;
+      import std.string : format, indexOf, lastIndexOf, toLower;
       import vibe.stream.operations : readAllUTF8;
       import diamond.core.webconfig;
       import diamond.core.senc;
 
-      string requestHeaders = protectedHeaders ? "" : client.headers.toString();
+      string protectIP(string ip)
+      {
+        if (!ip || !ip.length || ip.indexOf('.') == -1)
+        {
+          return "";
+        }
 
-      string responseHeaders = void;
+        auto newIP = ip[0 .. ip.indexOf('.')];
+        auto last = ip.lastIndexOf('.');
+
+        if (last > 0)
+        {
+          newIP ~= "..." ~ ip[ip.lastIndexOf('.') .. $];
+        }
+
+        return newIP;
+      }
+
+      string requestHeaders = "";
+
+      if (!protectedHeaders)
+      {
+        foreach (key,value; client.headers)
+        {
+          if (protectedIP && (key.toLower() == "x-forwarded-for" || key.toLower() == "x-real-ip" || key.toLower().canFind("ip") || key.toLower().canFind("address")))
+          {
+            requestHeaders ~= "%s: %s\r\n".format(key, protectIP(value));
+          }
+          else
+          {
+            requestHeaders ~= "%s: %s\r\n".format(key, value);
+          }
+        }
+      }
+
+      string responseHeaders = "";
 
       if (!protectedHeaders)
       {
         foreach (key,value; client.rawResponse.headers)
         {
-          responseHeaders ~= "%s: %s\r\n".format(key, value);
+          if (protectedIP && (key.toLower() == "x-forwarded-for" || key.toLower() == "x-real-ip" || key.toLower().canFind("ip") || key.toLower().canFind("address")))
+          {
+            responseHeaders ~= "%s: %s\r\n".format(key, protectIP(value));
+          }
+          else
+          {
+            responseHeaders ~= "%s: %s\r\n".format(key, value);
+          }
         }
-      }
-      else
-      {
-        responseHeaders = "";
       }
 
       import std.uuid : randomUUID, sha1UUID;
@@ -265,24 +302,6 @@ Message:
       else if (statusCode == HttpStatus.continue_)
       {
         statusCode = HttpStatus.ok;
-      }
-
-      string protectIP(string ip)
-      {
-        if (!ip || !ip.length || ip.indexOf('.') == -1)
-        {
-          return "";
-        }
-
-        auto newIP = ip[0 .. ip.indexOf('.')];
-        auto last = ip.lastIndexOf('.');
-
-        if (last > 0)
-        {
-          newIP ~= "..." ~ ip[ip.lastIndexOf('.') .. $];
-        }
-
-        return newIP;
       }
 
       auto logResult = new LogResult
