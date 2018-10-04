@@ -60,6 +60,8 @@ struct DbRelationship
 /// Attribute for custom data-type handling.
 struct DbProxy
 {
-  /// The name of the custom handle.
-  string handler;
+  /// The name of the custom read handler.
+  string readHandler;
+  /// The name of the custom write handler.
+  string writeHandler;
 }
