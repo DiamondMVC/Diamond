@@ -37,7 +37,7 @@ package(diamond.data.mapping.engines.mysql)
   /// The format for nullable proxies.
   enum readNullProxyFormat = q{
     import std.variant : Variant;
-    mixin("model." ~ proxy.handler ~ "!(\"%s\")(_row.isNull(_index) ? Variant.init : _row[_index]);");
+    mixin("model." ~ proxy.readHandler ~ "!(\"%s\")(_row.isNull(_index) ? Variant.init : _row[_index]);");
     _index++;
   };
 
@@ -49,7 +49,7 @@ package(diamond.data.mapping.engines.mysql)
 
   /// The format for proxies.
   enum readProxyFormat = q{
-    mixin("model." ~ proxy.handler ~ "!(\"%s\")(_row[_index]);");
+    mixin("model." ~ proxy.readHandler ~ "!(\"%s\")(_row[_index]);");
     _index++;
   };
 
@@ -227,12 +227,21 @@ final class MySqlEntityFormatter(TModel) : SqlEntityFormatter!TModel
 
         static if (!hasNoMap && !hasId)
         {
+          import std.traits : getUDAs;
+
           enum hasEnum = hasUDA!({{fullName}}, DbEnum);
           enum hasTimestamp = hasUDA!({{fullName}}, DbTimestamp);
+          enum hasProxy = hasUDA!({{fullName}}, DbProxy);
 
           static if (hasEnum)
           {
             paramsInserts ~= "params[index++] = cast(string)model.{{fieldName}};";
+          }
+          else static if (hasProxy)
+          {
+            mixin("enum proxy = getUDAs!(%s, DbProxy)[0];".format("{{fullName}}"));
+
+            paramsInserts ~= "params[index++] = model." ~ proxy.writeHandler  ~ "!(\"{{fieldName}}\")();";
           }
           else static if (hasTimestamp)
           {
@@ -330,12 +339,21 @@ final class MySqlEntityFormatter(TModel) : SqlEntityFormatter!TModel
 
         static if (!hasNoMap && !hasId)
         {
+          import std.traits : getUDAs;
+          
           enum hasEnum = hasUDA!({{fullName}}, DbEnum);
           enum hasTimestamp = hasUDA!({{fullName}}, DbTimestamp);
+          enum hasProxy = hasUDA!({{fullName}}, DbProxy);
 
           static if (hasEnum)
           {
             paramsUpdates ~= "params[index++] = cast(string)model.{{fieldName}};";
+          }
+          else static if (hasProxy)
+          {
+            mixin("enum proxy = getUDAs!(%s, DbProxy)[0];".format("{{fullName}}"));
+
+            paramsUpdates ~= "params[index++] = model." ~ proxy.writeHandler  ~ "!(\"{{fieldName}}\")();";
           }
           else static if (hasTimestamp)
           {
