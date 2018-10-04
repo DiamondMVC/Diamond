@@ -34,7 +34,30 @@ static if (isWeb)
   }
 
   /// The cookie key for auth tokens.
-  private static const __gshared authCookieKey = "__D_AUTH_TOKEN";
+  private static const __gshared _authCookieKey = "__D_AUTH_TOKEN";
+
+  /**
+  * Gets the auth cookie key based on the client's host.
+  * If the host isn't found then the defauly key is used.
+  * Params:
+  *   client = The client to retrieve the host from.
+  * Returns:
+  *   The auth cookie key.
+  */
+  private string getAuthCookieKey(HttpClient client)
+  {
+    import diamond.core.senc;
+    import diamond.core.webconfig;
+
+    string key = "";
+
+    if (webConfig && webConfig.mappedAuthKeys && webConfig.mappedAuthKeys.length)
+    {
+      key = webConfig.mappedAuthKeys.get(client.host, "");
+    }
+
+    return SENC.encode(key) ~ _authCookieKey;
+  }
 
   /// Wrapper for the token validator.
   private class TokenValidator
@@ -178,7 +201,7 @@ static if (isWeb)
 
     enforce(tokenValidator.f !is null || tokenValidator.d !is null, "No token validator found.");
 
-    auto token = client.cookies.get(authCookieKey);
+    auto token = client.cookies.get(getAuthCookieKey(client));
     Role role;
 
     if (token)
@@ -214,7 +237,7 @@ static if (isWeb)
 
     auto token = enforceInput(tokenSetter.getAndSetToken(client), "Could not set token.");
 
-    client.cookies.create(HttpCookieType.functional, authCookieKey, token, loginTime * 60);
+    client.cookies.create(HttpCookieType.functional, getAuthCookieKey(client), token, loginTime * 60);
 
     validateAuthentication(client);
   }
@@ -227,6 +250,8 @@ static if (isWeb)
   void logout(HttpClient client)
   {
     enforce(tokenInvalidator.f !is null || tokenInvalidator.d !is null, "No token invalidator found.");
+
+    auto authCookieKey = getAuthCookieKey(client);
 
     client.session.clearValues();
     client.cookies.remove(authCookieKey);
@@ -249,7 +274,7 @@ static if (isWeb)
   */
   string getAuthCookie(HttpClient client)
   {
-    return client.cookies.get(authCookieKey);
+    return client.cookies.get(getAuthCookieKey(client));
   }
 
   /**
@@ -261,6 +286,6 @@ static if (isWeb)
   */
   bool hasAuthCookie(HttpClient client)
   {
-    return client.cookies.has(authCookieKey);
+    return client.cookies.has(getAuthCookieKey(client));
   }
 }

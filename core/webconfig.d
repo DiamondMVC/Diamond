@@ -70,6 +70,8 @@ static if (isWeb)
     @optional string forceSSLUrl;
     /// An array of routes that shouldn't have logging for headers.
     @optional string[] disableHeaderLoggingRoutes;
+    /// An associative array of mapped auth keys.
+    @optional string[string] mappedAuthKeys;
   }
 
   /// Wrapper around a webservice.
