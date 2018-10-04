@@ -14,7 +14,30 @@ static if (isWeb)
   import diamond.http;
 
   /// The storage key for the authentication roles.
-  private static const __gshared roleStorageKey = "__D_AUTH_ROLE";
+  private static const __gshared _roleStorageKey = "__D_AUTH_ROLE";
+
+  /**
+  * Gets the role storage key based on the client's host.
+  * If the host isn't found then the defauly key is used.
+  * Params:
+  *   client = The client to retrieve the host from.
+  * Returns:
+  *   The role storage key.
+  */
+  private string getRoleStorageKey(HttpClient client)
+  {
+    import diamond.core.senc;
+    import diamond.core.webconfig;
+
+    string key = "";
+
+    if (webConfig && webConfig.mappedAuthKeys && webConfig.mappedAuthKeys.length)
+    {
+      key = webConfig.mappedAuthKeys.get(client.host, "");
+    }
+
+    return SENC.encode(key) ~ _roleStorageKey;
+  }
 
   /// The roles.
   private static __gshared Role[string] _roles;
@@ -200,7 +223,7 @@ static if (isWeb)
   {
     enforce(client, "No client specified.");
 
-    return client.getContext!Role(roleStorageKey, defaultRole);
+    return client.getContext!Role(getRoleStorageKey(client), defaultRole);
   }
 
   /**
@@ -214,7 +237,7 @@ static if (isWeb)
     enforce(client, "No client specified.");
     enforce(role, "No role specified.");
 
-    client.addContext(roleStorageKey, role);
+    client.addContext(getRoleStorageKey(client), role);
   }
 
   /**
@@ -233,7 +256,7 @@ static if (isWeb)
   {
     enforce(client, "No client specified.");
 
-    auto sessionRole = client.session.getValue!string(roleStorageKey, null);
+    auto sessionRole = client.session.getValue!string(getRoleStorageKey(client), null);
 
     if (sessionRole !is null)
     {
@@ -262,7 +285,7 @@ static if (isWeb)
     HttpClient client, Role role
   )
   {
-    client.session.setValue(roleStorageKey, role.name);
+    client.session.setValue(getRoleStorageKey(client), role.name);
   }
 
   /**
