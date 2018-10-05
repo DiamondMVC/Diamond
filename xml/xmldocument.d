@@ -6,10 +6,12 @@
 module diamond.xml.xmldocument;
 
 import diamond.xml.xmlexception;
+import diamond.dom.domdocument;
+import diamond.dom.domnode;
 import diamond.xml.xmlnode;
 
 /// An XML document.
-final class XmlDocument
+final class XmlDocument : DomDocument
 {
   private:
   /// The version of the xml document.
@@ -24,7 +26,31 @@ final class XmlDocument
   /// Creates a new xml document.
   this() @safe
   {
+    super();
+  }
 
+  /**
+  * Parses the elements from the dom to the document.
+  * Params:
+  *   elements = The parsed dom elements.
+  */
+  override void parseElements(DomNode[] elements) @safe
+  {
+    if (!elements || elements.length != 2)
+    {
+      throw new XmlException("No xml header found or no root element found.");
+    }
+
+    auto header = elements[0];
+    _root = elements[1];
+
+    auto versionAttribute = header.getAttribute("version");
+    auto encodingAttribute = header.getAttribute("encoding");
+
+    import std.string : strip;
+
+    _xmlVersion = versionAttribute ? versionAttribute.value.strip() : null;
+    _encoding = encodingAttribute ? encodingAttribute.value.strip() : "UTF-8";
   }
 
   @property

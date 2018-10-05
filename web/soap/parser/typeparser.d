@@ -9,6 +9,7 @@ import std.string : toLower, strip, format;
 import std.array : split;
 import std.algorithm : endsWith;
 
+import diamond.dom;
 import diamond.xml;
 import diamond.web.soap.soaptype;
 import diamond.web.soap.complextype;

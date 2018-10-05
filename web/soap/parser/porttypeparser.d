@@ -8,6 +8,7 @@ module diamond.web.soap.parser.porttypeparser;
 import std.array : split, join;
 import std.string : format;
 
+import diamond.dom;
 import diamond.xml;
 import diamond.web.soap.message;
 import diamond.web.soap.messageoperation;

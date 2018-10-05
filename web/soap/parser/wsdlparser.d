@@ -8,6 +8,7 @@ module diamond.web.soap.parser.wsdlparser;
 import std.string : format;
 import std.file : write, exists, mkdir;
 
+import diamond.dom;
 import diamond.xml;
 
 /**

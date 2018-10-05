@@ -3,14 +3,14 @@
 * License: MIT (https://github.com/DiamondMVC/Diamond/blob/master/LICENSE)
 * Author: Jacob Jensen (bausshf)
 */
-module diamond.xml.xmlattribute;
+module diamond.dom.domattribute;
 
 import std.string : strip, toLower;
 
 import diamond.errors.checks;
 
-/// An XML attribute.
-final class XmlAttribute
+/// A dom attribute.
+final class DomAttribute
 {
   private:
   /// The name of the attribute.
@@ -20,7 +20,7 @@ final class XmlAttribute
 
   public:
   /**
-  * Creates a new xml attribute.
+  * Creates a new dom attribute.
   * Params:
   *   name = The name.
   *   value = The value.

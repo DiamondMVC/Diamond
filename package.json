@@ -11,11 +11,12 @@
 	"sourcePaths": [
 		"app", "authentication", "controllers",
 		"core", "data", "database",
-		"errors","extensions", "http",
-		"io", "mail", "markdown",
-		"security", "seo", "tasks",
-		"templates", "unittesting", "views",
-		"web", "xml"
+		"dom", "errors","extensions",
+		"html", "http", "io",
+		"mail", "markdown", "security",
+		"seo", "tasks", "templates",
+		"unittesting", "views", "web",
+		"xml"
 	],
 	"dependencies": {
 		"vibe-d": {
