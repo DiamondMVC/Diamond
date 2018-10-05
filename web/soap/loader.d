@@ -20,6 +20,7 @@ package(diamond) void loadSoapDefinition(string name, string wsdl, string module
   import std.file : readText, exists;
 
   import diamond.security.validation.url : isValidUrl;
+  import diamond.dom;
   import diamond.xml;
   import diamond.web.soap.parser;
   import diamond.errors.exceptions;
@@ -39,7 +40,7 @@ package(diamond) void loadSoapDefinition(string name, string wsdl, string module
     throw new SoapException("The wsdl file was not found remote or locally.");
   }
 
-  auto document = parseXml(wsdl);
+  auto document = parseDom!XmlDocument(wsdl, new XmlParserSettings);
 
   if (document.root.name != "definitions" && document.root.name != "wsdl:definitions" && document.root.name != "xs:definitions" && document.root.name != "xsd:definitions")
   {

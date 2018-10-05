@@ -8,6 +8,7 @@ module diamond.web.soap.parser.serviceparser;
 import std.array : split;
 import std.string : format;
 
+import diamond.dom;
 import diamond.xml;
 
 package(diamond.web.soap.parser):

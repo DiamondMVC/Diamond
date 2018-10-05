@@ -9,6 +9,7 @@ import std.algorithm : startsWith;
 import std.array : split;
 
 import diamond.core.collections;
+import diamond.dom;
 import diamond.xml;
 import diamond.web.soap.message;
 import diamond.web.soap.parameter;

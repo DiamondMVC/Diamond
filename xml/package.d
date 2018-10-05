@@ -8,8 +8,7 @@ module diamond.xml;
 public
 {
   import diamond.xml.xmldocument;
-  import diamond.xml.xmlnode;
-  import diamond.xml.xmlattribute;
   import diamond.xml.xmlexception;
-  import diamond.xml.xmlparser;
+  import diamond.xml.xmlnode;
+  import diamond.xml.xmlparsersettings;
 }
