@@ -501,6 +501,31 @@ final class DomNode
   }
 
   /**
+  * Gets a dom node by an attribute named "id" matching the given value.
+  * Params:
+  *   id = The id of the node to retrieve.
+  * Returns:
+  *   The dom node if found, null otherwise.
+  */
+  DomNode getElementById(string id) @safe
+  {
+    if (_children && _children.length)
+    {
+      foreach (child; _children)
+      {
+        auto result = child.getByAttribute("id", id, true);
+
+        if (result && result.length)
+        {
+          return result[0];
+        }
+      }
+    }
+
+    return null;
+  }
+
+  /**
   * Queries all dom nodes based on a css3 selector.
   * Params:
   *   selector = The css3 selector.
