@@ -7,6 +7,7 @@ module diamond.dom.domparser;
 
 import std.uni : isWhite;
 import std.string : format, strip, toLower, indexOf;
+import std.algorithm : canFind;
 
 import diamond.dom.domdocument;
 import diamond.dom.domnode;
@@ -34,6 +35,11 @@ TDocument parseDom(TDocument : DomDocument)(string dom, DomParserSettings parser
   doc.parseElements(elements);
 
   return doc;
+}
+
+private bool findAhead(string dom, string toFind) @safe
+{
+  return dom && dom.length && dom.canFind(toFind);
 }
 
 /**
@@ -75,6 +81,25 @@ package(diamond.dom) DomNode[] parseDomElements(string dom, DomParserSettings pa
   string text;
   bool comment;
   char headerChar;
+
+  void finalizeNode() @trusted
+  {
+    if (!currentNode)
+    {
+      return;
+    }
+
+    if (currentNode.parent)
+    {
+      currentNode.parent.addChild(currentNode);
+    }
+    else
+    {
+      elements ~= currentNode;
+    }
+
+    currentNode = currentNode.parent;
+  }
 
   foreach (ref i; 0 .. dom.length)
   {
@@ -128,16 +153,7 @@ package(diamond.dom) DomNode[] parseDomElements(string dom, DomParserSettings pa
 
       currentNode.rawText = content;
 
-      if (currentNode.parent)
-      {
-        currentNode.parent.addChild(currentNode);
-      }
-      else
-      {
-        elements ~= currentNode;
-      }
-
-      currentNode = currentNode.parent;
+      finalizeNode();
       continue;
     }
 
@@ -197,16 +213,7 @@ package(diamond.dom) DomNode[] parseDomElements(string dom, DomParserSettings pa
           }
         }
 
-        if (currentNode.parent)
-        {
-          currentNode.parent.addChild(currentNode);
-        }
-        else
-        {
-          elements ~= currentNode;
-        }
-
-        currentNode = currentNode.parent;
+        finalizeNode();
       }
       else
       {
@@ -226,35 +233,32 @@ package(diamond.dom) DomNode[] parseDomElements(string dom, DomParserSettings pa
     {
       continue;
     }
-    else if (currentNode && current == '/' && next == '>')
+    else if (currentNode && next == '>' && current == '/')
     {
       i++;
 
-      if (currentNode.parent)
-      {
-        currentNode.parent.addChild(currentNode);
-      }
-      else
-      {
-        elements ~= currentNode;
-      }
-
-      currentNode = currentNode.parent;
+      finalizeNode();
     }
     else if (current == '>')
     {
-      if (currentNode && last == '/')
+      if
+      (
+        currentNode &&
+        parserSettings.allowSelfClosingTags &&
+        (
+          parserSettings.isSelfClosingTag(currentNode.name) ||
+          (
+            !parserSettings.isStandardTag(currentNode.name) &&
+            !findAhead(dom[i .. $], "/" ~ currentNode.name)
+          )
+        )
+      )
       {
-        if (currentNode.parent)
-        {
-          currentNode.parent.addChild(currentNode);
-        }
-        else
-        {
-          elements ~= currentNode;
-        }
-
-        currentNode = currentNode.parent;
+        finalizeNode();
+      }
+      else if (currentNode && last == '/')
+      {
+        finalizeNode();
       }
       else if (currentNode && isHeader && headerChar == '!')
       {
@@ -299,6 +303,23 @@ package(diamond.dom) DomNode[] parseDomElements(string dom, DomParserSettings pa
           if (current == '>')
           {
             evaluated = true;
+
+            if
+            (
+              currentNode &&
+              parserSettings.allowSelfClosingTags &&
+              (
+                parserSettings.isSelfClosingTag(name) ||
+                (
+                  !parserSettings.isStandardTag(name) &&
+                  !findAhead(dom[i .. $], "/" ~ name)
+                )
+              )
+            )
+            {
+              evaluated = true;
+              i--;
+            }
           }
 
           if (current == '/')
@@ -387,6 +408,11 @@ package(diamond.dom) DomNode[] parseDomElements(string dom, DomParserSettings pa
     {
       throw new DomException("Encountered unexpected character: '%s' at index: '%d'.".format(current, i));
     }
+  }
+
+  if (currentNode)
+  {
+    elements ~= currentNode;
   }
 
   return elements;
