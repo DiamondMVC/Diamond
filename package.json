@@ -16,7 +16,7 @@
 		"mail", "markdown", "security",
 		"seo", "tasks", "templates",
 		"unittesting", "views", "web",
-		"xml"
+		"xhtml", "xml"
 	],
 	"dependencies": {
 		"vibe-d": {

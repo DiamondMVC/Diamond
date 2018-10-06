@@ -15,6 +15,7 @@ final class XmlParserSettings : DomParserSettings
   /// Creates a new xml parser settings.
   this() @safe
   {
-    super(true, null);
+    // Xml is strict, has no flexible tags, allows no self-closing tags and has no standard tags.
+    super(true, null, false, null, null);
   }
 }

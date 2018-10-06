@@ -136,6 +136,11 @@ final class DomNode
 
     name = name.strip().toLower();
 
+    if (!name.length)
+    {
+      return;
+    }
+
     _attributes[name] = new DomAttribute(name, value);
   }
 
@@ -366,7 +371,7 @@ final class DomNode
   string toString(size_t index) @trusted
   {
     import std.string : format;
-    import std.algorithm : map;
+    import std.algorithm : map, filter;
     import std.array : array, join;
 
     string tabs = "";
@@ -381,7 +386,7 @@ final class DomNode
     {
       attributes = " ";
 
-      attributes ~= _attributes.values.map!(a => "%s=\"%s\"".format(a.name, a.value)).array.join(" ");
+      attributes ~= _attributes.values.filter!(a => a.name && a.name.strip().length).map!(a => "%s=\"%s\"".format(a.name, a.value)).array.join(" ");
     }
 
     if (_children && _children.length)
@@ -400,6 +405,10 @@ final class DomNode
     else if (_text)
     {
       return "%s<%s%s>%s</%s>\r\n".format(tabs, _name, attributes, _text, _name);
+    }
+    else if (_parserSettings && _parserSettings.isSelfClosingTag(_name))
+    {
+      return "%s<%s%s>\r\n".format(tabs, _name, attributes);
     }
     else
     {
