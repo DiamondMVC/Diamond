@@ -18,6 +18,10 @@ final class HtmlDocument : DomDocument
   HtmlNode[] _rootNodes;
   /// The doctype node.
   HtmlNode _doctype;
+  /// The head node.
+  HtmlNode _head;
+  /// The body node.
+  HtmlNode _body;
 
   public:
   final:
@@ -47,8 +51,34 @@ final class HtmlDocument : DomDocument
       {
         _doctype = element;
       }
+      else if (element.name.toLower() == "head")
+      {
+        _head = element;
+      }
+      else if (element.name.toLower() == "body")
+      {
+        _body = element;
+      }
       else
       {
+        if (element.name.toLower() == "html")
+        {
+          if (element.children)
+          {
+            foreach (child; element.children)
+            {
+              if (child.name.toLower() == "head")
+              {
+                _head = child;
+              }
+              else if (child.name.toLower() == "body")
+              {
+                _body = child;
+              }
+            }
+          }
+        }
+
         _rootNodes ~= element;
       }
     }
@@ -63,7 +93,53 @@ final class HtmlDocument : DomDocument
     void root(HtmlNode[] nodes) @safe
     {
       _rootNodes = nodes;
+
+      if (!_rootNodes)
+      {
+        return;
+      }
+
+      foreach (element; _rootNodes)
+      {
+        import std.string : toLower;
+
+        if (element.name.toLower() == "doctype")
+        {
+          _doctype = element;
+        }
+        else if (element.name.toLower() == "head")
+        {
+          _head = element;
+        }
+        else if (element.name.toLower() == "body")
+        {
+          _body = element;
+        }
+        else if (element.name.toLower() == "html")
+        {
+          if (element.children)
+          {
+            foreach (child; element.children)
+            {
+              if (child.name.toLower() == "head")
+              {
+                _head = child;
+              }
+              else if (child.name.toLower() == "body")
+              {
+                _body = child;
+              }
+            }
+          }
+        }
+      }
     }
+
+    /// Gets the head node.
+    HtmlNode head() @safe { return _head; }
+
+    /// Gets the body node.
+    HtmlNode body() @safe { return _body; }
   }
 
   /**

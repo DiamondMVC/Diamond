@@ -13,5 +13,4 @@ public
   import diamond.dom.domexception;
   import diamond.dom.domparser;
   import diamond.dom.domparsersettings;
-  import diamond.dom.cssselector;
 }

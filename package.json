@@ -10,13 +10,13 @@
 	"targetType": "sourceLibrary",
 	"sourcePaths": [
 		"app", "authentication", "controllers",
-		"core", "data", "database",
-		"dom", "errors","extensions",
-		"html", "http", "io",
-		"mail", "markdown", "security",
-		"seo", "tasks", "templates",
-		"unittesting", "views", "web",
-		"xhtml", "xml"
+		"core", "css", "data",
+		"database", "dom", "errors",
+		"extensions", "html", "http",
+		"io", "mail", "markdown",
+		"security", "seo", "tasks",
+		"templates", "unittesting", "views",
+		"web", "xhtml", "xml"
 	],
 	"dependencies": {
 		"vibe-d": {

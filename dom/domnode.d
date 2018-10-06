@@ -14,10 +14,14 @@ import diamond.dom.domattribute;
 import diamond.dom.domexception;
 import diamond.dom.domparsersettings;
 
+private size_t _nextId;
+
 /// A dom node.
 final class DomNode
 {
   private:
+  /// The id of the node.
+  size_t _nodeId;
   /// The name of the node.
   string _name;
   /// The parent of the node.
@@ -40,6 +44,9 @@ final class DomNode
   */
   this(DomNode parent) @safe
   {
+    _nodeId = _nextId;
+    _nextId++;
+
     _parent = parent;
   }
 
@@ -183,7 +190,7 @@ final class DomNode
   /**
   * Checks whether an attribute is present within the node or not.
   * Params:
-  *   The name of the attribute.
+  *   name = The name of the attribute.
   * Returns:
   *   True if the attribute is present, false otherwise.
   */
@@ -197,6 +204,150 @@ final class DomNode
     name = name.strip().toLower();
 
     return cast(bool)(name in _attributes);
+  }
+
+  /**
+  * Checks whether an attribute is present within the node or not.
+  * Params:
+  *   name = The name of the attribute.
+  *   value = The value of the attribute.
+  * Returns:
+  *   True if the attribute is present, false otherwise.
+  */
+  bool hasAttribute(string name, string value) @trusted
+  {
+    if (!name)
+    {
+      return false;
+    }
+
+    name = name.strip().toLower();
+
+    auto attribute = _attributes.get(name, null);
+
+    if (!attribute)
+    {
+      return false;
+    }
+
+    return attribute.value == value;
+  }
+
+  /**
+  * Checks whether an attribute is present within the node or not and contains the value as a word.
+  * Params:
+  *   name = The name of the attribute.
+  *   value = The value of the attribute.
+  * Returns:
+  *   True if the attribute is present, false otherwise.
+  */
+  bool hasAttributeContains(string name, string value) @trusted
+  {
+    if (!name)
+    {
+      return false;
+    }
+
+    name = name.strip().toLower();
+
+    auto attribute = _attributes.get(name, null);
+
+    if (!attribute)
+    {
+      return false;
+    }
+
+    import std.array : split, array;
+    import std.algorithm : filter, map, canFind;
+
+    return attribute.value.split(" ").filter!(v => v && v.strip().length).map!(v => v.strip()).canFind(value);
+  }
+
+  /**
+  * Checks whether an attribute is present within the node or not and starts with the value given.
+  * Params:
+  *   name = The name of the attribute.
+  *   value = The value of the attribute.
+  * Returns:
+  *   True if the attribute is present, false otherwise.
+  */
+  bool hasAttributeStartsWith(string name, string value) @trusted
+  {
+    if (!name)
+    {
+      return false;
+    }
+
+    name = name.strip().toLower();
+
+    auto attribute = _attributes.get(name, null);
+
+    if (!attribute)
+    {
+      return false;
+    }
+
+    import std.algorithm : startsWith;
+
+    return attribute.value.startsWith(value);
+  }
+
+  /**
+  * Checks whether an attribute is present within the node or not and ends with the value given.
+  * Params:
+  *   name = The name of the attribute.
+  *   value = The value of the attribute.
+  * Returns:
+  *   True if the attribute is present, false otherwise.
+  */
+  bool hasAttributeEndsWith(string name, string value) @trusted
+  {
+    if (!name)
+    {
+      return false;
+    }
+
+    name = name.strip().toLower();
+
+    auto attribute = _attributes.get(name, null);
+
+    if (!attribute)
+    {
+      return false;
+    }
+
+    import std.algorithm : endsWith;
+
+    return attribute.value.endsWith(value);
+  }
+
+  /**
+  * Checks whether an attribute is present within the node or not and contains a substring with the value given.
+  * Params:
+  *   name = The name of the attribute.
+  *   value = The value of the attribute.
+  * Returns:
+  *   True if the attribute is present, false otherwise.
+  */
+  bool hasAttributeSubstring(string name, string value) @trusted
+  {
+    if (!name)
+    {
+      return false;
+    }
+
+    name = name.strip().toLower();
+
+    auto attribute = _attributes.get(name, null);
+
+    if (!attribute)
+    {
+      return false;
+    }
+
+    import std.algorithm : canFind;
+
+    return attribute.value.canFind(value);
   }
 
   /// Clears the attributes of the node.
@@ -349,16 +500,296 @@ final class DomNode
     return elements;
   }
 
+  /**
+  * Queries all dom nodes based on a css3 selector.
+  * Params:
+  *   selector = The css3 selector.
+  * Returns:
+  *   An array of all matching nodes.
+  */
   DomNode[] querySelectorAll(string selector)
   {
-    /// TODO: This ...
-    return null;
+    import std.array : split, array;
+    import std.algorithm : map, filter;
+
+    import diamond.css;
+
+    auto selectorCollection = selector.split(",");
+
+    DomNode[] elements;
+
+    foreach (cssSelector; selectorCollection)
+    {
+      DomNode[] selectorElements;
+
+      auto query = parseCss3Selector(cssSelector);
+
+      if (query)
+      {
+        Css3SelectionQuery current = query;
+        Css3SelectionQuery last;
+
+        DomNode[] currentNodes = [this];
+
+        while (current)
+        {
+          Css3SelectorOperator operator = current.operator;
+
+          if (operator == Css3SelectorOperator.none)
+          {
+            if (!last)
+            {
+              break;
+            }
+
+            operator = last.operator;
+          }
+
+          if (current.selections)
+          {
+            bool hadWildCard;
+
+            auto nodes = currentNodes.dup;
+            currentNodes = [];
+
+            foreach (selection; current.selections)
+            {
+              if (selection.hasWildcard)
+              {
+                foreach (currentNode; currentNodes)
+                {
+                  selectorElements ~= currentNode.getAll();
+                }
+
+                hadWildCard = true;
+                break;
+              }
+
+              foreach (currentNode; nodes)
+              {
+                DomNode[] filterNodes(DomNode[] temp) @safe
+                {
+                  foreach (tagName; selection.tagNames)
+                  {
+                    temp = temp.filter!(n => n.name == tagName).array;
+                  }
+
+                  foreach (id; selection.ids)
+                  {
+                    temp = temp.filter!(n => n.hasAttribute("id", id)).array;
+                  }
+
+                  foreach (className; selection.classNames)
+                  {
+                    temp = temp.filter!(n => n.hasAttributeContains("class", className)).array;
+                  }
+
+                  if (selection.attributeSelection)
+                  {
+                    auto attribute = selection.attributeSelection;
+
+                    switch (attribute.operator)
+                    {
+                      case Css3SelectorAttributeOperator.equals:
+                      {
+                        temp = temp.filter!(n => n.hasAttribute(attribute.name, attribute.value)).array;
+                        break;
+                      }
+
+                      case Css3SelectorAttributeOperator.containsWord:
+                      {
+                        temp = temp.filter!(n => n.hasAttributeContains(attribute.name, attribute.value)).array;
+                        break;
+                      }
+
+                      case Css3SelectorAttributeOperator.listStartsWith:
+                      {
+                        auto values = attribute.value.split("-");
+
+                        foreach (value; values)
+                        {
+                          temp = temp.filter!(n => n.hasAttributeContains(attribute.name, value)).array;
+                        }
+                        break;
+                      }
+
+                      case Css3SelectorAttributeOperator.startsWith:
+                      {
+                        temp = temp.filter!(n => n.hasAttributeStartsWith(attribute.name, attribute.value)).array;
+                        break;
+                      }
+
+                      case Css3SelectorAttributeOperator.endsWith:
+                      {
+                        temp = temp.filter!(n => n.hasAttributeEndsWith(attribute.name, attribute.value)).array;
+                        break;
+                      }
+
+                      case Css3SelectorAttributeOperator.contains:
+                      {
+                        temp = temp.filter!(n => n.hasAttributeSubstring(attribute.name, attribute.value)).array;
+                        break;
+                      }
+
+                      default: break;
+                    }
+                  }
+
+                  return temp;
+                }
+
+                switch (operator)
+                {
+                  case Css3SelectorOperator.firstChild:
+                  {
+                    if (currentNode._children)
+                    {
+                      DomNode[] temp = currentNode._children.dup;
+
+                      temp = filterNodes(temp);
+
+                      if (temp && temp.length)
+                      {
+                        currentNodes ~= temp[0];
+                      }
+                    }
+                    break;
+                  }
+
+                  case Css3SelectorOperator.firstSibling:
+                  {
+                    if (currentNode._parent && currentNode._parent._children)
+                    {
+                      DomNode[] temp = currentNode._parent._children.dup;
+
+                      temp = filterNodes(temp);
+
+                      if (temp && temp.length)
+                      {
+                        currentNodes ~= temp[0];
+                      }
+                    }
+                    break;
+                  }
+
+                  case Css3SelectorOperator.allChildren:
+                  {
+                    if (currentNode._children)
+                    {
+                      DomNode[] temp = currentNode.getAll().dup;
+
+                      temp = filterNodes(temp);
+
+                      if (temp && temp.length)
+                      {
+                        currentNodes ~= temp;
+                      }
+                    }
+                    break;
+                  }
+
+                  case Css3SelectorOperator.allSiblings:
+                  {
+                    if (currentNode._parent && currentNode._parent._children)
+                    {
+                      DomNode[] temp = currentNode._parent._children.dup;
+
+                      temp = filterNodes(temp);
+
+                      if (temp && temp.length)
+                      {
+                        currentNodes ~= temp;
+                      }
+                    }
+                    break;
+                  }
+
+                  default: break;
+                }
+              }
+            }
+
+            if (hadWildCard)
+            {
+              current = null;
+              continue;
+            }
+          }
+
+          last = current;
+          current = current.nextSelection;
+        }
+
+        selectorElements = currentNodes;
+      }
+
+      elements ~= selectorElements;
+    }
+
+    // TODO: Rewrite this for efficiency ...
+    auto uniqMem(string pred, T)(T[] array) @safe
+    {
+      T[] result = [];
+
+      foreach (a; array)
+      {
+        bool notUnique;
+        foreach (b; result)
+        {
+          mixin("if (" ~ pred ~ ") notUnique = true;");
+        }
+
+        if (!notUnique)
+        {
+          result ~= a;
+        }
+      }
+
+      return result;
+    }
+
+    return elements ? (uniqMem!"a._nodeId == b._nodeId"(elements)) : [];
   }
 
+  /**
+  * Queries the first dom node based on a css3 selector.
+  * Params:
+  *   selector = The css3 selector.
+  * Returns:
+  *   The node if found, null otherwise.
+  */
   DomNode querySelector(string selector)
   {
-    /// TODO: This ...
-    return null;
+    auto result = querySelectorAll(selector);
+
+    if (!result || !result.length)
+    {
+      return null;
+    }
+
+    return result[0];
+  }
+
+  /**
+  * Gets all nested nodes.
+  * Returns:
+  *   An array of all nested nodes.
+  */
+  private DomNode[] getAll()
+  {
+    DomNode[] nodes;
+
+    if (_children)
+    {
+      foreach (child; _children)
+      {
+        nodes ~= child;
+
+        nodes ~= child.getAll();
+      }
+    }
+
+    return nodes ? nodes : [];
   }
 
   /**

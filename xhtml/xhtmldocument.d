@@ -18,6 +18,10 @@ final class XHtmlDocument : DomDocument
   XHtmlNode[] _rootNodes;
   /// The doctype node.
   XHtmlNode _doctype;
+  /// The head node.
+  XHtmlNode _head;
+  /// The body node.
+  XHtmlNode _body;
 
   public:
   final:
@@ -47,8 +51,34 @@ final class XHtmlDocument : DomDocument
       {
         _doctype = element;
       }
+      else if (element.name.toLower() == "head")
+      {
+        _head = element;
+      }
+      else if (element.name.toLower() == "body")
+      {
+        _body = element;
+      }
       else
       {
+        if (element.name.toLower() == "html")
+        {
+          if (element.children)
+          {
+            foreach (child; element.children)
+            {
+              if (child.name.toLower() == "head")
+              {
+                _head = child;
+              }
+              else if (child.name.toLower() == "body")
+              {
+                _body = child;
+              }
+            }
+          }
+        }
+        
         _rootNodes ~= element;
       }
     }
@@ -63,13 +93,59 @@ final class XHtmlDocument : DomDocument
     void root(XHtmlNode[] nodes) @safe
     {
       _rootNodes = nodes;
+
+      if (!_rootNodes)
+      {
+        return;
+      }
+
+      foreach (element; _rootNodes)
+      {
+        import std.string : toLower;
+
+        if (element.name.toLower() == "doctype")
+        {
+          _doctype = element;
+        }
+        else if (element.name.toLower() == "head")
+        {
+          _head = element;
+        }
+        else if (element.name.toLower() == "body")
+        {
+          _body = element;
+        }
+        else if (element.name.toLower() == "html")
+        {
+          if (element.children)
+          {
+            foreach (child; element.children)
+            {
+              if (child.name.toLower() == "head")
+              {
+                _head = child;
+              }
+              else if (child.name.toLower() == "body")
+              {
+                _body = child;
+              }
+            }
+          }
+        }
+      }
     }
+
+    /// Gets the head node.
+    XHtmlNode head() @safe { return _head; }
+
+    /// Gets the body node.
+    XHtmlNode body() @safe { return _body; }
   }
 
   /**
-  * Converts the html document to a properly formatted html document-string.
+  * Converts the xhtml document to a properly formatted xhtml document-string.
   * Returns:
-  *   A string equivalent to the properly formatted html document-string.
+  *   A string equivalent to the properly formatted xhtml document-string.
   */
   override string toString() @safe
   {
