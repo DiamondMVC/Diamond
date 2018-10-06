@@ -103,6 +103,13 @@ final class Css3Selection
     /// Gets the attribute selection.
     Css3AttributeSelection attributeSelection() @safe { return _attributeSelection; }
   }
+
+  override string toString()
+  {
+    import std.string : format;
+
+    return format("%s : %s : %s : %s", tagNames, ids, classNames, states);
+  }
 }
 
 /// Wrapper around a css3 attribute selection.
@@ -199,6 +206,8 @@ Css3SelectionQuery parseParts(string selector) @safe
     return null;
   }
 
+  selector = selector.strip();
+
   bool inAttribute;
   Css3SelectionQuery root = new Css3SelectionQuery;
   Css3SelectionQuery currentQuery = root;
@@ -263,6 +272,12 @@ Css3SelectionQuery parseParts(string selector) @safe
     else if (!current.isWhite || inAttribute)
     {
       currentQuery._selector ~= current;
+
+      if (i == (selector.length - 1) && !currentQuery._parent)
+      {
+        currentQuery._operator = Css3SelectorOperator.allChildren;
+        break;
+      }
     }
   }
 

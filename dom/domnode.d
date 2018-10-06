@@ -535,7 +535,7 @@ final class DomNode
   DomNode[] querySelectorAll(string selector)
   {
     import std.array : split, array;
-    import std.algorithm : map, filter;
+    import std.algorithm : map, filter, sort, group;
 
     import diamond.css;
 
@@ -751,29 +751,7 @@ final class DomNode
       elements ~= selectorElements;
     }
 
-    // TODO: Rewrite this for efficiency ...
-    auto uniqMem(string pred, T)(T[] array) @safe
-    {
-      T[] result = [];
-
-      foreach (a; array)
-      {
-        bool notUnique;
-        foreach (b; result)
-        {
-          mixin("if (" ~ pred ~ ") notUnique = true;");
-        }
-
-        if (!notUnique)
-        {
-          result ~= a;
-        }
-      }
-
-      return result;
-    }
-
-    return elements ? (uniqMem!"a._nodeId == b._nodeId"(elements)) : [];
+    return elements ? elements.sort.group.map!(g => g[0]).array : [];
   }
 
   /**
@@ -880,5 +858,34 @@ final class DomNode
   override string toString() @safe
   {
     return toString(0);
+  }
+
+  /// Operator overload.
+  override int opCmp(Object o)
+  {
+    auto node = cast(DomNode)o;
+
+    if (!node)
+    {
+      return -1;
+    }
+
+    if (node._nodeId == _nodeId)
+    {
+      return 0;
+    }
+
+    if (node._nodeId < _nodeId)
+    {
+      return -1;
+    }
+
+    return 1;
+  }
+
+  /// Operator overload.
+  override bool opEquals(Object o)
+  {
+    return opCmp(o) == 0;
   }
 }
