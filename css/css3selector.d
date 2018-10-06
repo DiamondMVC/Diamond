@@ -76,7 +76,7 @@ final class Css3Selection
   /// The attribute selection.
   Css3AttributeSelection _attributeSelection;
   /// The attribute selector.
-  public string _attributeSelector;
+  string _attributeSelector;
 
   public:
   final:
