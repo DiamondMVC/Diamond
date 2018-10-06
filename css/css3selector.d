@@ -103,13 +103,6 @@ final class Css3Selection
     /// Gets the attribute selection.
     Css3AttributeSelection attributeSelection() @safe { return _attributeSelection; }
   }
-
-  override string toString()
-  {
-    import std.string : format;
-
-    return format("%s : %s : %s : %s", tagNames, ids, classNames, states);
-  }
 }
 
 /// Wrapper around a css3 attribute selection.
