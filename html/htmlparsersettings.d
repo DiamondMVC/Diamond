@@ -19,7 +19,7 @@ final class HtmlParserSettings : DomParserSettings
     (
       false, // Html is not strict
       // Tags that can contain flexible content.
-      ["script", "pre", "code", "style"],
+      ["script", "pre", "code", "style", "svg"],
       // Html allows self-closing tags.
       true,
       // Tags that are self-closing.

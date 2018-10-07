@@ -51,34 +51,37 @@ final class XHtmlDocument : DomDocument
       {
         _doctype = element;
       }
-      else if (element.name.toLower() == "head")
-      {
-        _head = element;
-      }
-      else if (element.name.toLower() == "body")
-      {
-        _body = element;
-      }
       else
       {
-        if (element.name.toLower() == "html")
+        if (element.name.toLower() == "head")
         {
-          if (element.children)
+          _head = element;
+        }
+        else if (element.name.toLower() == "body")
+        {
+          _body = element;
+        }
+        else
+        {
+          if (element.name.toLower() == "html")
           {
-            foreach (child; element.children)
+            if (element.children)
             {
-              if (child.name.toLower() == "head")
+              foreach (child; element.children)
               {
-                _head = child;
-              }
-              else if (child.name.toLower() == "body")
-              {
-                _body = child;
+                if (child.name.toLower() == "head")
+                {
+                  _head = child;
+                }
+                else if (child.name.toLower() == "body")
+                {
+                  _body = child;
+                }
               }
             }
           }
         }
-        
+
         _rootNodes ~= element;
       }
     }
@@ -140,6 +143,78 @@ final class XHtmlDocument : DomDocument
 
     /// Gets the body node.
     XHtmlNode body() @safe { return _body; }
+  }
+
+  /**
+  * Queries all dom nodes based on a css3 selector.
+  * Params:
+  *   selector = The css3 selector.
+  * Returns:
+  *   An array of all matching nodes.
+  */
+  XHtmlNode[] querySelectorAll(string selector)
+  {
+    import std.array : array;
+    import std.algorithm : map, filter, sort, group;
+
+    XHtmlNode[] elements;
+
+    auto dummyNode = new XHtmlNode(null);
+
+    foreach (rootNode; _rootNodes)
+    {
+      dummyNode.addChild(rootNode);
+
+      elements ~= dummyNode.querySelectorAll(selector);
+    }
+
+    return elements ? elements.sort.group.map!(g => g[0]).array : [];
+  }
+
+  /**
+  * Queries the first dom node based on a css3 selector.
+  * Params:
+  *   selector = The css3 selector.
+  * Returns:
+  *   The node if found, null otherwise.
+  */
+  XHtmlNode querySelector(string selector)
+  {
+    auto result = querySelectorAll(selector);
+
+    if (!result || !result.length)
+    {
+      return null;
+    }
+
+    return result[0];
+  }
+
+  /**
+  * Gets a dom node by an attribute named "id" matching the given value.
+  * Params:
+  *   id = The id of the node to retrieve.
+  * Returns:
+  *   The dom node if found, null otherwise.
+  */
+  XHtmlNode getElementById(string id) @safe
+  {
+    foreach (rootNode; _rootNodes)
+    {
+      if (rootNode.hasAttribute("id", id))
+      {
+        return rootNode;
+      }
+
+      auto element = rootNode.getElementById(id);
+
+      if (element)
+      {
+        return element;
+      }
+    }
+
+    return null;
   }
 
   /**

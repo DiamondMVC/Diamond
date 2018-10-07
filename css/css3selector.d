@@ -220,6 +220,12 @@ Css3SelectionQuery parseParts(string selector) @safe
     {
       inAttribute = false;
       currentQuery._selector ~= current;
+
+      if (i == (selector.length - 1) && !currentQuery._parent)
+      {
+        currentQuery._operator = Css3SelectorOperator.allChildren;
+        break;
+      }
     }
     else if (currentQuery._selector && currentQuery._selector.length && !inAttribute && (current == '>' || current == '+' || current == '~' || (current.isWhite && (next != '>' && next != '+' && next != '~'))))
     {
@@ -313,10 +319,6 @@ Css3Selection[] parsePart(string selector) @safe
       {
         selection._ids ~= identifier;
       }
-      else if (identifier.strip() == "*")
-      {
-        selection._hasWildcard = true;
-      }
       else
       {
         selection._tagNames ~= identifier;
@@ -359,6 +361,11 @@ Css3Selection[] parsePart(string selector) @safe
     {
       currentAttributeSelector ~= current;
     }
+    else if (current == '*')
+    {
+      selection._hasWildcard = true;
+      break;
+    }
     else if (current == '.')
     {
       finalizeSelection();
@@ -385,9 +392,12 @@ Css3Selection[] parsePart(string selector) @safe
     }
   }
 
-  finalizeSelection();
+  if (!selection._hasWildcard)
+  {
+    finalizeSelection();
+  }
 
-  if (selection._tagNames || selection._ids || selection._classNames || selection._attributeSelector || selection._states)
+  if (selection._hasWildcard || selection._tagNames || selection._ids || selection._classNames || selection._attributeSelector || selection._states)
   {
     selections ~= selection;
   }
