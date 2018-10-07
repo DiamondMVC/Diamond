@@ -8,6 +8,7 @@ module diamond.xml.xmldocument;
 import diamond.xml.xmlexception;
 import diamond.dom.domdocument;
 import diamond.dom.domnode;
+import diamond.dom.domparsersettings;
 import diamond.xml.xmlnode;
 
 /// An XML document.
@@ -23,10 +24,14 @@ final class XmlDocument : DomDocument
 
   public:
   final:
-  /// Creates a new xml document.
-  this() @safe
+  /**
+  * Creates a new xml document.
+  * Params:
+  *   parserSettings = The settings used for parsing the document.
+  */
+  this(DomParserSettings parserSettings) @safe
   {
-    super();
+    super(parserSettings);
   }
 
   /**
@@ -91,6 +96,12 @@ final class XmlDocument : DomDocument
     {
       _root = newRoot;
     }
+  }
+
+  /// XML documents cannot be repaired.
+  override void repairDocument() @safe
+  {
+    throw new XmlException("Cannot repair XML documents.");
   }
 
   /**

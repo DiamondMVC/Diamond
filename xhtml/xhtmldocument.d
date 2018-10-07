@@ -8,6 +8,7 @@ module diamond.xhtml.xhtmldocument;
 import diamond.xhtml.xhtmlexception;
 import diamond.dom.domdocument;
 import diamond.dom.domnode;
+import diamond.dom.domparsersettings;
 import diamond.xhtml.xhtmlnode;
 
 /// An XHTML document.
@@ -25,10 +26,14 @@ final class XHtmlDocument : DomDocument
 
   public:
   final:
-  /// Creates a new html document.
-  this() @safe
+  /**
+  * Creates a new xhtml document.
+  * Params:
+  *   parserSettings = The settings used for parsing the document.
+  */
+  this(DomParserSettings parserSettings) @safe
   {
-    super();
+    super(parserSettings);
   }
 
   /**
@@ -215,6 +220,12 @@ final class XHtmlDocument : DomDocument
     }
 
     return null;
+  }
+
+  /// XHtml documents cannot be repaired. Use HtmlDocument.repairDocument() instead.
+  override void repairDocument() @safe
+  {
+    throw new XHtmlException("Cannot repair XHtml documents, because they're strict html. Use HtmlDocument.repairDocument() instead.");
   }
 
   /**

@@ -23,6 +23,10 @@ abstract class DomParserSettings
   HashSet!string _selfClosingTags;
   /// HashSet of standard tags.
   HashSet!string _standardTags;
+  /// Tags to repair within the head section.
+  HashSet!string _headRepairTags;
+  /// Tags to repair within the body section.
+  HashSet!string _bodyRepairTags;
 
   protected
   {
@@ -34,6 +38,8 @@ abstract class DomParserSettings
     *   allowSelfClosingTags =  Boolean determining whether the parser allows self-closing tags or not.
     *   selfClosingTags =       An array of tags that can be self-closed.
     *   standardTags =          An array of standard tags. These are only relevant if self-closing tags are allowed.
+    *   headRepairTags =        An array of tags that can be repaired within the head section.
+    *   bodyRepairTags =        An array of tags that can be repaired within the body section.
     */
     this
     (
@@ -41,7 +47,9 @@ abstract class DomParserSettings
       string[] flexibleTags,
       bool allowSelfClosingTags,
       string[] selfClosingTags,
-      string[] standardTags
+      string[] standardTags,
+      string[] headRepairTags,
+      string[] bodyRepairTags
     ) @safe
     {
       _strictParsing = strictParsing;
@@ -78,6 +86,26 @@ abstract class DomParserSettings
           {
             _standardTags.add(tag.toLower);
           }
+        }
+      }
+
+      _headRepairTags = new HashSet!string;
+
+      if (headRepairTags && headRepairTags.length)
+      {
+        foreach (tag; headRepairTags)
+        {
+          _headRepairTags.add(tag.toLower);
+        }
+      }
+
+      _bodyRepairTags = new HashSet!string;
+
+      if (bodyRepairTags && bodyRepairTags.length)
+      {
+        foreach (tag; bodyRepairTags)
+        {
+          _bodyRepairTags.add(tag.toLower);
         }
       }
     }
@@ -128,5 +156,29 @@ abstract class DomParserSettings
   bool isStandardTag(string tagName) @safe
   {
     return _standardTags.has(tagName.toLower);
+  }
+
+  /**
+  * Checks whether a specific tag is located in the head section or not.
+  * Params:
+  *   tagName = The name of the tag to validate.
+  * Returns:
+  *   True if the tag is located in the head section, false otherwise.
+  */
+  bool isHeadTag(string tagName) @safe
+  {
+    return _headRepairTags.has(tagName);
+  }
+
+  /**
+  * Checks whether a specific tag is located in the body section or not.
+  * Params:
+  *   tagName = The name of the tag to validate.
+  * Returns:
+  *   True if the tag is located in the body section, false otherwise.
+  */
+  bool isBodyTag(string tagName) @safe
+  {
+    return _bodyRepairTags.has(tagName);
   }
 }

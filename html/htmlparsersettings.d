@@ -101,6 +101,75 @@ final class HtmlParserSettings : DomParserSettings
         "menu", "menuitem", "summary",
         // Web Components
         "content", "element", "shadow", "slot", "template"
+      ],
+      // Tags to repair in the head section
+      [
+        "title", "meta", "link", "base",
+        // Although style can be allowed in the body, when repairing it's better suited in the head section.
+        "style"
+      ],
+      // Tags to repair in the body section
+      [
+        "area", "br", "col", "embed",
+        "hr", "img", "input", "keygen",
+        "param", "source", "track", "wbr",
+        "address", "article", "aside",
+        "footer", "header",
+        "h1", "h2", "h3", "h4", "h5", "h6",
+        "hgroup",
+        "main", "nav", "section",
+        "blockquote",
+        "dd", "dir", "div", "dl", "dt",
+        "figcaption", "figure",
+        "hr",
+        "li", "ol", "ul",
+        "a",
+        "abbr",
+        "b",
+        "bdo", "bdo",
+        "br",
+        "cite",
+        "data",
+        "dfn",
+        "em", "i",
+        "kbd",
+        "mark", "q",
+        "rn", "rp", "rt", "rtc",
+        "ruby",
+        "s",
+        "samp", "small", "span",
+        "strong", "sub", "sup",
+        "time", "tt",
+        "u",
+        "var",
+        "audio", "map", "video",
+        "applet", "iframe",
+        "noembed", "object",
+        "picture",
+        "canvas",
+        "del", "ins",
+        "caption",
+        "col", "colgroup",
+        "table",
+        "tbody", "td",
+        "tfoot",
+        "th", "thead",
+        "tr",
+        "button", "datalist", "fieldset",
+        "form", "label", "legend",
+        "meter", "optgroup",
+        "option",
+        "output",
+        "progress",
+        "select",
+        "textarea",
+        "details", "dialog",
+        "menu", "menuitem", "summary",
+        "content", "element", "shadow", "slot", "template",
+        "svg", "path",
+        // script is placed in the body, because sometimes it's depending on the content.
+        // During a repair we do not know if the script is depending or not and thus we have to make an assumption.
+        "script"
       ]
     );
   }
