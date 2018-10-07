@@ -25,7 +25,9 @@ final class XHtmlParserSettings : DomParserSettings
       // XHtml has no self-closing tags.
       null,
       // Standard tags are not relevant without self-closing tags.
-      null
+      null,
+      // XHtml documents cannot be repaired.
+      null, null
     );
   }
 }

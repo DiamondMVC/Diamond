@@ -105,7 +105,7 @@ final class DomNode
     /// Gets the children of the node.
     DomNode[] children() @safe { return _children; }
 
-    package(diamond.dom)
+    package(diamond)
     {
       /// Gets the settings used to parse the dom node.
       DomParserSettings parserSettings() @safe { return _parserSettings; }
@@ -115,7 +115,10 @@ final class DomNode
       {
         _parserSettings = parserSettings;
       }
+    }
 
+    package(diamond.dom)
+    {
       /// Gets a boolean determining whether the node is a text node or not.
       bool isTextNode() @safe { return _textNode; }
 

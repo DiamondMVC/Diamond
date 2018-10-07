@@ -29,7 +29,7 @@ TDocument parseDom(TDocument : DomDocument)(string dom, DomParserSettings parser
 {
   enforce(parserSettings !is null, "Missing parsing settings.");
 
-  auto doc = new TDocument;
+  auto doc = new TDocument(parserSettings);
 
   auto elements = parseDomElements(dom, parserSettings);
 
