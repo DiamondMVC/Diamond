@@ -8,6 +8,7 @@ module diamond.dom.domparser;
 import std.uni : isWhite;
 import std.string : format, strip, toLower, indexOf;
 import std.algorithm : canFind;
+import std.conv : to;
 
 import diamond.dom.domdocument;
 import diamond.dom.domnode;
@@ -81,6 +82,7 @@ package(diamond.dom) DomNode[] parseDomElements(string dom, DomParserSettings pa
   string text;
   bool comment;
   char headerChar;
+  char attributeStringChar = '\0';
 
   void finalizeNode() @trusted
   {
@@ -107,6 +109,27 @@ package(diamond.dom) DomNode[] parseDomElements(string dom, DomParserSettings pa
     char current = dom[i];
     char next =  i < (dom.length - 1) ? dom[i + 1] : '\0';
 
+    if (current < 32 && (current < 8 || current > 13))
+    {
+      continue;
+    }
+
+    if (comment)
+    {
+      if (current == '-' && next == '-' && i < (dom.length - 2))
+      {
+        auto afterNext = dom[i + 2];
+
+        if (afterNext == '>')
+        {
+          comment = false;
+          i += 2;
+        }
+      }
+
+      continue;
+    }
+
     if (currentNode && evaluated && parserSettings.isFlexibleTag(currentNode.name))
     {
       string content = "";
@@ -126,7 +149,7 @@ package(diamond.dom) DomNode[] parseDomElements(string dom, DomParserSettings pa
           stringChar = current;
           inString = true;
         }
-        else if (current == stringChar && inString)
+        else if ((current == stringChar || current == '\r' || current == '\n') && inString)
         {
           inString = false;
         }
@@ -162,22 +185,6 @@ package(diamond.dom) DomNode[] parseDomElements(string dom, DomParserSettings pa
       continue;
     }
 
-    if (comment)
-    {
-      if (current == '-' && next == '-' && i < (dom.length - 2))
-      {
-        auto afterNext = dom[i + 2];
-
-        if (afterNext == '>')
-        {
-          comment = false;
-           i += 3;
-        }
-      }
-
-      continue;
-    }
-
     if (current == '<')
     {
       if (next == '!' && i < (dom.length - 3))
@@ -188,14 +195,22 @@ package(diamond.dom) DomNode[] parseDomElements(string dom, DomParserSettings pa
         if (afterNext == '-' && nextAfterNext == '-')
         {
           comment = true;
-          i += 4;
+          i += 3;
           continue;
         }
       }
 
-      if (currentNode && text && text.length)
+      if (currentNode && text && text.strip().length)
       {
         currentNode.rawText = text;
+
+        currentNode = new DomNode(currentNode);
+        currentNode.isTextNode = true;
+        currentNode.rawText = text;
+        currentNode.parserSettings = parserSettings;
+
+        finalizeNode();
+
         text = null;
       }
 
@@ -335,8 +350,10 @@ package(diamond.dom) DomNode[] parseDomElements(string dom, DomParserSettings pa
     }
     else if (currentNode && !evaluated)
     {
-      if (!attribute && current == '\"')
+      if (!attribute && (current == '\"' || current == '\''))
       {
+        attributeStringChar = current;
+
         auto j = i;
         DomAttribute tempAttribute;
 
@@ -344,10 +361,11 @@ package(diamond.dom) DomNode[] parseDomElements(string dom, DomParserSettings pa
         {
           j++;
 
-          if (dom[j] == '\"')
+          if (dom[j] == attributeStringChar && last != '\\')
           {
             tempAttribute = new DomAttribute(dom[i .. j + 1], null);
             currentNode.addAttribute(tempAttribute);
+            attributeStringChar = '\0';
             break;
           }
         }
@@ -374,7 +392,12 @@ package(diamond.dom) DomNode[] parseDomElements(string dom, DomParserSettings pa
         continue;
       }
 
-      if ((current == '\"' && (attributeValue || last == '\"')) || (current == '=' && !attribute))
+      if (attributeStringChar == '\0' && (current == '\"' || current == '\'') && last != '\\')
+      {
+        attributeStringChar = current;
+      }
+
+      if ((current == attributeStringChar && last != '\\' && (attributeValue || last == attributeStringChar)) || (current == '=' && !attribute))
       {
         if (!attribute)
         {
@@ -386,6 +409,7 @@ package(diamond.dom) DomNode[] parseDomElements(string dom, DomParserSettings pa
 
           currentNode.addAttribute(attribute);
 
+          attributeStringChar = '\0';
           attribute = null;
           attributeName = null;
           attributeValue = null;
@@ -395,7 +419,7 @@ package(diamond.dom) DomNode[] parseDomElements(string dom, DomParserSettings pa
       {
         attributeName ~= current;
       }
-      else if (((current == '\"' && last != '=') || current != '\"'))
+      else if (((current == attributeStringChar && last != '=' && last != '\\') || current != attributeStringChar))
       {
         attributeValue ~= current;
       }

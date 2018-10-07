@@ -34,6 +34,8 @@ final class DomNode
   DomNode[] _children;
   /// The parser settings used for the dom node.
   DomParserSettings _parserSettings;
+  /// Boolean determining whether the node is a text node or not.
+  bool _textNode;
 
   public:
   final:
@@ -112,6 +114,15 @@ final class DomNode
       void parserSettings(DomParserSettings parserSettings) @safe
       {
         _parserSettings = parserSettings;
+      }
+
+      /// Gets a boolean determining whether the node is a text node or not.
+      bool isTextNode() @safe { return _textNode; }
+
+      /// Sets a boolean determining whether the node is a text node or not.
+      void isTextNode(bool textNode) @safe
+      {
+        _textNode = textNode;
       }
     }
   }
@@ -542,9 +553,15 @@ final class DomNode
     auto selectorCollection = selector.split(",");
 
     DomNode[] elements;
+    bool hadWildCard;
 
     foreach (cssSelector; selectorCollection)
     {
+      if (hadWildCard)
+      {
+        break;
+      }
+
       DomNode[] selectorElements;
 
       auto query = parseCss3Selector(cssSelector);
@@ -556,7 +573,7 @@ final class DomNode
 
         DomNode[] currentNodes = [this];
 
-        while (current)
+        while (current && !hadWildCard)
         {
           Css3SelectorOperator operator = current.operator;
 
@@ -572,8 +589,6 @@ final class DomNode
 
           if (current.selections)
           {
-            bool hadWildCard;
-
             auto nodes = currentNodes.dup;
             currentNodes = [];
 
@@ -581,9 +596,10 @@ final class DomNode
             {
               if (selection.hasWildcard)
               {
-                foreach (currentNode; currentNodes)
+                foreach (currentNode; nodes)
                 {
-                  selectorElements ~= currentNode.getAll();
+                  elements = [currentNode];
+                  elements ~= currentNode.getAll();
                 }
 
                 hadWildCard = true;
@@ -796,6 +812,39 @@ final class DomNode
   }
 
   /**
+  * Converts the node to a properly formatted dom outer node-string.
+  * Returns:
+  *   A string equivalent to the properly formatted dom outer node-string.
+  */
+  string toOuterString() @trusted
+  {
+    import std.string : format;
+    import std.algorithm : map, filter;
+    import std.array : array, join;
+
+    string attributes;
+    if (_attributes && _attributes.length)
+    {
+      attributes = " ";
+
+      attributes ~= _attributes.values.filter!(a => a.name && a.name.strip().length).map!(a => "%s=\"%s\"".format(a.name, a.value)).array.join(" ");
+    }
+
+    if (_parserSettings && _parserSettings.isSelfClosingTag(_name))
+    {
+      return "<%s%s>\r\n".format(_name, attributes);
+    }
+    else if (_parserSettings && _parserSettings.isStandardTag(_name))
+    {
+      return "<%s%s></%s>\r\n".format(_name, attributes, _name);
+    }
+    else
+    {
+      return "<%s%s />\r\n".format(_name, attributes);
+    }
+  }
+
+  /**
   * Converts the node to a properly formatted dom node-string.
   * Params:
   *   index = The tab index of the node.
@@ -813,6 +862,11 @@ final class DomNode
     foreach (i; 0 .. index)
     {
       tabs ~= '\t';
+    }
+
+    if (_textNode)
+    {
+      return _text ~ "\r\n";
     }
 
     string attributes;
@@ -843,6 +897,10 @@ final class DomNode
     else if (_parserSettings && _parserSettings.isSelfClosingTag(_name))
     {
       return "%s<%s%s>\r\n".format(tabs, _name, attributes);
+    }
+    else if (_parserSettings && _parserSettings.isStandardTag(_name))
+    {
+      return "%s<%s%s></%s>\r\n".format(tabs, _name, attributes, _name);
     }
     else
     {
