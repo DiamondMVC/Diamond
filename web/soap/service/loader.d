@@ -3,7 +3,7 @@
 * License: MIT (https://github.com/DiamondMVC/Diamond/blob/master/LICENSE)
 * Author: Jacob Jensen (bausshf)
 */
-module diamond.web.soap.loader;
+module diamond.web.soap.service.loader;
 
 /**
 * Loads soap definitions from a wsdl file.
@@ -22,7 +22,7 @@ package(diamond) void loadSoapDefinition(string name, string wsdl, string module
   import diamond.security.validation.url : isValidUrl;
   import diamond.dom;
   import diamond.xml;
-  import diamond.web.soap.parser;
+  import diamond.web.soap.service.parser;
   import diamond.errors.exceptions;
 
   if (isValidUrl(originalWsdl))

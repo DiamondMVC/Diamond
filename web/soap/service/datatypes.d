@@ -3,7 +3,7 @@
 * License: MIT (https://github.com/DiamondMVC/Diamond/blob/master/LICENSE)
 * Author: Jacob Jensen (bausshf)
 */
-module diamond.web.soap.datatypes;
+module diamond.web.soap.service.datatypes;
 
 import std.datetime : DateTime;
 
@@ -84,7 +84,7 @@ public
     /// xsd.unsignedByte
     alias unsignedByte = ubyte;
 
-  import diamond.web.soap.envelopetype;
-  import diamond.web.soap.binding;
-  import diamond.web.soap.attributes;
+  import diamond.web.soap.service.envelopetype;
+  import diamond.web.soap.service.binding;
+  import diamond.web.soap.service.attributes;
 }

@@ -3,12 +3,12 @@
 * License: MIT (https://github.com/DiamondMVC/Diamond/blob/master/LICENSE)
 * Author: Jacob Jensen (bausshf)
 */
-module diamond.web.soap.complextype;
+module diamond.web.soap.service.complextype;
 
-import diamond.web.soap.soaptype;
-import diamond.web.soap.element;
+import diamond.web.soap.service.soaptype;
+import diamond.web.soap.service.element;
 
-package(diamond.web.soap):
+package(diamond.web.soap.service):
 /// Wrapper around a complex type.
 final class SoapComplexType : SoapType
 {

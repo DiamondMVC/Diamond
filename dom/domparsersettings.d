@@ -131,6 +131,11 @@ abstract class DomParserSettings
   */
   bool isFlexibleTag(string tagName) @safe
   {
+    if (!_flexibleTags)
+    {
+      return false;
+    }
+
     return _flexibleTags.has(tagName.toLower);
   }
 
@@ -143,6 +148,11 @@ abstract class DomParserSettings
   */
   bool isSelfClosingTag(string tagName) @safe
   {
+    if (!_selfClosingTags)
+    {
+      return false;
+    }
+
     return _selfClosingTags.has(tagName.toLower);
   }
 
@@ -155,6 +165,11 @@ abstract class DomParserSettings
   */
   bool isStandardTag(string tagName) @safe
   {
+    if (!_standardTags)
+    {
+      return false;
+    }
+
     return _standardTags.has(tagName.toLower);
   }
 
@@ -167,6 +182,11 @@ abstract class DomParserSettings
   */
   bool isHeadTag(string tagName) @safe
   {
+    if (!_headRepairTags)
+    {
+      return false;
+    }
+
     return _headRepairTags.has(tagName);
   }
 
@@ -179,6 +199,11 @@ abstract class DomParserSettings
   */
   bool isBodyTag(string tagName) @safe
   {
+    if (!_bodyRepairTags)
+    {
+      return false;
+    }
+
     return _bodyRepairTags.has(tagName);
   }
 }

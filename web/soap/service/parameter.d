@@ -3,36 +3,38 @@
 * License: MIT (https://github.com/DiamondMVC/Diamond/blob/master/LICENSE)
 * Author: Jacob Jensen (bausshf)
 */
-module diamond.web.soap.element;
+module diamond.web.soap.service.parameter;
 
-import diamond.web.soap.soaptype;
-
-package(diamond.web.soap):
-/// Wrapper around a soap element.
-final class SoapElement : SoapType
+package(diamond.web.soap.service):
+/// Wrapper around a soap parameter.
+final class SoapParameter
 {
   private:
+  /// The name.
+  string _name;
   /// The type.
   string _type;
 
   public:
   final:
   /**
-  * Creates a new soap element.
+  * Creates a new soap parameter.
   * Params:
   *   name = The name.
   *   type = The type.
   */
   this(string name, string type)
   {
-    super(name);
-
+    _name = name;
     _type = type;
   }
 
   @property
   {
-    /// Gets the type of the element.
+    /// Gets the name.
+    string name() { return _name; }
+
+    /// Gets the type.
     string type() { return _type; }
   }
 }

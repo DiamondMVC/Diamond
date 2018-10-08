@@ -3,7 +3,7 @@
 * License: MIT (https://github.com/DiamondMVC/Diamond/blob/master/LICENSE)
 * Author: Jacob Jensen (bausshf)
 */
-module diamond.web.soap.parser.serviceparser;
+module diamond.web.soap.service.parser.serviceparser;
 
 import std.array : split;
 import std.string : format;
@@ -11,7 +11,7 @@ import std.string : format;
 import diamond.dom;
 import diamond.xml;
 
-package(diamond.web.soap.parser):
+package(diamond.web.soap.service.parser):
 /**
 * Parses the services of the wsdl file.
 * Params:
