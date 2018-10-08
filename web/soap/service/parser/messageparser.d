@@ -3,7 +3,7 @@
 * License: MIT (https://github.com/DiamondMVC/Diamond/blob/master/LICENSE)
 * Author: Jacob Jensen (bausshf)
 */
-module diamond.web.soap.parser.messageparser;
+module diamond.web.soap.service.parser.messageparser;
 
 import std.algorithm : startsWith;
 import std.array : split;
@@ -11,11 +11,11 @@ import std.array : split;
 import diamond.core.collections;
 import diamond.dom;
 import diamond.xml;
-import diamond.web.soap.message;
-import diamond.web.soap.parameter;
+import diamond.web.soap.service.message;
+import diamond.web.soap.service.parameter;
 import diamond.errors.exceptions.soapexception;
 
-package(diamond.web.soap.parser):
+package(diamond.web.soap.service.parser):
 /**
 * Parses the messages of the wsdl file.
 * Params:

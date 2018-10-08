@@ -3,11 +3,11 @@
 * License: MIT (https://github.com/DiamondMVC/Diamond/blob/master/LICENSE)
 * Author: Jacob Jensen (bausshf)
 */
-module diamond.web.soap.message;
+module diamond.web.soap.service.message;
 
-import diamond.web.soap.parameter;
+import diamond.web.soap.service.parameter;
 
-package(diamond.web.soap):
+package(diamond.web.soap.service):
 /// Wrapper around a soap message.
 final class SoapMessage
 {

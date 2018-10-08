@@ -3,7 +3,7 @@
 * License: MIT (https://github.com/DiamondMVC/Diamond/blob/master/LICENSE)
 * Author: Jacob Jensen (bausshf)
 */
-module diamond.web.soap.parser.typeparser;
+module diamond.web.soap.service.parser.typeparser;
 
 import std.string : toLower, strip, format;
 import std.array : split;
@@ -11,14 +11,14 @@ import std.algorithm : endsWith;
 
 import diamond.dom;
 import diamond.xml;
-import diamond.web.soap.soaptype;
-import diamond.web.soap.complextype;
-import diamond.web.soap.simpletype;
-import diamond.web.soap.element;
-import diamond.web.soap.aliastype;
+import diamond.web.soap.service.soaptype;
+import diamond.web.soap.service.complextype;
+import diamond.web.soap.service.simpletype;
+import diamond.web.soap.service.element;
+import diamond.web.soap.service.aliastype;
 import diamond.errors.exceptions.soapexception;
 
-package(diamond.web.soap.parser):
+package(diamond.web.soap.service.parser):
 /**
 * Parses a schema.
 * Params:

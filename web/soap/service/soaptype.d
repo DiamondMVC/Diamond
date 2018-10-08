@@ -3,9 +3,9 @@
 * License: MIT (https://github.com/DiamondMVC/Diamond/blob/master/LICENSE)
 * Author: Jacob Jensen (bausshf)
 */
-module diamond.web.soap.soaptype;
+module diamond.web.soap.service.soaptype;
 
-package(diamond.web.soap):
+package(diamond.web.soap.service):
 /// Wrapper around a soap type.
 abstract class SoapType
 {

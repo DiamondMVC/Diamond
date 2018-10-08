@@ -3,11 +3,9 @@
 * License: MIT (https://github.com/DiamondMVC/Diamond/blob/master/LICENSE)
 * Author: Jacob Jensen (bausshf)
 */
-module diamond.web.soap;
+module diamond.web.soap.server;
 
 public
 {
-  import diamond.web.soap.client;
-  import diamond.web.soap.server;
-  import diamond.web.soap.service;
+
 }

@@ -3,10 +3,10 @@
 * License: MIT (https://github.com/DiamondMVC/Diamond/blob/master/LICENSE)
 * Author: Jacob Jensen (bausshf)
 */
-module diamond.web.soap.aliastype;
+module diamond.web.soap.service.aliastype;
 
-import diamond.web.soap.soaptype;
-import diamond.web.soap.element;
+import diamond.web.soap.service.soaptype;
+import diamond.web.soap.service.element;
 
 package(diamond.web.soap):
 /// Wrapper around an alias type.

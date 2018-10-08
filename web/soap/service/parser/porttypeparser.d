@@ -3,18 +3,18 @@
 * License: MIT (https://github.com/DiamondMVC/Diamond/blob/master/LICENSE)
 * Author: Jacob Jensen (bausshf)
 */
-module diamond.web.soap.parser.porttypeparser;
+module diamond.web.soap.service.parser.porttypeparser;
 
 import std.array : split, join;
 import std.string : format;
 
 import diamond.dom;
 import diamond.xml;
-import diamond.web.soap.message;
-import diamond.web.soap.messageoperation;
+import diamond.web.soap.service.message;
+import diamond.web.soap.service.messageoperation;
 import diamond.errors.exceptions.soapexception;
 
-package(diamond.web.soap.parser):
+package(diamond.web.soap.service.parser):
 /**
 * Parses the port types of the wsdl file.
 * Params:

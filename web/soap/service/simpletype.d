@@ -3,11 +3,11 @@
 * License: MIT (https://github.com/DiamondMVC/Diamond/blob/master/LICENSE)
 * Author: Jacob Jensen (bausshf)
 */
-module diamond.web.soap.simpletype;
+module diamond.web.soap.service.simpletype;
 
-import diamond.web.soap.soaptype;
+import diamond.web.soap.service.soaptype;
 
-package(diamond.web.soap):
+package(diamond.web.soap.service):
 /// Enumeration of simple type definitions.
 enum SoapSimpleTypeDefinition
 {

@@ -3,7 +3,7 @@
 * License: MIT (https://github.com/DiamondMVC/Diamond/blob/master/LICENSE)
 * Author: Jacob Jensen (bausshf)
 */
-module diamond.web.soap.parser.wsdlparser;
+module diamond.web.soap.service.parser.wsdlparser;
 
 import std.string : format;
 import std.file : write, exists, mkdir;
@@ -19,13 +19,13 @@ import diamond.xml;
 *   document =   The wsdl document.
 *   moduleName = The name of the resulting d module.
 */
-package(diamond.web.soap) void parseWsdl(string name, string wsdl, XmlDocument document, string moduleName)
+package(diamond.web.soap.service) void parseWsdl(string name, string wsdl, XmlDocument document, string moduleName)
 {
-  import diamond.web.soap.parser.typeparser;
-  import diamond.web.soap.parser.messageparser;
-  import diamond.web.soap.parser.porttypeparser;
-  import diamond.web.soap.parser.bindingparser;
-  import diamond.web.soap.parser.serviceparser;
+  import diamond.web.soap.service.parser.typeparser;
+  import diamond.web.soap.service.parser.messageparser;
+  import diamond.web.soap.service.parser.porttypeparser;
+  import diamond.web.soap.service.parser.bindingparser;
+  import diamond.web.soap.service.parser.serviceparser;
 
   auto types = document.root.getByTagName("types");
 
@@ -104,13 +104,13 @@ import diamond.web.soap.client;
   }
 
   import diamond.core.collections;
-  import diamond.web.soap.message;
+  import diamond.web.soap.service.message;
 
   SoapMessage[string] inputs;
   SoapMessage[string] outputs;
   parseMessages(moduleName, new HashSet!string(typeNames), document.root, inputs, outputs);
 
-  import diamond.web.soap.messageoperation;
+  import diamond.web.soap.service.messageoperation;
 
   SoapMessageOperation[][string] messageOperations;
   wsdlResult ~= parsePortTypes(document.root, inputs, outputs, messageOperations);

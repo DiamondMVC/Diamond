@@ -3,7 +3,7 @@
 * License: MIT (https://github.com/DiamondMVC/Diamond/blob/master/LICENSE)
 * Author: Jacob Jensen (bausshf)
 */
-module diamond.web.soap.envelopetype;
+module diamond.web.soap.service.envelopetype;
 
 /// Wrapper around a soap envelope type.
 abstract class SoapEnvelopeType
