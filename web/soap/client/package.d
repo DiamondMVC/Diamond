@@ -7,5 +7,8 @@ module diamond.web.soap.client;
 
 public
 {
-  import diamond.web.soap.soapclient;
+  import diamond.web.soap.client.soapclient;
+  import diamond.web.soap.client.envelope;
+  import diamond.web.soap.client.envelopebody;
+  import diamond.web.soap.client.envelopeparameter;
 }
