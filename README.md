@@ -214,9 +214,8 @@ final class HomeController(TView) : WebController!TView
   }
   
   /// /home/setname/{name}
-  @HttpAction(HttpPost) Status setName()
+  @HttpAction(HttpPost) Status setName(string name)
   {
-    auto name = this.getByIndex!string(0);
     view.model = new Home(name);
     
     return Status.success;
