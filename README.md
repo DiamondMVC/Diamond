@@ -45,7 +45,7 @@ Website: https://diamondmvc.org/
 
 |Package|Version|Description|
 |---|:--:|---|
-|vibe.d|0.8.3|Used as the backend for Diamond's web applications.|
+|vibe.d|0.8.3|Used as the backend for Diamond's web applications. From 3.0.0 vibe.d will be an optional dependency.|
 |DMD/Phobos|2.072.2 - 2.077.0|The standard library of D and thus a required dependency.|
 |Mysql-native|2.2.1|A native wrapper for Mysql. It's a dependency, because of the MySql ORM.|
 |ddbc|X.X.X|A database wrapper in D to a lot of database systems. Diamond will be using it for PostgreSQL, Sqlite and MSSQL.|
@@ -191,7 +191,7 @@ View:
 <p>Hello @=model.name;!</p>
 ```
 
-### Controller
+### Controller (View)
 
 ```
 module controllers.homecontroller;
@@ -223,6 +223,30 @@ final class HomeController(TView) : WebController!TView
 }
 ```
 
+### Controller (Api)
+
+```
+module controllers.usercontroller;
+
+import diamond.controllers;
+
+final class UserController : ApiController
+{
+  this(HttpClient client)
+  {
+    super(client);
+  }
+  
+  /// /user/update
+  @HttpAction(HttpPost) Status update(UserModel user)
+  {
+    // Do stuff ...
+    
+    return Status.success;
+  }
+}
+```
+
 ### Model
 
 ```
@@ -244,6 +268,17 @@ final class Home
   {
     string name() { return _name; }
   }
+}
+
+...
+
+module models.user;
+
+final class User
+{
+  public:
+  string name;
+  int age;
 }
 ```
 
