@@ -72,6 +72,10 @@ static if (isWeb)
     @optional string[] disableHeaderLoggingRoutes;
     /// An associative array of mapped auth keys.
     @optional string[string] mappedAuthKeys;
+    /// The maximum number of bytes a request can transfer. Defaults to 4,000,000 bytes.
+    @optional ulong maxRequestSize;
+    /// The maximum number of bytes a request header can be. Default is 8,192 bytes.
+    @optional ulong maxRequestHeaderSize;
   }
 
   /// Wrapper around a webservice.

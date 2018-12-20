@@ -274,6 +274,8 @@ static if (isWeb)
     settings.port = port;
     settings.bindAddresses = ipAddresses;
     settings.accessLogToConsole = webConfig.accessLogToConsole;
+    settings.maxRequestSize = webConfig.maxRequestSize ? webConfig.maxRequestSize : 4000000;
+    settings.maxRequestHeaderSize = webConfig.maxRequestHeaderSize ? webConfig.maxRequestHeaderSize : 8192;
     settings.errorPageHandler = (HTTPServerRequest request, HTTPServerResponse response, HTTPServerErrorInfo error)
     {
       import diamond.extensions;
