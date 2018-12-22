@@ -185,6 +185,8 @@ static if (isWeb)
 
   static if (isWebServer)
   {
+    mixin(generateGlobalView());
+    
     mixin GenerateViews;
 
     static foreach (viewResult; generateViewsResult)
