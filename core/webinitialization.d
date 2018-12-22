@@ -10,6 +10,25 @@ import diamond.core.apptype;
 static if (isWebApi)
 {
   /**
+  * Generates the global view data.
+  * Returns:
+  *   A string containing all global view data such as imports etc.
+  */
+  string generateGlobalView()
+  {
+    string content;
+
+    import diamond.core.io : handleCTFEFile;
+
+    mixin handleCTFEFile!("globalview.d", q{
+      content = __fileResult;
+    });
+    handle();
+
+    return content ? content : "";
+  }
+
+  /**
   * Generates the controller data.
   * Returns:
   *   An array with the names of the controllers to handle.
