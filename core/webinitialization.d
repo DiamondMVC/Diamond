@@ -86,7 +86,7 @@ static if (isWebServer)
             continue;
           }
 
-          auto data = line.split("|");
+          auto data = line.split(".");
 
           if (data.length != 2)
           {
@@ -101,7 +101,7 @@ static if (isWebServer)
           }
           else
           {
-            viewDataString ~= "  viewData[\"" ~ data[0].strip() ~ "\"] = import(\"" ~ data[1].strip() ~ "\");";
+            viewDataString ~= "  viewData[\"" ~ data[0].strip() ~ "\"] = import(\"" ~ (data[0].strip() ~ "." ~ data[1].strip()) ~ "\");";
           }
         }
       }
