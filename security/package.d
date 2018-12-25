@@ -12,4 +12,5 @@ public
   import diamond.security.network;
   import diamond.security.backup;
   import diamond.security.validation;
+  import diamond.security.html;
 }

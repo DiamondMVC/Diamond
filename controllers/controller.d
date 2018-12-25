@@ -118,16 +118,32 @@ static if (isWeb)
         {
           static if(parameterTypes_%2$s.length == 1)
           {
-            mapAction(
-              action_%2$s.method,
-              (
-                action_%2$s.action && action_%2$s.action.strip().length ?
-                action_%2$s.action : "%2$s"
-              ).firstToLower(),
-              () {
-                mixin("return controller.%2$s(client.getModelFromJson!" ~ (parameterTypes_%2$s[0]) ~ ");");
-              }
-            );
+            static if (hasUDA!(%1$s.%2$s, HttpSanitize))
+            {
+              mapAction(
+                action_%2$s.method,
+                (
+                  action_%2$s.action && action_%2$s.action.strip().length ?
+                  action_%2$s.action : "%2$s"
+                ).firstToLower(),
+                () {
+                  mixin("return controller.%2$s(client.getSanitizedModelFromJson!" ~ (parameterTypes_%2$s[0]) ~ ");");
+                }
+              );
+            }
+            else
+            {
+              mapAction(
+                action_%2$s.method,
+                (
+                  action_%2$s.action && action_%2$s.action.strip().length ?
+                  action_%2$s.action : "%2$s"
+                ).firstToLower(),
+                () {
+                  mixin("return controller.%2$s(client.getModelFromJson!" ~ (parameterTypes_%2$s[0]) ~ ");");
+                }
+              );
+            }
           }
           else
           {
@@ -149,23 +165,51 @@ static if (isWeb)
               {
                 static if (hasUDA!(%1$s.%2$s, HttpQuery))
                 {
-                  mixin("auto " ~ parameterNames_%2$s[i] ~ " = to!(" ~ (parameterTypes_%2$s[i]) ~ ")(client.query.get(\"" ~ parameterNames_%2$s[i] ~ "\"));");
+                  static if (hasUDA!(%1$s.%2$s, HttpSanitize))
+                  {
+                    mixin("auto " ~ parameterNames_%2$s[i] ~ " = to!(" ~ (parameterTypes_%2$s[i]) ~ ")(escapeHtml(client.query.get(\"" ~ parameterNames_%2$s[i] ~ "\")));");
+                  }
+                  else
+                  {
+                    mixin("auto " ~ parameterNames_%2$s[i] ~ " = to!(" ~ (parameterTypes_%2$s[i]) ~ ")(client.query.get(\"" ~ parameterNames_%2$s[i] ~ "\"));");
+                  }
                 }
                 else static if (hasUDA!(%1$s.%2$s, HttpForm))
                 {
-                  mixin("auto " ~ parameterNames_%2$s[i] ~ " = to!(" ~ (parameterTypes_%2$s[i]) ~ ")(client.form.get(\"" ~ parameterNames_%2$s[i] ~ "\"));");
+                  static if (hasUDA!(%1$s.%2$s, HttpSanitize))
+                  {
+                    mixin("auto " ~ parameterNames_%2$s[i] ~ " = to!(" ~ (parameterTypes_%2$s[i]) ~ ")(escapeHtml(client.form.get(\"" ~ parameterNames_%2$s[i] ~ "\")));");
+                  }
+                  else
+                  {
+                    mixin("auto " ~ parameterNames_%2$s[i] ~ " = to!(" ~ (parameterTypes_%2$s[i]) ~ ")(client.form.get(\"" ~ parameterNames_%2$s[i] ~ "\"));");
+                  }
                 }
                 else
                 {
                   mixin(parameterTypes_%2$s[i] ~ " " ~ parameterNames_%2$s[i] ~ ";");
 
-                  if (action_%2$s.action && action_%2$s.action.length)
+                  static if (hasUDA!(%1$s.%2$s, HttpSanitize) && parameterTypes_%2$s[i] == "string")
                   {
-                    mixin(parameterNames_%2$s[i] ~ " = get!(" ~ (parameterTypes_%2$s[i]) ~ ")(\"" ~ parameterNames_%2$s[i] ~ "\");");
+                    if (action_%2$s.action && action_%2$s.action.length)
+                    {
+                      mixin(parameterNames_%2$s[i] ~ " = escapeHtml(get!(" ~ (parameterTypes_%2$s[i]) ~ ")(\"" ~ parameterNames_%2$s[i] ~ "\"));");
+                    }
+                    else
+                    {
+                      mixin(parameterNames_%2$s[i] ~ " = escapeHtml(getByIndex!(" ~ (parameterTypes_%2$s[i]) ~ ")(\"" ~ to!string(i) ~ "\"));");
+                    }
                   }
                   else
                   {
-                    mixin(parameterNames_%2$s[i] ~ " = getByIndex!(" ~ (parameterTypes_%2$s[i]) ~ ")(\"" ~ to!string(i) ~ "\");");
+                    if (action_%2$s.action && action_%2$s.action.length)
+                    {
+                      mixin(parameterNames_%2$s[i] ~ " = get!(" ~ (parameterTypes_%2$s[i]) ~ ")(\"" ~ parameterNames_%2$s[i] ~ "\");");
+                    }
+                    else
+                    {
+                      mixin(parameterNames_%2$s[i] ~ " = getByIndex!(" ~ (parameterTypes_%2$s[i]) ~ ")(\"" ~ to!string(i) ~ "\");");
+                    }
                   }
                 }
               }

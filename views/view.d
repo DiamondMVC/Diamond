@@ -320,63 +320,9 @@ static if (isWebServer || !isWeb)
       void escape(T)(T data)
       {
         auto toEscape = to!string(data);
-        string result = "";
 
-        foreach (c; toEscape)
-        {
-          switch (c)
-          {
-            case '<':
-            {
-              result ~= "&lt;";
-              break;
-            }
-
-            case '>':
-            {
-              result ~= "&gt;";
-              break;
-            }
-
-            case '"':
-            {
-              result ~= "&quot;";
-              break;
-            }
-
-            case '\'':
-            {
-              result ~= "&#39";
-              break;
-            }
-
-            case '&':
-            {
-              result ~= "&amp;";
-              break;
-            }
-
-            case ' ':
-            {
-              result ~= "&nbsp;";
-              break;
-            }
-
-            default:
-            {
-              if (c < ' ')
-              {
-                result ~= format("&#%d;", c);
-              }
-              else
-              {
-                result ~= to!string(c);
-              }
-            }
-          }
-        }
-
-        append(result);
+        import diamond.security.html;
+        append(escapeHtml(toEscape));
       }
 
       /**
