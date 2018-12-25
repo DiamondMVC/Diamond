@@ -91,4 +91,7 @@ static if (isWeb)
 
   /// Attribute for retrieving controller data from the query string.
   struct HttpQuery { }
+
+  /// Attribute for sanitizing html tags from inputs by replacing them with their &gt; and &lt;
+  struct HttpSanitize { }
 }

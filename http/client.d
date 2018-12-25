@@ -396,6 +396,43 @@ static if (isWeb)
       }
     }
 
+    /// Gets a santized model from the request's json.
+    T getSanitizedModelFromJson(T, CTORARGS...)(CTORARGS args)
+    {
+      import vibe.data.json;
+      import vibe.stream.operations : readAllUTF8;
+
+      import diamond.security.html;
+
+      auto json = _request.bodyReader ? _request.bodyReader.readAllUTF8() : "";
+
+      if (!json)
+      {
+        return T.init;
+      }
+
+      static if (is(T == struct))
+      {
+        T value = deserializeJson!T(escapeJson(json));
+
+        return value;
+      }
+      else static if (is(T == class))
+      {
+        auto value = new T(args);
+
+        Json jsonObject = deserializeJson!Json(escapeJson(json));
+
+        value.deserializeJson(jsonObject);
+
+        return value;
+      }
+      else
+      {
+        static assert(0);
+      }
+    }
+
     /**
     * Adds a generic context value to the client.
     * Params:
