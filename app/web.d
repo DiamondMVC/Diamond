@@ -1,5 +1,5 @@
 /**
-* Copyright © DiamondMVC 2018
+* Copyright © DiamondMVC 2019
 * License: MIT (https://github.com/DiamondMVC/Diamond/blob/master/LICENSE)
 * Author: Jacob Jensen (bausshf)
 */
@@ -186,7 +186,7 @@ static if (isWeb)
   static if (isWebServer)
   {
     mixin(generateGlobalView());
-    
+
     mixin GenerateViews;
 
     static foreach (viewResult; generateViewsResult)
@@ -480,7 +480,10 @@ static if (isWeb)
   */
   private void handleHTTPListenInternal(HttpClient client)
   {
-    handleHTTPPermissions(client);
+    if (webConfig.authenticateStaticFiles)
+    {
+      handleHTTPPermissions(client);
+    }
 
     if (_staticFiles)
     {
@@ -499,6 +502,11 @@ static if (isWeb)
         }
         return;
       }
+    }
+
+    if (!webConfig.authenticateStaticFiles)
+    {
+      handleHTTPPermissions(client);
     }
 
     static if (isWebServer)

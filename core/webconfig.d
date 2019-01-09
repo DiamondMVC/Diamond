@@ -1,5 +1,5 @@
 /**
-* Copyright © DiamondMVC 2018
+* Copyright © DiamondMVC 2019
 * License: MIT (https://github.com/DiamondMVC/Diamond/blob/master/LICENSE)
 * Author: Jacob Jensen (bausshf)
 */
@@ -76,6 +76,8 @@ static if (isWeb)
     @optional ulong maxRequestSize;
     /// The maximum number of bytes a request header can be. Default is 8,192 bytes.
     @optional ulong maxRequestHeaderSize;
+    /// Boolean determining whether authentication should run for static files or not.
+    @optional bool authenticateStaticFiles;
   }
 
   /// Wrapper around a webservice.
