@@ -1,5 +1,5 @@
 /**
-* Copyright © DiamondMVC 2018
+* Copyright © DiamondMVC 2019
 * License: MIT (https://github.com/DiamondMVC/Diamond/blob/master/LICENSE)
 * Author: Jacob Jensen (bausshf)
 */
@@ -66,10 +66,16 @@ static if (isWebServer)
         }
         catch (Exception e)
         {
+          import std.file : write;
+          write("ERRORS.txt", e.toString);
+
           throw new ViewException(super.name, e);
         }
         catch (Throwable t)
         {
+          import std.file : write;
+          write("ERRORS.txt", t.toString);
+
           throw new ViewError(super.name, t);
         }
       }
