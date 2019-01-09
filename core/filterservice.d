@@ -36,7 +36,7 @@ private
       this.title = title;
       this.url = url;
       this.keywords = keywords;
-      this.keywordReplacement = _keywordReplacement;
+      this.keywordReplacement = keywordReplacement;
     }
   }
 }
@@ -87,7 +87,7 @@ void addSearchFilter(string title, string url, string[] keywords, string keyword
   enforce(url && url.length, "Missing url.");
   enforce(keywords && keywords.length, "Missing keywords.");
 
-  _entries ~= new FilterEntry(url, keywords, keywordReplacement);
+  _entries ~= new FilterEntry(title, url, keywords, keywordReplacement);
 }
 
 /**
@@ -99,6 +99,9 @@ void addSearchFilter(string title, string url, string[] keywords, string keyword
 */
 FilterResult[] search(string[] searchKeywords)
 {
+  import std.algorithm : canFind;
+  import std.array : join, replace;
+  
   FilterResult[] results;
 
   if (!_entries)
