@@ -41,7 +41,7 @@ private
     );
 
     grammars['='] = new Grammar(
-      "expressionValue", '=', ';',
+      "expressionEscaped", '=', ';',
       ContentMode.appendContent, CharacterIncludeMode.none, false, true
     );
 
@@ -51,7 +51,7 @@ private
     );
 
     grammars['$'] = new Grammar(
-      "expressionEscaped", '$', ';',
+      "expressionValue", '$', ';',
       ContentMode.appendContent, CharacterIncludeMode.none, false, false,
       '=' // Character that must follow the first character after @
     );
