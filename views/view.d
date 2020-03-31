@@ -554,7 +554,7 @@ static if (isWebServer || !isWeb)
         */
         void meta(string nameField = "name")(string name, string content)
         {
-          append("<meta %s=\"%s\" content\"%s\">".format(nameField, name, content));
+          append("<meta %s=\"%s\" content=\"%s\">".format(nameField, name, content));
         }
 
         /**
@@ -601,12 +601,12 @@ static if (isWebServer || !isWeb)
         */
         void openGraphGeneralMeta(string title, string description, string image, string url, string siteName, string type)
         {
-          meta("og:title", title);
-          meta("og:description", description);
-          meta("og:image", image);
-          meta("og:url", url);
-          meta("og:site_name", siteName);
-          meta("og:type", type);
+          meta!"property"("og:title", title);
+          meta!"property"("og:description", description);
+          meta!"property"("og:image", image);
+          meta!"property"("og:url", url);
+          meta!"property"("og:site_name", siteName);
+          meta!"property"("og:type", type);
         }
 
         import CSRF = diamond.security.csrf;
